@@ -1,5 +1,4 @@
 <?php
-
 use MichaelDrennen\NaturalDate\NaturalDate;
 
 class NaturalDateTest extends PHPUnit_Framework_TestCase {
