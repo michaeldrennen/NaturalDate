@@ -11,6 +11,11 @@ class NaturalDate {
 
     protected $inputString;
     protected $timezoneId;
+
+    /**
+     * @var string $languageCode Ex: 'en'
+     */
+    protected $languageCode;
     protected $countryCode; // Not sure I need this...?
     protected $utcAnchorDate;
     protected $utcAnchorTime;
@@ -24,6 +29,65 @@ class NaturalDate {
     protected $confidenceWindowInSeconds;
     protected $utcBestDate; //(mid point anchor + confidence window / 2)
     protected $localBestDate;
+
+    /**
+     * @var array $tokens An array of Token objects.
+     */
+    protected $tokens;
+
+    /**
+     * @param string $string       Ex: 'Summer of 78'
+     * @param string $timezoneId   Ex: 'America/Denver'
+     * @param string $languageCode Ex: 'en'
+     *
+     * @return static
+     * @throws \MichaelDrennen\NaturalDate\Exceptions\InvalidTimezone
+     */
+    public static function parse( string $string = '', string $timezoneId = 'UTC', string $languageCode = 'en' ): NaturalDate {
+
+        $date = new static();
+        $date->setInputString( $string );
+        $date->setTimezoneId( $timezoneId );
+        $date->setLanguageCode( $languageCode );
+
+        date_default_timezone_set( $timezoneId );
+        $iAnchorTime = strtotime( $date->getInputString() );
+
+        // If the string that is passed in can be parsed by PHP's strtotime() function, then our job is done.
+        if ( false !== $iAnchorTime ):
+            $date->setLocalAnchorDate( date( 'Y-m-d', $iAnchorTime ) );
+            $date->setLocalAnchorTime( date( 'H:i:s', $iAnchorTime ) );
+
+            $carbon = Carbon::createFromTimestamp( $iAnchorTime, $date->getTimezoneId() );
+            $carbon->setTimezone( 'UTC' );
+
+            $date->setUtcAnchorDate( $carbon->toDateString() );
+            $date->setUtcAnchorTime( $carbon->toTimeString() );
+            $date->setUtcConfidenceWindowStartDate( $carbon );
+            $date->setUtcConfidenceWindowStartTime( $carbon );
+            $date->setUtcConfidenceWindowEndDate( $carbon );
+            $date->setUtcConfidenceWindowEndTime( $carbon->toTimeString() );
+
+            return $date;
+        endif;
+
+        $date->parseStringToTokens( $date->getLanguageCode(), $date->getInputString() );
+
+
+    }
+
+    protected function parseStringToTokens( string $string ) {
+        $string         = trim( $string );
+        $explodedTokens = explode( " ", $string );
+        foreach ( $explodedTokens as $explodedToken ):
+            $this->tokens[] = $this->makeTokenFromString( $explodedToken );
+        endforeach;
+    }
+
+    protected function makeTokenFromString( string $string ): Token {
+        return new Token( $string );
+    }
+
 
     /**
      * @return mixed
@@ -59,6 +123,14 @@ class NaturalDate {
             throw new InvalidTimezone( "The timezone id you passed in [" . $timezoneId . "] is not valid because it is not found in the array returned by DateTimeZone::listIdentifiers()" );
         }
         $this->timezoneId = $timezoneId;
+    }
+
+    public function setLanguageCode( string $languageCode ) {
+        $this->languageCode = $languageCode;
+    }
+
+    public function getLanguageCode(): string {
+        return $this->languageCode;
     }
 
     /**
@@ -132,30 +204,30 @@ class NaturalDate {
     }
 
     /**
-     * @return mixed
+     * @return Carbon
      */
-    public function getUtcConfidenceWindowStartDate() {
+    public function getUtcConfidenceWindowStartDate(): Carbon {
         return $this->utcConfidenceWindowStartDate;
     }
 
     /**
-     * @param mixed $utcConfidenceWindowStartDate
+     * @param Carbon $utcConfidenceWindowStartDate
      */
-    public function setUtcConfidenceWindowStartDate( $utcConfidenceWindowStartDate ) {
+    public function setUtcConfidenceWindowStartDate( Carbon $utcConfidenceWindowStartDate ) {
         $this->utcConfidenceWindowStartDate = $utcConfidenceWindowStartDate;
     }
 
     /**
-     * @return mixed
+     * @return Carbon
      */
-    public function getUtcConfidenceWindowEndDate() {
+    public function getUtcConfidenceWindowEndDate(): Carbon {
         return $this->utcConfidenceWindowEndDate;
     }
 
     /**
-     * @param mixed $utcConfidenceWindowEndDate
+     * @param Carbon $utcConfidenceWindowEndDate
      */
-    public function setUtcConfidenceWindowEndDate( $utcConfidenceWindowEndDate ) {
+    public function setUtcConfidenceWindowEndDate( Carbon $utcConfidenceWindowEndDate ) {
         $this->utcConfidenceWindowEndDate = $utcConfidenceWindowEndDate;
     }
 
@@ -181,23 +253,23 @@ class NaturalDate {
     }
 
     /**
-     * @param mixed $utcConfidenceWindowEndTime
+     * @param Carbon $utcConfidenceWindowEndTime
      */
-    public function setUtcConfidenceWindowEndTime( $utcConfidenceWindowEndTime ) {
+    public function setUtcConfidenceWindowEndTime( Carbon $utcConfidenceWindowEndTime ) {
         $this->utcConfidenceWindowEndTime = $utcConfidenceWindowEndTime;
     }
 
     /**
      * @return mixed
      */
-    public function getConfidenceWindowString() {
+    public function getConfidenceWindowString(): string {
         return $this->confidenceWindowString;
     }
 
     /**
-     * @param mixed $confidenceWindowString
+     * @param string $confidenceWindowString
      */
-    public function setConfidenceWindowString( $confidenceWindowString ) {
+    public function setConfidenceWindowString( string $confidenceWindowString ) {
         $this->confidenceWindowString = $confidenceWindowString;
     }
 
@@ -248,40 +320,5 @@ class NaturalDate {
 
     }
 
-
-    /**
-     * @param string $string
-     * @param string $timezoneId
-     *
-     * @return static
-     * @throws \MichaelDrennen\NaturalDate\Exceptions\InvalidTimezone
-     * @throws \MichaelDrennen\NaturalDate\Exceptions\StrToTimeParseFailure
-     */
-    public static function parse( string $string = '', string $timezoneId ): NaturalDate {
-
-
-        $date = new static();
-        $date->setInputString( $string );
-        $date->setTimezoneId( $timezoneId );
-
-        date_default_timezone_set( $timezoneId );
-        $iAnchorTime = strtotime( $date->getInputString() );
-
-        if ( false === $iAnchorTime ):
-            throw new StrToTimeParseFailure( "The input string you passed [" . $date->getInputString() . "] could not be parsed by strtotime()" );
-        endif;
-
-        $date->setLocalAnchorDate( date( 'Y-m-d', $iAnchorTime ) );
-        $date->setLocalAnchorTime( date( 'H:i:s', $iAnchorTime ) );
-
-        $carbon = Carbon::createFromTimestamp( $iAnchorTime, $date->getTimezoneId() );
-        $carbon->setTimezone( 'UTC' );
-
-        $date->setUtcAnchorDate( $carbon->toDateString() );
-        $date->setUtcAnchorTime( $carbon->toTimeString() );
-
-
-        return $date;
-    }
 
 }
