@@ -21,10 +21,10 @@ class NaturalDate {
     protected $utcAnchorTime;
     protected $localAnchorDate;
     protected $localAnchorTime;
-    protected $utcConfidenceWindowStartDate;
-    protected $utcConfidenceWindowEndDate;
-    protected $utcConfidenceWindowStartTime;
-    protected $utcConfidenceWindowEndTime;
+
+    protected $utcConfidenceWindowStart;
+    protected $utcConfidenceWindowEnd;
+
     protected $confidenceWindowString; // (see above. decade, year, early 2015, etc)
     protected $confidenceWindowInSeconds;
     protected $utcBestDate; //(mid point anchor + confidence window / 2)
@@ -63,20 +63,26 @@ class NaturalDate {
 
             $date->setUtcAnchorDate( $carbon->toDateString() );
             $date->setUtcAnchorTime( $carbon->toTimeString() );
-            $date->setUtcConfidenceWindowStartDate( $carbon );
-            $date->setUtcConfidenceWindowStartTime( $carbon );
-            $date->setUtcConfidenceWindowEndDate( $carbon );
-            $date->setUtcConfidenceWindowEndTime( $carbon->toTimeString() );
+
+            $date->setUtcConfidenceWindowStart( $carbon );
+            $date->setUtcConfidenceWindowEnd( $carbon );
 
             return $date;
         endif;
 
         $date->parseStringToTokens( $date->getLanguageCode(), $date->getInputString() );
 
+        /**
+         * @var \MichaelDrennen\NaturalDate\Token $token
+         */
+        foreach ( $date->tokens as $token ):
+            $date = $token->process( $date );
+        endforeach;
 
+        return $date;
     }
 
-    protected function parseStringToTokens( string $string ) {
+    protected function parseStringToTokens( string $languageCode, string $string ) {
         $string         = trim( $string );
         $explodedTokens = explode( " ", $string );
         foreach ( $explodedTokens as $explodedToken ):
@@ -84,8 +90,17 @@ class NaturalDate {
         endforeach;
     }
 
-    protected function makeTokenFromString( string $string ): Token {
-        return new Token( $string );
+    /**
+     * @param string $languageCode
+     * @param string $string
+     *
+     * @return \MichaelDrennen\NaturalDate\Token
+     * @throws \MichaelDrennen\NaturalDate\Exceptions\Token\UndefinedLanguageCode
+     */
+    protected function makeTokenFromString( string $languageCode, string $string ): Token {
+        $tokenFactory = new TokenFactory();
+
+        return $tokenFactory->make( $languageCode, $string );
     }
 
 
@@ -203,61 +218,35 @@ class NaturalDate {
         $this->localAnchorTime = $localAnchorTime;
     }
 
+
     /**
-     * @return Carbon
+     * @param Carbon $utcConfidenceWindowStart
      */
-    public function getUtcConfidenceWindowStartDate(): Carbon {
-        return $this->utcConfidenceWindowStartDate;
+    public function setUtcConfidenceWindowStart( Carbon $utcConfidenceWindowStart ) {
+        $this->utcConfidenceWindowStart = $utcConfidenceWindowStart;
     }
 
     /**
-     * @param Carbon $utcConfidenceWindowStartDate
+     * @return \Carbon\Carbon
      */
-    public function setUtcConfidenceWindowStartDate( Carbon $utcConfidenceWindowStartDate ) {
-        $this->utcConfidenceWindowStartDate = $utcConfidenceWindowStartDate;
+    public function getUtcConfidenceWindowStart(): Carbon {
+        return $this->utcConfidenceWindowStart;
     }
 
     /**
-     * @return Carbon
+     * @param Carbon $utcConfidenceWindowEnd
      */
-    public function getUtcConfidenceWindowEndDate(): Carbon {
-        return $this->utcConfidenceWindowEndDate;
+    public function setUtcConfidenceWindowEnd( Carbon $utcConfidenceWindowEnd ) {
+        $this->utcConfidenceWindow = $utcConfidenceWindowEnd;
     }
 
     /**
-     * @param Carbon $utcConfidenceWindowEndDate
+     * @return \Carbon\Carbon
      */
-    public function setUtcConfidenceWindowEndDate( Carbon $utcConfidenceWindowEndDate ) {
-        $this->utcConfidenceWindowEndDate = $utcConfidenceWindowEndDate;
+    public function getUtcConfidenceWindowEnd(): Carbon {
+        return $this->utcConfidenceWindowEnd;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getUtcConfidenceWindowStartTime() {
-        return $this->utcConfidenceWindowStartTime;
-    }
-
-    /**
-     * @param mixed $utcConfidenceWindowStartTime
-     */
-    public function setUtcConfidenceWindowStartTime( $utcConfidenceWindowStartTime ) {
-        $this->utcConfidenceWindowStartTime = $utcConfidenceWindowStartTime;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getUtcConfidenceWindowEndTime() {
-        return $this->utcConfidenceWindowEndTime;
-    }
-
-    /**
-     * @param Carbon $utcConfidenceWindowEndTime
-     */
-    public function setUtcConfidenceWindowEndTime( Carbon $utcConfidenceWindowEndTime ) {
-        $this->utcConfidenceWindowEndTime = $utcConfidenceWindowEndTime;
-    }
 
     /**
      * @return mixed
