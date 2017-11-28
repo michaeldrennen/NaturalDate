@@ -5,7 +5,28 @@ use MichaelDrennen\NaturalDate\Token;
 
 class TokenEn extends Token {
 
-    public function __construct( $string ) {
-        parent::__construct( $string );
+    protected $modifierTokens = [
+        'early', 'late',
+        'beginning', 'middle', 'end',
+        'begining', // sic*
+    ];
+
+    protected $bridgeTokens = [
+        'between',
+        'betwen', // sic*
+    ];
+
+    protected $connectorTokens = [
+        'and', '&', 'n', '+',
+    ];
+
+    /**
+     * TokenEn constructor.
+     *
+     * @param string $string
+     * @param int    $tokenPosition Tokens are saved into an array. This value is the array index of this Token.
+     */
+    public function __construct( $string, $tokenPosition ) {
+        parent::__construct( $string, $tokenPosition );
     }
 }

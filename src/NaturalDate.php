@@ -9,26 +9,54 @@ use MichaelDrennen\NaturalDate\Exceptions\StrToTimeParseFailure;
 
 class NaturalDate {
 
-    protected $inputString;
+    /**
+     * @var string $input The string that the user submitted. EX: "summer of 87"
+     */
+    protected $input;
+
+    /**
+     * @var string $timezoneId Ex: 'America/Denver'
+     */
     protected $timezoneId;
 
     /**
      * @var string $languageCode Ex: 'en'
      */
     protected $languageCode;
-    protected $countryCode; // Not sure I need this...?
-    protected $utcAnchorDate;
-    protected $utcAnchorTime;
-    protected $localAnchorDate;
-    protected $localAnchorTime;
 
+
+    protected $countryCode; // Not sure I need this...?
+
+    /**
+     * @var Carbon $utcAnchorDate
+     */
+    protected $utcAnchorDate;
+
+
+    /**
+     * @var Carbon $utcConfidenceWindowStart When the user does not supply an exact timestamp, this Carbon date serves
+     *      as a "bookend". The event represented by this NaturalDate instance did not happen before this value.
+     */
     protected $utcConfidenceWindowStart;
+
+    /**
+     * @var Carbon $utcConfidenceWindowEnd The other "bookend". The event did not happen after this value.
+     */
     protected $utcConfidenceWindowEnd;
 
+    /**
+     * @var string $confidenceWindowString
+     */
     protected $confidenceWindowString; // (see above. decade, year, early 2015, etc)
+
+
     protected $confidenceWindowInSeconds;
-    protected $utcBestDate; //(mid point anchor + confidence window / 2)
-    protected $localBestDate;
+
+    /**
+     * @var Carbon $utcBestDate (mid point anchor + confidence window / 2)
+     */
+    protected $utcBestDate;
+
 
     /**
      * @var array $tokens An array of Token objects.
@@ -46,23 +74,21 @@ class NaturalDate {
     public static function parse( string $string = '', string $timezoneId = 'UTC', string $languageCode = 'en' ): NaturalDate {
 
         $date = new static();
-        $date->setInputString( $string );
+        $date->setInput( $string );
         $date->setTimezoneId( $timezoneId );
         $date->setLanguageCode( $languageCode );
 
         date_default_timezone_set( $timezoneId );
-        $iAnchorTime = strtotime( $date->getInputString() );
+        $iAnchorTime = strtotime( $date->getInput() );
 
         // If the string that is passed in can be parsed by PHP's strtotime() function, then our job is done.
         if ( false !== $iAnchorTime ):
             $date->setLocalAnchorDate( date( 'Y-m-d', $iAnchorTime ) );
-            $date->setLocalAnchorTime( date( 'H:i:s', $iAnchorTime ) );
 
             $carbon = Carbon::createFromTimestamp( $iAnchorTime, $date->getTimezoneId() );
             $carbon->setTimezone( 'UTC' );
 
             $date->setUtcAnchorDate( $carbon->toDateString() );
-            $date->setUtcAnchorTime( $carbon->toTimeString() );
 
             $date->setUtcConfidenceWindowStart( $carbon );
             $date->setUtcConfidenceWindowEnd( $carbon );
@@ -70,7 +96,7 @@ class NaturalDate {
             return $date;
         endif;
 
-        $date->parseStringToTokens( $date->getLanguageCode(), $date->getInputString() );
+        $date->parseStringToTokens( $date->getLanguageCode(), $date->getInput() );
 
         /**
          * @var \MichaelDrennen\NaturalDate\Token $token
@@ -82,44 +108,51 @@ class NaturalDate {
         return $date;
     }
 
+    /**
+     * @param string $languageCode
+     * @param string $string
+     *
+     * @throws \MichaelDrennen\NaturalDate\Exceptions\Token\UndefinedLanguageCode
+     */
     protected function parseStringToTokens( string $languageCode, string $string ) {
         $string         = trim( $string );
         $explodedTokens = explode( " ", $string );
-        foreach ( $explodedTokens as $explodedToken ):
-            $this->tokens[] = $this->makeTokenFromString( $explodedToken );
+        foreach ( $explodedTokens as $tokenPosition => $explodedToken ):
+            $this->tokens[ $tokenPosition ] = $this->makeTokenFromString( $languageCode, $explodedToken, $tokenPosition );
         endforeach;
     }
 
     /**
      * @param string $languageCode
      * @param string $string
+     * @param int    $tokenPosition Tokens are saved into an array. This value is the array index of this Token.
      *
      * @return \MichaelDrennen\NaturalDate\Token
      * @throws \MichaelDrennen\NaturalDate\Exceptions\Token\UndefinedLanguageCode
      */
-    protected function makeTokenFromString( string $languageCode, string $string ): Token {
+    protected function makeTokenFromString( string $languageCode, string $string, int $tokenPosition ): Token {
         $tokenFactory = new TokenFactory();
 
-        return $tokenFactory->make( $languageCode, $string );
+        return $tokenFactory->make( $languageCode, $string, $tokenPosition );
     }
 
 
     /**
      * @return mixed
      */
-    public function getInputString() {
-        return $this->inputString;
+    public function getInput() {
+        return $this->input;
     }
 
     /**
-     * @param mixed $inputString
+     * @param mixed $input
      */
-    public function setInputString( $inputString ) {
-        $this->inputString = $inputString;
+    public function setInput( $input ) {
+        $this->input = $input;
     }
 
     /**
-     * @return mixed
+     * @return string Ex: 'America/Denver'
      */
     public function getTimezoneId() {
         return $this->timezoneId;
@@ -140,10 +173,16 @@ class NaturalDate {
         $this->timezoneId = $timezoneId;
     }
 
+    /**
+     * @param string $languageCode EX: "en"
+     */
     public function setLanguageCode( string $languageCode ) {
         $this->languageCode = $languageCode;
     }
 
+    /**
+     * @return string EX: "en"
+     */
     public function getLanguageCode(): string {
         return $this->languageCode;
     }
@@ -202,20 +241,6 @@ class NaturalDate {
      */
     public function setLocalAnchorDate( $localAnchorDate ) {
         $this->localAnchorDate = $localAnchorDate;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getLocalAnchorTime() {
-        return $this->localAnchorTime;
-    }
-
-    /**
-     * @param mixed $localAnchorTime
-     */
-    public function setLocalAnchorTime( $localAnchorTime ) {
-        $this->localAnchorTime = $localAnchorTime;
     }
 
 
@@ -290,24 +315,8 @@ class NaturalDate {
         $this->utcBestDate = $utcBestDate;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getLocalBestDate() {
-        return $this->localBestDate;
-    }
-
-    /**
-     * @param mixed $localBestDate
-     */
-    public function setLocalBestDate( $localBestDate ) {
-        $this->localBestDate = $localBestDate;
-    }
-
-
     public function __construct() {
 
     }
-
 
 }

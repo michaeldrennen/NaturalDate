@@ -5,24 +5,28 @@ namespace MichaelDrennen\NaturalDate;
 
 class Token {
 
+    /**
+     * Valid token types. I create constants here to make the code clearer to me in my IDE.
+     */
     const modifier  = 'modifier';
     const bridge    = 'bridge';
     const connector = 'connector';
 
+    /**
+     * @var string $string The string that this token was made from.
+     */
     protected $string;
 
-    protected $modifierTokens = [
-        'early', 'late',
-        'beginning', 'middle', 'end', 'begining',
-    ];
+    /**
+     * @var int $tokenPosition Tokens are saved into an array. This value is the array index of this Token.
+     */
+    protected $tokenPosition;
 
-    protected $bridgeTokens = [
-        'between', 'betwen',
-    ];
+    /**
+     * @var \MichaelDrennen\NaturalDate\NaturalDate $naturalDate
+     */
+    protected $naturalDate;
 
-    protected $connectorTokens = [
-        'and', '&', '+', 'n',
-    ];
 
     /**
      * @var string $tokenType One of the string constants defined above. Ex: self::modifier|bridge|connector
@@ -48,10 +52,12 @@ class Token {
      * Token constructor.
      *
      * @param string $string
+     * @param int    $tokenPosition Tokens are saved into an array. This value is the array index of this Token.
      */
-    public function __construct( string $string ) {
+    public function __construct( string $string, int $tokenPosition ) {
         $this->setString( $string );
         $this->setTokenType( $string );
+        $this->setTokenPosition( $tokenPosition );
     }
 
     /**
@@ -60,9 +66,8 @@ class Token {
      * @return \MichaelDrennen\NaturalDate\NaturalDate
      */
     public function process( &$naturalDate ): NaturalDate {
-
-
-        return $naturalDate;
+        $this->naturalDate = $naturalDate;
+        return $this->naturalDate;
     }
 
     /**
@@ -93,13 +98,21 @@ class Token {
         return $this->tokenType;
     }
 
+    protected function setTokenPosition( $tokenPosition ) {
+        $this->tokenPosition = $tokenPosition;
+    }
+
+    protected function getTokenPosition(): int {
+        return $this->tokenPosition;
+    }
+
     /**
      * @param string $token
      *
      * @return bool
      */
     private function isModifierToken( string $token ): bool {
-        return in_array( $token, $this->modifierTokens );
+        return in_array( $token, $this->naturalDate->modifierTokens );
     }
 
     /**
@@ -108,7 +121,7 @@ class Token {
      * @return bool
      */
     private function isBridgeToken( string $token ): bool {
-        return in_array( $token, $this->bridgeTokens );
+        return in_array( $token, $this->naturalDate->bridgeTokens );
     }
 
     /**
@@ -117,7 +130,7 @@ class Token {
      * @return bool
      */
     private function isConnectorToken( string $token ): bool {
-        return in_array( $token, $this->connectorTokens );
+        return in_array( $token, $this->naturalDate->connectorTokens );
     }
 
 }

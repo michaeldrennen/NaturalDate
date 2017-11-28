@@ -3,3 +3,4 @@
 /build/
 /vendor/
 _config.yml
+phpunit.xml
