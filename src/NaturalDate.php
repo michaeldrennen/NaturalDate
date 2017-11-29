@@ -70,6 +70,7 @@ class NaturalDate {
      *
      * @return static
      * @throws \MichaelDrennen\NaturalDate\Exceptions\InvalidTimezone
+     * @throws \MichaelDrennen\NaturalDate\Exceptions\Token\UndefinedLanguageCode
      */
     public static function parse( string $string = '', string $timezoneId = 'UTC', string $languageCode = 'en' ): NaturalDate {
 
@@ -108,6 +109,7 @@ class NaturalDate {
         return $date;
     }
 
+
     /**
      * @param string $languageCode
      * @param string $string
@@ -121,6 +123,7 @@ class NaturalDate {
             $this->tokens[ $tokenPosition ] = $this->makeTokenFromString( $languageCode, $explodedToken, $tokenPosition );
         endforeach;
     }
+
 
     /**
      * @param string $languageCode
