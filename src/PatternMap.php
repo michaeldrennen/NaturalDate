@@ -78,8 +78,8 @@ class PatternMap {
             PatternMap::month => new Month( $this->patterns[ PatternMap::month ] ),
         ];
 
-        foreach ( $overridePatterns as $pattern => $patternModifier ):
-            $this->patterns[ $pattern ] = $patternModifier;
+        foreach ( $overridePatterns as $tag => $patternModifier ):
+            $this->patternModifiers[ $tag ] = $patternModifier;
         endforeach;
     }
 

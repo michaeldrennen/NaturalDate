@@ -4,6 +4,7 @@ namespace MichaelDrennen\NaturalDate\Tests;
 use Carbon\Carbon;
 use MichaelDrennen\NaturalDate\Exceptions\StrToTimeParseFailure;
 use MichaelDrennen\NaturalDate\NaturalDate;
+use MichaelDrennen\NaturalDate\PatternModifiers\JohnMcClanesBirthday;
 use PHPUnit\Framework\TestCase;
 
 class NaturalDateTest extends TestCase {
@@ -81,6 +82,16 @@ class NaturalDateTest extends TestCase {
 
         $this->assertEquals( Carbon::parse( '1978-01-01 00:00:00' ), $startDate );
         $this->assertEquals( Carbon::parse( '1978-01-09 23:59:59' ), $endDate );
+    }
+
+    public function testParseWithAdditionalPatternModifierAsJohnMcClanesBirthday() {
+
+
+        $string           = "john mcclane's birthday";
+        $timezoneId       = 'America/Denver';
+        $languageCode     = 'en';
+        $patternModifiers = [ 'JMBirthday' => new JohnMcClanesBirthday( [] ) ];
+        $date             = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
     }
 
     //public function testNaturalDateWithUnparsableString() {
