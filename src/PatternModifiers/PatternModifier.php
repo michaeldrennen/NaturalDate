@@ -14,6 +14,7 @@ abstract class PatternModifier implements PatternModifierInterface {
     public function match( string $input ): bool {
         $patterns = $this->getPatterns();
         foreach ( $patterns as $pattern ):
+            echo "\n" . $pattern;
             $matched = preg_match( $pattern, $input, $this->matches );
             if ( 1 === $matched ):
                 return true;

@@ -79,6 +79,7 @@ class PatternMap {
         ];
 
         foreach ( $overridePatterns as $tag => $patternModifier ):
+            var_dump( $patternModifier );
             $this->patternModifiers[ $tag ] = $patternModifier;
         endforeach;
     }

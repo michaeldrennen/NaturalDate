@@ -131,7 +131,7 @@ class NaturalDate {
             throw $exception;
         }
 
-        throw new NaturalDateException( "Unable to parse the date: " . $string );
+        throw new NaturalDateException( "Unable to parse the date: [" . $string . "]" );
     }
 
     /**

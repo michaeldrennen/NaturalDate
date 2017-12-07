@@ -7,7 +7,9 @@ use MichaelDrennen\NaturalDate\NaturalDate;
 class JohnMcClanesBirthday extends PatternModifier {
 
     protected $patterns = [
-        "/john mcclane's birthday/i",
+        "/john mcclane\'s birthday/i",
+        "/john mcclanes birthday/i",
+        "/john mcclane birthday/i",
     ];
 
     public function modify( NaturalDate $naturalDate ): NaturalDate {
