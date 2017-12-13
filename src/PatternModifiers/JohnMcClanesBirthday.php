@@ -17,7 +17,8 @@ class JohnMcClanesBirthday extends PatternModifier {
                                 $naturalDate->getTimezoneId(),
                                 $naturalDate->getLanguageCode(),
                                 Carbon::parse( 'November 2, 1955' ),
-                                Carbon::parse( 'November 2, 1955' ),
+                                Carbon::parse( 'November 2, 1955 23:59:59' ),
+                                NaturalDate::date,
                                 $naturalDate->getPatternModifiers() );
     }
 }

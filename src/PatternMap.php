@@ -21,6 +21,8 @@ class PatternMap {
     const year  = 'year';
     const month = 'month';
 
+    const christmas = 'christmas';
+
 
     // I think I want to put classes or objects as the values in this array.
     // Those will tell the code what further processing to do on this string.
@@ -36,6 +38,9 @@ class PatternMap {
 
         PatternMap::year  => null,
         PatternMap::month => null,
+
+        PatternMap::christmas => null,
+
     ];
 
     protected $patternModifiers = [
@@ -50,6 +55,9 @@ class PatternMap {
 
         PatternMap::year  => null,
         PatternMap::month => null,
+
+        PatternMap::christmas => null,
+
     ];
 
     /**
@@ -73,18 +81,23 @@ class PatternMap {
 
     protected function initializePatternModifierObjects( array $overridePatterns ) {
         $this->patternModifiers = [
-            PatternMap::early => new Early( $this->patterns[ PatternMap::early ] ),
-            PatternMap::year  => new Year( $this->patterns[ PatternMap::year ] ),
-            PatternMap::month => new Month( $this->patterns[ PatternMap::month ] ),
+            PatternMap::christmas => new Month( $this->patterns[ PatternMap::christmas ] ),
+            PatternMap::early     => new Early( $this->patterns[ PatternMap::early ] ),
+            PatternMap::year      => new Year( $this->patterns[ PatternMap::year ] ),
+            PatternMap::month     => new Month( $this->patterns[ PatternMap::month ] ),
+
         ];
 
         foreach ( $overridePatterns as $tag => $patternModifier ):
-            var_dump( $patternModifier );
+            //var_dump( $patternModifier );
             $this->patternModifiers[ $tag ] = $patternModifier;
         endforeach;
     }
 
     /**
+     * Given an input string, this method loops through each patternModifier object, and returns the patternModifier
+     * that first matches a pattern in the input string.
+     *
      * @param string $input
      *
      * @returns PatternModifier
@@ -95,7 +108,9 @@ class PatternMap {
          * @var \MichaelDrennen\NaturalDate\PatternModifiers\PatternModifier $patternModifier
          */
         foreach ( $this->patternModifiers as $label => $patternModifier ):
+            echo "\nPattern Modifier: " . get_class( $patternModifier );
             $matched = $patternModifier->match( $input );
+            var_dump( $matched );
             if ( true === $matched ):
                 $this->matchedPatternLabel = $label;
                 return $patternModifier;

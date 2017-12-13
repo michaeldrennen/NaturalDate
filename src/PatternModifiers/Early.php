@@ -38,32 +38,32 @@ class Early extends PatternModifier {
     }
 
     protected function modifyYear( NaturalDate &$naturalDate ) {
-        $year      = $naturalDate->getUtcStart()->year;
+        $year      = $naturalDate->getLocalStart()->year;
         $startDate = Carbon::parse( $year . '-01-01T00:00:00' );
         $endDate   = Carbon::parse( $year . '-04-30T23:59:59' );
-        $naturalDate->setUtcStart( $startDate );
-        $naturalDate->setUtcEnd( $endDate );
+        $naturalDate->setLocalStart( $startDate );
+        $naturalDate->setLocalEnd( $endDate );
     }
 
     protected function modifyMonth( NaturalDate &$naturalDate ) {
-        $year  = $naturalDate->getUtcStart()->year;
-        $month = $naturalDate->getUtcStart()->month;
+        $year  = $naturalDate->getLocalStart()->year;
+        $month = $naturalDate->getLocalStart()->month;
 
         $startDate = Carbon::parse( $year . '-' . $month . '-01T00:00:00' );
         $endDate   = Carbon::parse( $year . '-' . $month . '-09T23:59:59' );
-        $naturalDate->setUtcStart( $startDate );
-        $naturalDate->setUtcEnd( $endDate );
+        $naturalDate->setLocalStart( $startDate );
+        $naturalDate->setLocalEnd( $endDate );
     }
 
     protected function modifyDate( NaturalDate &$naturalDate ) {
-        $year  = $naturalDate->getUtcStart()->year;
-        $month = $naturalDate->getUtcStart()->month;
-        $day   = $naturalDate->getUtcStart()->day;
+        $year  = $naturalDate->getLocalStart()->year;
+        $month = $naturalDate->getLocalStart()->month;
+        $day   = $naturalDate->getLocalStart()->day;
 
         $startDate = Carbon::parse( $year . '-' . $month . '-' . $day . 'T00:00:00' );
         $endDate   = Carbon::parse( $year . '-' . $month . '-' . $day . 'T07:59:59' );
-        $naturalDate->setUtcStart( $startDate );
-        $naturalDate->setUtcEnd( $endDate );
+        $naturalDate->setLocalStart( $startDate );
+        $naturalDate->setLocalEnd( $endDate );
     }
 
 

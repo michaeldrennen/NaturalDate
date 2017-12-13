@@ -49,25 +49,37 @@ class NaturalDate {
      */
     protected $type;
 
+    /**
+     * @var Carbon $localStart
+     */
+    protected $localStart;
 
     /**
-     * @var Carbon $utcStart When the user does not supply an exact timestamp, this Carbon date serves
-     *      as a "bookend". The event represented by this NaturalDate instance did not happen before this value.
+     * @var Carbon $localEnd
      */
-    protected $utcStart;
-
-    /**
-     * @var Carbon $utcEnd The other "bookend". The event did not happen after this value.
-     */
-    protected $utcEnd;
+    protected $localEnd;
 
 
-    protected $spreadInSeconds;
-
-    /**
-     * @var Carbon $utcBestDate (mid point anchor + confidence window / 2)
-     */
-    protected $utcBestDate;
+    // I think I will make all of these calculated fields.
+    // Only need to store the local start and end times, and modify them on get()
+    ///**
+    // * @var Carbon $utcStart When the user does not supply an exact timestamp, this Carbon date serves
+    // *      as a "bookend". The event represented by this NaturalDate instance did not happen before this value.
+    // */
+    //protected $utcStart;
+    //
+    ///**
+    // * @var Carbon $utcEnd The other "bookend". The event did not happen after this value.
+    // */
+    //protected $utcEnd;
+    //
+    //
+    //protected $spreadInSeconds;
+    //
+    ///**
+    // * @var Carbon $utcBestDate (mid point anchor + confidence window / 2)
+    // */
+    //protected $utcBestDate;
 
 
     /**
@@ -91,6 +103,9 @@ class NaturalDate {
      */
     protected $matchesArrayFromPregMatch = [];
 
+    /**
+     * @var array
+     */
     protected $patternModifiers = [];
 
     /**
@@ -111,19 +126,18 @@ class NaturalDate {
 
         // Run the whole string through the patterns. I take the first pattern that matches.
         try {
-            $date = new static( $string, $timezoneId, $languageCode, null, null, '', $patternModifiers );
+            $naturalDate = new static( $string, $timezoneId, $languageCode, null, null, '', $patternModifiers );
             // Assign the pattern map that contains all of the pattern modifiers.
-            $date->setPatternMap( $date->getLanguageCode() );
-            $date->setMatchedPattern();
+            $naturalDate->setPatternMap( $naturalDate->getLanguageCode() );
+            $naturalDate->setMatchedPattern();
 
-            return $date->modify();
+            return $naturalDate->modify();
         } catch ( NoMatchingPatternFound $exception ) {
-            $iAnchorTime = strtotime( $date->getInput() );
+            $iAnchorTime = strtotime( $naturalDate->getInput() );
 
             // If the string that is passed in can be parsed by PHP's strtotime() function, then our job is done.
             if ( false !== $iAnchorTime ):
-                $carbon = Carbon::createFromTimestamp( $iAnchorTime, $date->getTimezoneId() );
-                $carbon->setTimezone( 'UTC' );
+                $carbon = Carbon::createFromTimestamp( $iAnchorTime, $naturalDate->getTimezoneId() );
 
                 return new static( $string, $timezoneId, $languageCode, $carbon, $carbon, NaturalDate::date, $patternModifiers );
             endif;
@@ -166,6 +180,7 @@ class NaturalDate {
     }
 
     /**
+     * @note The first element of the $matches array is the full string, which I never need. So I shift it off.
      * @link http://php.net/manual/en/function.preg-match.php
      * @return array
      */
@@ -217,18 +232,35 @@ class NaturalDate {
         $this->utcAnchorDate = $utcAnchorDate;
     }
 
+    public function setLocalStart( Carbon $localStart = null ) {
+        $this->localStart = $localStart;
+    }
+
+    public function setLocalEnd( Carbon $localEnd = null ) {
+        $this->localEnd = $localEnd;
+    }
+
+    public function getLocalStart(): Carbon {
+        return $this->localStart;
+    }
+
+    public function getLocalEnd(): Carbon {
+        return $this->localEnd;
+    }
 
     /**
      * @param Carbon $utcStart
+     * * @param string $timezoneId Ex: America/Denver
      */
-    public function setUtcStart( Carbon $utcStart = null ) {
+    public function setUtcStart( Carbon $utcStart = null, string $timezoneId ) {
         $this->utcStart = $utcStart;
     }
 
     /**
      * @param Carbon $utcEnd
+     * @param string $timezoneId Ex: America/Denver
      */
-    public function setUtcEnd( Carbon $utcEnd = null ) {
+    public function setUtcEnd( Carbon $utcEnd = null, string $timezoneId ) {
         $this->utcEnd = $utcEnd;
     }
 
@@ -248,7 +280,7 @@ class NaturalDate {
     }
 
     /**
-     * @param string $type See the constants like year for valid types.
+     * @param string $type See the constants above like 'year' for valid types.
      */
     public function setType( string $type = '' ) {
         $this->type = $type;
@@ -290,7 +322,7 @@ class NaturalDate {
      * @return \Carbon\Carbon
      */
     public function getUtcStart(): Carbon {
-        return $this->utcStart;
+        return $this->localStart->setTimezone( 'UTC' );
     }
 
 
@@ -298,24 +330,24 @@ class NaturalDate {
      * @return \Carbon\Carbon
      */
     public function getUtcEnd(): Carbon {
-        return $this->utcEnd;
+        return $this->localEnd->setTimezone( 'UTC' );
     }
 
 
     /**
      * @return mixed
      */
-    public function getSpreadInSeconds() {
-        return $this->spreadInSeconds;
-    }
+    //public function getSpreadInSeconds() {
+    //    return $this->spreadInSeconds;
+    //}
 
 
     /**
      * @return mixed
      */
-    public function getUtcBestDate() {
-        return $this->utcBestDate;
-    }
+    //public function getUtcBestDate() {
+    //    return $this->utcBestDate;
+    //}
 
     public function getType(): string {
         return $this->type;
@@ -327,19 +359,26 @@ class NaturalDate {
      * @param string         $input        Ex: early 2016
      * @param string         $timezoneId   Ex: America\Denver
      * @param string         $languageCode Ex: en
-     * @param \Carbon\Carbon $startDateTime
-     * @param \Carbon\Carbon $endDateTime
+     * @param \Carbon\Carbon $localStartDateTime
+     * @param \Carbon\Carbon $localEndDateTime
      * @param string         $type
      * @param array          $patternModifiers
      *
      * @throws \MichaelDrennen\NaturalDate\Exceptions\InvalidTimezone
      */
-    public function __construct( string $input = '', string $timezoneId = '', string $languageCode = '', Carbon $startDateTime = null, Carbon $endDateTime = null, string $type = '', array $patternModifiers = [] ) {
+    public function __construct(
+        string $input = '',
+        string $timezoneId = '',
+        string $languageCode = '',
+        Carbon $localStartDateTime = null,
+        Carbon $localEndDateTime = null,
+        string $type = '',
+        array $patternModifiers = [] ) {
         $this->setInput( $input );
         $this->setTimezoneId( $timezoneId );
         $this->setLanguageCode( $languageCode );
-        $this->setUtcStart( $startDateTime );
-        $this->setUtcEnd( $endDateTime );
+        $this->setLocalStart( $localStartDateTime );
+        $this->setLocalEnd( $localEndDateTime );
         $this->setType( $type );
         $this->setPatternModifiers( $patternModifiers );
     }

@@ -15,11 +15,7 @@ class NaturalDateTest extends TestCase {
         $timezoneId       = 'America/Denver';
         $languageCode     = 'en';
         $patternModifiers = [];
-        try {
-            $date = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
-        } catch ( \Exception $exception ) {
-            // Do nothing.
-        }
+        $date             = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
 
         $this->assertInstanceOf( NaturalDate::class, $date, "Expecting to have an instance of NaturalDate." );
     }
@@ -29,12 +25,12 @@ class NaturalDateTest extends TestCase {
         $timezoneId       = 'America/Denver';
         $languageCode     = 'en';
         $patternModifiers = [];
-        $date             = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
-        $startDate        = $date->getUtcStart();
-        $endDate          = $date->getUtcEnd();
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
+        $startDate        = $naturalDate->getUtcStart();
+        $endDate          = $naturalDate->getUtcEnd();
 
-        $this->assertEquals( Carbon::parse( '1978-01-01 00:00:00' ), $startDate );
-        $this->assertEquals( Carbon::parse( '1978-12-31 23:59:59' ), $endDate );
+        $this->assertEquals( Carbon::parse( '1978-01-01 07:00:00', 'UTC' ), $startDate );
+        $this->assertEquals( Carbon::parse( '1979-01-01 06:59:59', 'UTC' ), $endDate );
     }
 
 
@@ -43,18 +39,12 @@ class NaturalDateTest extends TestCase {
         $timezoneId       = 'America/Denver';
         $languageCode     = 'en';
         $patternModifiers = [];
-        try {
-            $date      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
-            $startDate = $date->getUtcStart();
-            $endDate   = $date->getUtcEnd();
+        $date             = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
+        $startDate        = $date->getUtcStart();
+        $endDate          = $date->getUtcEnd();
 
-            $this->assertEquals( Carbon::parse( '2016-01-01 00:00:00' ), $startDate );
-            $this->assertEquals( Carbon::parse( '2016-04-30 23:59:59' ), $endDate );
-        } catch ( \Exception $exception ) {
-            print_r( $exception->getTrace() );
-            var_dump( $exception->getMessage() );
-            print( $exception->getTraceAsString() );
-        }
+        $this->assertEquals( Carbon::parse( '2016-01-01 07:00:00', 'UTC' ), $startDate );
+        $this->assertEquals( Carbon::parse( '2016-05-01 05:59:59', 'UTC' ), $endDate );
     }
 
     public function testEarlyModifierJustMonth() {
@@ -65,10 +55,10 @@ class NaturalDateTest extends TestCase {
         $date             = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
         $startDate        = $date->getUtcStart();
         $endDate          = $date->getUtcEnd();
+        $thisYear         = date( 'Y' ); // Keeps the Unit Tests up to date.
 
-        $thisYear = date( 'Y' ); // Keeps the Unit Tests up to date.
-        $this->assertEquals( Carbon::parse( $thisYear . '-01-01 00:00:00' ), $startDate );
-        $this->assertEquals( Carbon::parse( $thisYear . '-01-09 23:59:59' ), $endDate );
+        $this->assertEquals( Carbon::parse( $thisYear . '-01-01 07:00:00', 'UTC' ), $startDate );
+        $this->assertEquals( Carbon::parse( $thisYear . '-01-10 06:59:59', 'UTC' ), $endDate );
     }
 
     public function testEarlyModifierWithMonthAndYear() {
@@ -80,18 +70,36 @@ class NaturalDateTest extends TestCase {
         $startDate        = $date->getUtcStart();
         $endDate          = $date->getUtcEnd();
 
-        $this->assertEquals( Carbon::parse( '1978-01-01 00:00:00' ), $startDate );
-        $this->assertEquals( Carbon::parse( '1978-01-09 23:59:59' ), $endDate );
+        $this->assertEquals( Carbon::parse( '1978-01-01 07:00:00', 'UTC' ), $startDate );
+        $this->assertEquals( Carbon::parse( '1978-01-10 06:59:59', 'UTC' ), $endDate );
+    }
+
+    public function testChristmas() {
+        $string           = 'xmas 1979';
+        $timezoneId       = 'America/Denver';
+        $languageCode     = 'en';
+        $patternModifiers = [];
+        $date             = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
+        $startDate        = $date->getUtcStart();
+        $endDate          = $date->getUtcEnd();
+
+        $this->assertEquals( Carbon::parse( '1979-12-25 07:00:00', 'UTC' ), $startDate );
+        $this->assertEquals( Carbon::parse( '1979-12-26 06:59:59', 'UTC' ), $endDate );
     }
 
     public function testParseWithAdditionalPatternModifierAsJohnMcClanesBirthday() {
-
-
         $string           = "john mcclane's birthday";
         $timezoneId       = 'America/Denver';
         $languageCode     = 'en';
         $patternModifiers = [ 'JMBirthday' => new JohnMcClanesBirthday( [] ) ];
-        $date             = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
+        $startDate        = $naturalDate->getUtcStart();
+        $endDate          = $naturalDate->getUtcEnd();
+        $type             = $naturalDate->getType();
+
+        $this->assertEquals( Carbon::parse( '1955-11-02 07:00:00', 'UTC' ), $startDate );
+        $this->assertEquals( Carbon::parse( '1955-11-03 06:59:59', 'UTC' ), $endDate );
+        $this->assertEquals( NaturalDate::date, $type );
     }
 
     //public function testNaturalDateWithUnparsableString() {

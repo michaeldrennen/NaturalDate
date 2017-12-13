@@ -13,7 +13,12 @@ class Month extends PatternModifier {
      * @return \MichaelDrennen\NaturalDate\NaturalDate
      */
     public function modify( NaturalDate $naturalDate ): NaturalDate {
+        print( "\n\n" . $naturalDate->getInput() );
+        print( "\n" . $naturalDate->getTimezoneId() );
+        print( "\n\n" );
         $capturedCarbon = Carbon::parse( $naturalDate->getInput(), $naturalDate->getTimezoneId() );
+        print( "\n\ncapturedCarbon" );
+        print_r( $capturedCarbon );
 
         $startDate = $capturedCarbon->copy()->modify( 'first day of this month' );
         $endDate   = $startDate->copy()->modify( 'last day of this month' );
@@ -26,8 +31,6 @@ class Month extends PatternModifier {
                                 NaturalDate::month,
                                 $naturalDate->getPatternModifiers() );
 
-
-        return $naturalDate;
     }
 
     private function hasMonthAndYear( $elements ): bool {
