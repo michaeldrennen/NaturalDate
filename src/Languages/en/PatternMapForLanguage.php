@@ -25,12 +25,8 @@ class PatternMapForLanguage extends PatternMap {
             '/^(jan|feb|mar|apr|jun|jul|aug|sep|oct|nov|dec)\s*(\d{4}|\'\d{2}|\d{2})$/i',
         ],
         PatternMap::christmas => [
-            "/christmas\s*(\d{4})/i",
-            "/christmas\s*(\d{2})/i",
-            "/christmas\s*\'(\d{2})/i",
-            "/xmas\s*(\d{4})/i",
-            "/xmas\s*(\d{2})/i",
-            "/xmas\s*\'(\d{2})/i",
+            "/^(.*)christmas(.*)/i",
+            "/^(.*)xmas(.*)/i",
         ],
 
 

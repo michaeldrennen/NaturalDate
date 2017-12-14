@@ -19,8 +19,10 @@ abstract class PatternModifier implements PatternModifierInterface {
     public function match( string $input ): bool {
         $patterns = $this->getPatterns();
         foreach ( $patterns as $pattern ):
-            //echo "\n" . $pattern;
-            $matched = preg_match( $pattern, $input, $this->matches );
+            echo "\nPATTERN: " . $pattern . "\n";
+            $matched       = preg_match( $pattern, $input, $this->matches );
+            $this->matches = array_map( 'trim', $this->matches );   // Trim the whitespace.
+            $this->matches = array_filter( $this->matches );                // Remove empties from the matches array.
             if ( 1 === $matched ):
                 return true;
             endif;
@@ -28,6 +30,7 @@ abstract class PatternModifier implements PatternModifierInterface {
 
         return false;
     }
+
 
     protected function getPatterns(): array {
         return $this->patterns;

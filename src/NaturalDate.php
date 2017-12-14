@@ -252,32 +252,32 @@ class NaturalDate {
      * @param Carbon $utcStart
      * * @param string $timezoneId Ex: America/Denver
      */
-    public function setUtcStart( Carbon $utcStart = null, string $timezoneId ) {
-        $this->utcStart = $utcStart;
-    }
+    //public function setUtcStart( Carbon $utcStart = null, string $timezoneId ) {
+    //    $this->utcStart = $utcStart;
+    //}
 
     /**
      * @param Carbon $utcEnd
      * @param string $timezoneId Ex: America/Denver
      */
-    public function setUtcEnd( Carbon $utcEnd = null, string $timezoneId ) {
-        $this->utcEnd = $utcEnd;
-    }
+    //public function setUtcEnd( Carbon $utcEnd = null, string $timezoneId ) {
+    //    $this->utcEnd = $utcEnd;
+    //}
 
     /**
      * @param mixed $spreadInSeconds
      */
-    public function setSpreadInSeconds( $spreadInSeconds ) {
-        $this->spreadInSeconds = $spreadInSeconds;
-    }
+    //public function setSpreadInSeconds( $spreadInSeconds ) {
+    //    $this->spreadInSeconds = $spreadInSeconds;
+    //}
 
 
     /**
      * @param mixed $utcBestDate
      */
-    public function setUtcBestDate( $utcBestDate ) {
-        $this->utcBestDate = $utcBestDate;
-    }
+    //public function setUtcBestDate( $utcBestDate ) {
+    //    $this->utcBestDate = $utcBestDate;
+    //}
 
     /**
      * @param string $type See the constants above like 'year' for valid types.

@@ -10,6 +10,7 @@ class Christmas extends PatternModifier {
     public function modify( NaturalDate $naturalDate ): NaturalDate {
 
         $pregMatchMatches = $naturalDate->getPregMatchMatches();
+        print_r( $pregMatchMatches );
         $datePart         = $pregMatchMatches[ 0 ];
         var_dump( $datePart );
         $capturedDate = NaturalDate::parse( $datePart, $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $naturalDate->getPatternModifiers() );

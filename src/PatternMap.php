@@ -2,6 +2,7 @@
 namespace MichaelDrennen\NaturalDate;
 
 use MichaelDrennen\NaturalDate\Exceptions\NoMatchingPatternFound;
+use MichaelDrennen\NaturalDate\PatternModifiers\Christmas;
 use MichaelDrennen\NaturalDate\PatternModifiers\Early;
 use MichaelDrennen\NaturalDate\PatternModifiers\Month;
 use MichaelDrennen\NaturalDate\PatternModifiers\PatternModifier;
@@ -81,11 +82,10 @@ class PatternMap {
 
     protected function initializePatternModifierObjects( array $overridePatterns ) {
         $this->patternModifiers = [
-            PatternMap::christmas => new Month( $this->patterns[ PatternMap::christmas ] ),
             PatternMap::early     => new Early( $this->patterns[ PatternMap::early ] ),
             PatternMap::year      => new Year( $this->patterns[ PatternMap::year ] ),
             PatternMap::month     => new Month( $this->patterns[ PatternMap::month ] ),
-
+            PatternMap::christmas => new Christmas( $this->patterns[ PatternMap::christmas ] ),
         ];
 
         foreach ( $overridePatterns as $tag => $patternModifier ):
@@ -108,7 +108,7 @@ class PatternMap {
          * @var \MichaelDrennen\NaturalDate\PatternModifiers\PatternModifier $patternModifier
          */
         foreach ( $this->patternModifiers as $label => $patternModifier ):
-            echo "\nPattern Modifier: " . get_class( $patternModifier );
+            echo "\nPattern Modifier: " . get_class( $patternModifier ) . "\n";
             $matched = $patternModifier->match( $input );
             var_dump( $matched );
             if ( true === $matched ):
