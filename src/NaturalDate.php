@@ -60,6 +60,25 @@ class NaturalDate {
     protected $localEnd;
 
 
+    /**
+     * All local values. Used when passing into a PatternModifier's modify function. For example, if you pass a
+     * NaturalDate object into the Year PatternModifier, I don't want to set the month or day if they have already been
+     * set. This gives me a way to check if they are set or not before I overwrite them with default values.
+     */
+    protected $startYear;
+    protected $startMonth;
+    protected $startDay;
+    protected $startHour;
+    protected $startMinute;
+    protected $startSecond;
+    protected $endYear;
+    protected $endMonth;
+    protected $endDay;
+    protected $endHour;
+    protected $endMinute;
+    protected $endSecond;
+
+
     // I think I will make all of these calculated fields.
     // Only need to store the local start and end times, and modify them on get()
     ///**
@@ -109,24 +128,54 @@ class NaturalDate {
     protected $patternModifiers = [];
 
     /**
-     * @param string $string                 Ex: 'Summer of 78'
-     * @param string $timezoneId             Ex: 'America/Denver'
-     * @param string $languageCode           Ex: 'en'
-     * @param array  $patternModifiers       Keys are PatternMap labels, and values are PatternModifier objects. For
-     *                                       instance, there is no way for the NaturalDate class to know when I was a
-     *                                       freshman in high school. So the developer would pass in: ['my freshman
-     *                                       year in high school' => $naturalDateForHighSchoolFreshmanYearDates]
+     * @var array It's possible that a PatternModifier can be triggered, but it doesn't have enough information to know
+     *      how to modify the NaturalDate. For example: "early xmas 1979". In that case, "early" will get triggered
+     *      first, but it doesn't know if the user meant early in the day or early in the year, etc. So place this
+     *      NaturalDate object into an array and pass it forward. During the next iteration, I may have enough
+     *      information to use that PatternModifier.
+     */
+    protected $unprocessedNaturalDates = [];
+
+
+
+    /**
+     * @param string                                  $string              Ex: 'Summer of 78'
+     * @param string                                  $timezoneId          Ex: 'America/Denver'
+     * @param string                                  $languageCode        Ex: 'en'
+     * @param array                                   $patternModifiers    Keys are PatternMap labels, and values are
+     *                                                                     PatternModifier objects. For instance, there
+     *                                                                     is no way for the NaturalDate class to know
+     *                                                                     when I was a freshman in high school. So the
+     *                                                                     developer would pass in: ['my freshman year
+     *                                                                     in high school' =>
+     *                                                                     $naturalDateForHighSchoolFreshmanYearDates]
+     * @param \MichaelDrennen\NaturalDate\NaturalDate $existingNaturalDate The idea is to break down each substring
+     *                                                                     into a NaturalDate object. Then combine them
+     *                                                                     together to create a single NaturalDate
+     *                                                                     object that accounts for all of the
+     *                                                                     modifiers.
      *
      * @return static
      * @throws \Exception;
      */
-    public static function parse( string $string = '', string $timezoneId = 'UTC', string $languageCode = 'en', $patternModifiers = [] ): NaturalDate {
+    public static function parse( string $string = '', string $timezoneId = 'UTC', string $languageCode = 'en', $patternModifiers = [], NaturalDate $existingNaturalDate = null ): NaturalDate {
         date_default_timezone_set( $timezoneId );
 
 
         // Run the whole string through the patterns. I take the first pattern that matches.
         try {
-            $naturalDate = new static( $string, $timezoneId, $languageCode, null, null, '', $patternModifiers );
+
+            if ( isset( $existingNaturalDate ) ) {
+                $naturalDate = $existingNaturalDate;
+                $naturalDate->setInput( $string );
+                $naturalDate->setTimezoneId( $timezoneId );
+                $naturalDate->setLanguageCode( $languageCode );
+                $naturalDate->setPatternModifiers( $patternModifiers );
+            } else {
+                $naturalDate = new static( $string, $timezoneId, $languageCode, null, null, '', $patternModifiers );
+            }
+
+
             // Assign the pattern map that contains all of the pattern modifiers.
             $naturalDate->setPatternMap( $naturalDate->getLanguageCode() );
             $naturalDate->setMatchedPattern();
@@ -233,11 +282,21 @@ class NaturalDate {
     }
 
     public function setLocalStart( Carbon $localStart = null ) {
-        $this->localStart = $localStart;
+        if ( is_null( $localStart ) ) {
+            $this->localStart = Carbon::parse( $this->getStartDate() );
+        } else {
+            $this->localStart = $localStart;
+        }
+
     }
 
     public function setLocalEnd( Carbon $localEnd = null ) {
-        $this->localEnd = $localEnd;
+        if ( is_null( $localEnd ) ) {
+            $this->localEnd = Carbon::parse( $this->getEndDate() );
+        } else {
+            $this->localEnd = $localEnd;
+        }
+
     }
 
     public function getLocalStart(): Carbon {
@@ -377,11 +436,123 @@ class NaturalDate {
         $this->setInput( $input );
         $this->setTimezoneId( $timezoneId );
         $this->setLanguageCode( $languageCode );
-        $this->setLocalStart( $localStartDateTime );
-        $this->setLocalEnd( $localEndDateTime );
+        //$this->setLocalStart( $localStartDateTime );
+        //$this->setLocalEnd( $localEndDateTime );
         $this->setType( $type );
         $this->setPatternModifiers( $patternModifiers );
     }
 
+    public function setStartYear( string $year ) {
+        $this->startYear = $year;
+    }
 
+    public function setStartMonth( string $month ) {
+        $this->startMonth = str_pad( $month, 2, '0', STR_PAD_LEFT );
+    }
+
+    public function setStartDay( string $day ) {
+        $this->startDay = str_pad( $day, 2, '0', STR_PAD_LEFT );
+    }
+
+    public function setStartHour( string $hour ) {
+        $this->startHour = str_pad( $hour, 2, '0', STR_PAD_LEFT );
+    }
+
+    public function setStartMinute( string $minute ) {
+        $this->startMinute = str_pad( $minute, 2, '0', STR_PAD_LEFT );
+    }
+
+    public function setStartSecond( string $second ) {
+        $this->startSecond = str_pad( $second, 2, '0', STR_PAD_LEFT );;
+    }
+
+    public function setEndYear( string $year ) {
+        $this->endYear = $year;
+    }
+
+    public function setEndMonth( string $month ) {
+        $this->endMonth = str_pad( $month, 2, '0', STR_PAD_LEFT );
+    }
+
+    public function setEndDay( string $day ) {
+        $this->endDay = str_pad( $day, 2, '0', STR_PAD_LEFT );
+    }
+
+    public function setEndHour( string $hour ) {
+        $this->endHour = str_pad( $hour, 2, '0', STR_PAD_LEFT );
+    }
+
+    public function setEndMinute( string $minute ) {
+        $this->endMinute = str_pad( $minute, 2, '0', STR_PAD_LEFT );
+    }
+
+    public function setEndSecond( string $second ) {
+        $this->endSecond = str_pad( $second, 2, '0', STR_PAD_LEFT );
+    }
+
+
+    // GETTERS
+    public function getStartYear(): string {
+        return $this->startYear;
+    }
+
+    public function getStartMonth(): string {
+        return $this->startMonth;
+    }
+
+    public function getStartDay(): string {
+        return $this->startDay;
+    }
+
+    public function getStartHour(): string {
+        return $this->startHour;
+    }
+
+    public function getStartMinute(): string {
+        return $this->startMinute;
+    }
+
+    public function getStartSecond(): string {
+        return $this->startSecond;
+    }
+
+    public function getEndYear(): string {
+        return $this->endYear;
+    }
+
+    public function getEndMonth(): string {
+        return $this->endMonth;
+    }
+
+    public function getEndDay(): string {
+        return $this->endDay;
+    }
+
+    public function getEndHour(): string {
+        return $this->endHour;
+    }
+
+    public function getEndMinute(): string {
+        return $this->endMinute;
+    }
+
+    public function getEndSecond(): string {
+        return $this->endSecond;
+    }
+
+    public function getStartDate(): string {
+        return $this->getStartYear() . '-' . $this->getStartMonth() . '-' . $this->getStartDay() . 'T' . $this->getStartHour() . ':' . $this->getStartMinute() . ':' . $this->getStartSecond();
+    }
+
+    public function getEndDate(): string {
+        return $this->getEndYear() . '-' . $this->getEndMonth() . '-' . $this->getEndDay() . 'T' . $this->getEndHour() . ':' . $this->getEndMinute() . ':' . $this->getEndSecond();
+    }
+
+    public function pushUnprocessedNaturalDate( NaturalDate $naturalDate ) {
+        array_push( $this->unprocessedNaturalDates, $naturalDate );
+    }
+
+    public function popUnprocessedNaturalDate(): NaturalDate {
+        return array_pop( $this->unprocessedNaturalDates );
+    }
 }

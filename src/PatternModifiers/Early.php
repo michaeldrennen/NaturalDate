@@ -1,7 +1,6 @@
 <?php
 namespace MichaelDrennen\NaturalDate\PatternModifiers;
 
-use Carbon\Carbon;
 use MichaelDrennen\NaturalDate\NaturalDate;
 
 class Early extends PatternModifier {
@@ -15,7 +14,7 @@ class Early extends PatternModifier {
     public function modify( NaturalDate $naturalDate ): NaturalDate {
         $pregMatchMatches = $naturalDate->getPregMatchMatches();
         $datePart         = $pregMatchMatches[ 0 ];
-        $capturedDate     = NaturalDate::parse( $datePart, $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $naturalDate->getPatternModifiers() );
+        $capturedDate     = NaturalDate::parse( $datePart, $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $naturalDate->getPatternModifiers(), $naturalDate );
 
         switch ( $capturedDate->getType() ):
             case 'year':
@@ -31,39 +30,31 @@ class Early extends PatternModifier {
                 break;
 
             default:
-
+                $naturalDate->pushUnprocessedNaturalDate( $naturalDate );
                 break;
         endswitch;
         return $capturedDate;
     }
 
     protected function modifyYear( NaturalDate &$naturalDate ) {
-        $year      = $naturalDate->getLocalStart()->year;
-        $startDate = Carbon::parse( $year . '-01-01T00:00:00' );
-        $endDate   = Carbon::parse( $year . '-04-30T23:59:59' );
-        $naturalDate->setLocalStart( $startDate );
-        $naturalDate->setLocalEnd( $endDate );
+        $naturalDate->setStartMonth( 1 );
+        $naturalDate->setStartDay( 1 );
+        $naturalDate->setEndMonth( 4 );
+        $naturalDate->setEndDay( 30 );
     }
 
     protected function modifyMonth( NaturalDate &$naturalDate ) {
-        $year  = $naturalDate->getLocalStart()->year;
-        $month = $naturalDate->getLocalStart()->month;
-
-        $startDate = Carbon::parse( $year . '-' . $month . '-01T00:00:00' );
-        $endDate   = Carbon::parse( $year . '-' . $month . '-09T23:59:59' );
-        $naturalDate->setLocalStart( $startDate );
-        $naturalDate->setLocalEnd( $endDate );
+        $naturalDate->setStartDay( 1 );
+        $naturalDate->setEndDay( 9 );
     }
 
     protected function modifyDate( NaturalDate &$naturalDate ) {
-        $year  = $naturalDate->getLocalStart()->year;
-        $month = $naturalDate->getLocalStart()->month;
-        $day   = $naturalDate->getLocalStart()->day;
-
-        $startDate = Carbon::parse( $year . '-' . $month . '-' . $day . 'T00:00:00' );
-        $endDate   = Carbon::parse( $year . '-' . $month . '-' . $day . 'T07:59:59' );
-        $naturalDate->setLocalStart( $startDate );
-        $naturalDate->setLocalEnd( $endDate );
+        $naturalDate->setStartHour( 0 );
+        $naturalDate->setStartMinute( 0 );
+        $naturalDate->setEndSecond( 0 );
+        $naturalDate->setEndHour( 7 );
+        $naturalDate->setEndMinute( 59 );
+        $naturalDate->setEndSecond( 59 );
     }
 
 

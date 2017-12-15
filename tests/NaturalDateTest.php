@@ -91,7 +91,7 @@ class NaturalDateTest extends TestCase {
     //}
 
     public function testChristmas() {
-        $string           = 'xmas 1979';
+        $string           = 'early xmas 1979';
         $timezoneId       = 'America/Denver';
         $languageCode     = 'en';
         $patternModifiers = [];
