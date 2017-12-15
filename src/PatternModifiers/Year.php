@@ -12,9 +12,11 @@ class Year extends PatternModifier {
      * @param \MichaelDrennen\NaturalDate\NaturalDate $naturalDate
      *
      * @return \MichaelDrennen\NaturalDate\NaturalDate
+     * @throws \Exception
      * @throws \MichaelDrennen\NaturalDate\Exceptions\NaturalDateException
      */
     public function modify( NaturalDate $naturalDate ): NaturalDate {
+
         // $naturalDate input will be a year of type: 2016, or 16, or '16
         $strLen = strlen( $naturalDate->getInput() );
         switch ( $strLen ):
@@ -36,6 +38,7 @@ class Year extends PatternModifier {
         $naturalDate->setStartYear( $year );
         $naturalDate->setEndYear( $year );
 
+        parent::modify($naturalDate);
         return $naturalDate;
 
         //$start = Carbon::parse( $year . '-01-01 00:00:00' );

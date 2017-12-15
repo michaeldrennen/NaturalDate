@@ -136,6 +136,11 @@ class NaturalDate {
      */
     protected $unprocessedNaturalDates = [];
 
+    /**
+     * @var bool $processed Set to true if the modify() function was able to successfully modify this NaturalDate. This
+     *      is related to the $unprocessedNaturalDates array.
+     */
+    protected $processed = false;
 
 
     /**
@@ -180,7 +185,10 @@ class NaturalDate {
             $naturalDate->setPatternMap( $naturalDate->getLanguageCode() );
             $naturalDate->setMatchedPattern();
 
-            return $naturalDate->modify();
+            $naturalDate = $naturalDate->modify();
+            $naturalDate->setLocalDateTimes();
+
+            return $naturalDate;
         } catch ( NoMatchingPatternFound $exception ) {
             $iAnchorTime = strtotime( $naturalDate->getInput() );
 
@@ -188,13 +196,21 @@ class NaturalDate {
             if ( false !== $iAnchorTime ):
                 $carbon = Carbon::createFromTimestamp( $iAnchorTime, $naturalDate->getTimezoneId() );
 
-                return new static( $string, $timezoneId, $languageCode, $carbon, $carbon, NaturalDate::date, $patternModifiers );
+                $naturalDate = new static( $string, $timezoneId, $languageCode, $carbon, $carbon, NaturalDate::date, $patternModifiers );
+                $naturalDate->setLocalDateTimes();
+
+                return $naturalDate;
             endif;
         } catch ( \Exception $exception ) {
             throw $exception;
         }
 
         throw new NaturalDateException( "Unable to parse the date: [" . $string . "]" );
+    }
+
+    public function setLocalDateTimes() {
+        $this->setLocalStart();
+        $this->setLocalEnd();
     }
 
     /**
@@ -236,6 +252,7 @@ class NaturalDate {
     public function getPregMatchMatches() {
         $matches = $this->matchedPatternModifier->getMatches();
         array_shift( $matches );
+
         return $matches;
     }
 
@@ -492,60 +509,74 @@ class NaturalDate {
 
 
     // GETTERS
-    public function getStartYear(): string {
+    public function getStartYear() {
         return $this->startYear;
     }
 
-    public function getStartMonth(): string {
+    public function getStartMonth() {
         return $this->startMonth;
     }
 
-    public function getStartDay(): string {
+    public function getStartDay() {
         return $this->startDay;
     }
 
-    public function getStartHour(): string {
+    public function getStartHour() {
         return $this->startHour;
     }
 
-    public function getStartMinute(): string {
+    public function getStartMinute() {
         return $this->startMinute;
     }
 
-    public function getStartSecond(): string {
+    public function getStartSecond() {
         return $this->startSecond;
     }
 
-    public function getEndYear(): string {
+    public function getEndYear() {
         return $this->endYear;
     }
 
-    public function getEndMonth(): string {
+    public function getEndMonth() {
         return $this->endMonth;
     }
 
-    public function getEndDay(): string {
+    public function getEndDay() {
         return $this->endDay;
     }
 
-    public function getEndHour(): string {
+    public function getEndHour() {
         return $this->endHour;
     }
 
-    public function getEndMinute(): string {
+    public function getEndMinute() {
         return $this->endMinute;
     }
 
-    public function getEndSecond(): string {
+    public function getEndSecond() {
         return $this->endSecond;
     }
 
     public function getStartDate(): string {
-        return $this->getStartYear() . '-' . $this->getStartMonth() . '-' . $this->getStartDay() . 'T' . $this->getStartHour() . ':' . $this->getStartMinute() . ':' . $this->getStartSecond();
+        $year   = $this->getStartYear() ? $this->getStartYear() : '0000';
+        $month  = $this->getStartMonth() ? $this->getStartMonth() : '01';
+        $day    = $this->getStartDay() ? $this->getStartDay() : '01';
+        $hour   = $this->getStartHour() ? $this->getStartHour() : '00';
+        $minute = $this->getStartMinute() ? $this->getStartMinute() : '00';
+        $second = $this->getStartSecond() ? $this->getStartSecond() : '00';
+
+        return $year . '-' . $month . '-' . $day . 'T' . $hour . ':' . $minute . ':' . $second;
     }
 
     public function getEndDate(): string {
-        return $this->getEndYear() . '-' . $this->getEndMonth() . '-' . $this->getEndDay() . 'T' . $this->getEndHour() . ':' . $this->getEndMinute() . ':' . $this->getEndSecond();
+        $year   = $this->getEndYear() ? $this->getEndYear() : '0000';
+        $month  = $this->getEndMonth() ? $this->getEndMonth() : '01';
+        $day    = $this->getEndDay() ? $this->getEndDay() : '01';
+        $hour   = $this->getEndHour() ? $this->getEndHour() : '23';
+        $minute = $this->getEndMinute() ? $this->getEndMinute() : '59';
+        $second = $this->getEndSecond() ? $this->getEndSecond() : '59';
+
+        return $year . '-' . $month . '-' . $day . 'T' . $hour . ':' . $minute . ':' . $second;
     }
 
     public function pushUnprocessedNaturalDate( NaturalDate $naturalDate ) {
@@ -554,5 +585,21 @@ class NaturalDate {
 
     public function popUnprocessedNaturalDate(): NaturalDate {
         return array_pop( $this->unprocessedNaturalDates );
+    }
+
+    public function getUnprocessedNaturalDates(): array {
+        return $this->unprocessedNaturalDates;
+    }
+
+    public function setUnprocessedNaturalDates( $unprocessedNaturalDates ) {
+        $this->unprocessedNaturalDates = $unprocessedNaturalDates;
+    }
+
+    public function setProcessed( bool $processed ) {
+        $this->processed = $processed;
+    }
+
+    public function getProcessed(): bool {
+        return $this->processed;
     }
 }

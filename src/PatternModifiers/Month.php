@@ -1,4 +1,5 @@
 <?php
+
 namespace MichaelDrennen\NaturalDate\PatternModifiers;
 
 use Carbon\Carbon;
@@ -13,33 +14,13 @@ class Month extends PatternModifier {
      * @return \MichaelDrennen\NaturalDate\NaturalDate
      */
     public function modify( NaturalDate $naturalDate ): NaturalDate {
-        print( "\n\n" . $naturalDate->getInput() );
-        print( "\n" . $naturalDate->getTimezoneId() );
-        print( "\n\n" );
         $capturedCarbon = Carbon::parse( $naturalDate->getInput(), $naturalDate->getTimezoneId() );
-        print( "\n\ncapturedCarbon" );
-        print_r( $capturedCarbon );
+        // @TODO Add code to to determine if start month or end month should be set.
+        $naturalDate->setStartMonth( $capturedCarbon->month );
+        $naturalDate->setEndMonth( $capturedCarbon->month );
+        $naturalDate->setType( NaturalDate::month );
 
-        $startDate = $capturedCarbon->copy()->modify( 'first day of this month' );
-        $endDate   = $startDate->copy()->modify( 'last day of this month' );
-
-        return new NaturalDate( $naturalDate->getInput(),
-                                $naturalDate->getTimezoneId(),
-                                $naturalDate->getLanguageCode(),
-                                $startDate,
-                                $endDate,
-                                NaturalDate::month,
-                                $naturalDate->getPatternModifiers() );
-
+        return $naturalDate;
     }
-
-    private function hasMonthAndYear( $elements ): bool {
-        return count( $elements ) == 2 ? true : false;
-    }
-
-    private function hasJustMonthYear( $elements ): bool {
-        return count( $elements ) == 1 ? true : false;
-    }
-
 
 }
