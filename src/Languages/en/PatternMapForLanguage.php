@@ -8,7 +8,7 @@ class PatternMapForLanguage extends PatternMap {
     // I think I want to put classes or objects as the values in this array.
     // Those will tell the code what further processing to do on this string.
     protected $patterns = [
-        PatternMap::early     => [ '/^early\s*(.*)$/i' ],
+        PatternMap::early     => [ '/^early(.*)$/i' ],
         PatternMap::late      => [ '/^late\s*(.*)$/i' ],
         PatternMap::beginning => [ '/^beginning\s*(of)?\s*(.*)$/i' ],
         PatternMap::middle    => [ '/^middle\s*(of)?\s*(.*)$/i' ],
@@ -25,8 +25,8 @@ class PatternMapForLanguage extends PatternMap {
             '/^(jan|feb|mar|apr|jun|jul|aug|sep|oct|nov|dec)\s*(\d{4}|\'\d{2}|\d{2})$/i',
         ],
         PatternMap::christmas => [
-            "/christmas/i",
-            "/xmas/i",
+            "/^christmas(.*)/i",
+            "/^xmas(.*)/i",
         ],
 
 

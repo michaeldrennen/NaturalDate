@@ -37,8 +37,9 @@ class Year extends PatternModifier {
         // @TODO Add some logic here to determine if both start and end year should be set...
         $naturalDate->setStartYear( $year );
         $naturalDate->setEndYear( $year );
+        $naturalDate->setType( NaturalDate::year );
 
-        parent::modify($naturalDate);
+
         return $naturalDate;
 
         //$start = Carbon::parse( $year . '-01-01 00:00:00' );

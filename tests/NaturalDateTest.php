@@ -55,7 +55,7 @@ class NaturalDateTest extends TestCase {
         $endDate          = $naturalDate->getUtcEnd();
 
         $this->assertEquals( Carbon::parse( '1978-01-01 07:00:00', 'UTC' ), $startDate );
-       // $this->assertEquals( Carbon::parse( '1979-01-01 06:59:59', 'UTC' ), $endDate );
+        // $this->assertEquals( Carbon::parse( '1979-01-01 06:59:59', 'UTC' ), $endDate );
     }
 
 
@@ -64,27 +64,15 @@ class NaturalDateTest extends TestCase {
         $timezoneId       = 'America/Denver';
         $languageCode     = 'en';
         $patternModifiers = [];
-        $date             = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
-        $startDate        = $date->getUtcStart();
-        $endDate          = $date->getUtcEnd();
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
+        $startDate        = $naturalDate->getUtcStart();
+        $endDate          = $naturalDate->getUtcEnd();
 
         $this->assertEquals( Carbon::parse( '2016-01-01 07:00:00', 'UTC' ), $startDate );
         $this->assertEquals( Carbon::parse( '2016-05-01 05:59:59', 'UTC' ), $endDate );
     }
 
-    public function testEarlyModifierJustMonth() {
-        $string           = 'early jan';
-        $timezoneId       = 'America/Denver';
-        $languageCode     = 'en';
-        $patternModifiers = [];
-        $date             = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
-        $startDate        = $date->getUtcStart();
-        $endDate          = $date->getUtcEnd();
-        $thisYear         = date( 'Y' ); // Keeps the Unit Tests up to date.
 
-        $this->assertEquals( Carbon::parse( $thisYear . '-01-01 07:00:00', 'UTC' ), $startDate );
-        $this->assertEquals( Carbon::parse( $thisYear . '-01-10 06:59:59', 'UTC' ), $endDate );
-    }
 
     public function testEarlyModifierWithMonthAndYear() {
         $string           = 'early jan 1978';
@@ -98,7 +86,6 @@ class NaturalDateTest extends TestCase {
         $this->assertEquals( Carbon::parse( '1978-01-01 07:00:00', 'UTC' ), $startDate );
         $this->assertEquals( Carbon::parse( '1978-01-10 06:59:59', 'UTC' ), $endDate );
     }
-
 
 
     public function testParseWithAdditionalPatternModifierAsJohnMcClanesBirthday() {
@@ -116,6 +103,21 @@ class NaturalDateTest extends TestCase {
         $this->assertEquals( NaturalDate::date, $type );
     }
 
+    public function testEarlyModifierJustMonth() {
+        $string           = 'early jan';
+        $timezoneId       = 'America/Denver';
+        $languageCode     = 'en';
+        $patternModifiers = [];
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
+        $startDate        = $naturalDate->getUtcStart();
+        $endDate          = $naturalDate->getUtcEnd();
+        $thisYear         = date( 'Y' ); // Keeps the Unit Tests up to date.
+
+        print_r( $naturalDate->getDebugMessages() );
+
+        $this->assertEquals( Carbon::parse( $thisYear . '-01-01 07:00:00', 'UTC' ), $startDate );
+        $this->assertEquals( Carbon::parse( $thisYear . '-01-10 06:59:59', 'UTC' ), $endDate );
+    }
 
 
     //public function testNaturalDateWithUnparsableString() {

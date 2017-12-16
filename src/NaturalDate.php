@@ -7,6 +7,7 @@ use DateTimeZone;
 use MichaelDrennen\NaturalDate\Exceptions\InvalidTimezone;
 use MichaelDrennen\NaturalDate\Exceptions\NaturalDateException;
 use MichaelDrennen\NaturalDate\Exceptions\NoMatchingPatternFound;
+use MichaelDrennen\NaturalDate\PatternModifiers\PatternModifier;
 
 
 class NaturalDate {
@@ -128,6 +129,7 @@ class NaturalDate {
     protected $patternModifiers = [];
 
     /**
+     * @NOTE Not sure I need this anymore
      * @var array It's possible that a PatternModifier can be triggered, but it doesn't have enough information to know
      *      how to modify the NaturalDate. For example: "early xmas 1979". In that case, "early" will get triggered
      *      first, but it doesn't know if the user meant early in the day or early in the year, etc. So place this
@@ -137,10 +139,16 @@ class NaturalDate {
     protected $unprocessedNaturalDates = [];
 
     /**
+     * @NOTE Not sure I need this anymore
      * @var bool $processed Set to true if the modify() function was able to successfully modify this NaturalDate. This
      *      is related to the $unprocessedNaturalDates array.
      */
     protected $processed = false;
+
+    /**
+     * @var array
+     */
+    protected $debugMessages = [];
 
 
     /**
@@ -170,20 +178,22 @@ class NaturalDate {
         // Run the whole string through the patterns. I take the first pattern that matches.
         try {
 
-            if ( isset( $existingNaturalDate ) ) {
-                $naturalDate = $existingNaturalDate;
-                $naturalDate->setInput( $string );
-                $naturalDate->setTimezoneId( $timezoneId );
-                $naturalDate->setLanguageCode( $languageCode );
-                $naturalDate->setPatternModifiers( $patternModifiers );
-            } else {
-                $naturalDate = new static( $string, $timezoneId, $languageCode, null, null, '', $patternModifiers );
-            }
+            //if ( isset( $existingNaturalDate ) ) {
+            //    $naturalDate = $existingNaturalDate;
+            //    $naturalDate->setInput( $string );
+            //    $naturalDate->setTimezoneId( $timezoneId );
+            //    $naturalDate->setLanguageCode( $languageCode );
+            //    $naturalDate->setPatternModifiers( $patternModifiers );
+            //} else {
+            //    $naturalDate = new static( $string, $timezoneId, $languageCode, null, null, '', $patternModifiers );
+            //}
+            $naturalDate = new static( $string, $timezoneId, $languageCode, null, null, '', $patternModifiers );
 
 
             // Assign the pattern map that contains all of the pattern modifiers.
             $naturalDate->setPatternMap( $naturalDate->getLanguageCode() );
             $naturalDate->setMatchedPattern();
+            $naturalDate->addDebugMessage( "In parse(): The matched pattern is: [" . get_class( $naturalDate->getMatchedPatternModifier() ) . "]." );
 
             $naturalDate = $naturalDate->modify();
             $naturalDate->setLocalDateTimes();
@@ -206,6 +216,14 @@ class NaturalDate {
         }
 
         throw new NaturalDateException( "Unable to parse the date: [" . $string . "]" );
+    }
+
+    public function addDebugMessage( string $message ) {
+        $this->debugMessages[] = $message;
+    }
+
+    public function getDebugMessages(): array {
+        return $this->debugMessages;
     }
 
     public function setLocalDateTimes() {
@@ -236,6 +254,15 @@ class NaturalDate {
         $this->matchedPatternModifier = $this->patternMap->setMatchedPattern( $input );
     }
 
+    /**
+     * Used solely for debugging right now.
+     *
+     * @return \MichaelDrennen\NaturalDate\PatternModifiers\PatternModifier
+     */
+    public function getMatchedPatternModifier(): PatternModifier {
+        return $this->matchedPatternModifier;
+    }
+
     protected function setPatternModifiers( array $patternModifiers ) {
         $this->patternModifiers = $patternModifiers;
     }
@@ -252,7 +279,9 @@ class NaturalDate {
     public function getPregMatchMatches() {
         $matches = $this->matchedPatternModifier->getMatches();
         array_shift( $matches );
-
+        $matches = array_map( 'trim', $matches );
+        $matches = array_filter( $matches );
+        $matches = array_values( $matches ); // reset indexes to zero based
         return $matches;
     }
 
@@ -266,7 +295,7 @@ class NaturalDate {
      * @param mixed $input
      */
     public function setInput( $input ) {
-        $this->input = $input;
+        $this->input = trim( $input );
     }
 
     /**
@@ -460,6 +489,7 @@ class NaturalDate {
     }
 
     public function setStartYear( string $year ) {
+
         $this->startYear = $year;
     }
 
@@ -505,6 +535,49 @@ class NaturalDate {
 
     public function setEndSecond( string $second ) {
         $this->endSecond = str_pad( $second, 2, '0', STR_PAD_LEFT );
+    }
+
+    public function setStartDateTimeAsStartOfToday() {
+        $this->setStartYear( date( 'Y' ) );
+        $this->setStartMonth( date( 'm' ) );
+        $this->setStartDay( date( 'd' ) );
+        $this->setStartHour( 0 );
+        $this->setStartMinute( 0 );
+        $this->setStartSecond( 0 );
+    }
+
+    public function setEndDateTimeAsEndOfToday() {
+        $this->setEndYear( date( 'Y' ) );
+        $this->setEndMonth( date( 'm' ) );
+        $this->setEndDay( date( 'd' ) );
+        $this->setEndHour( 23 );
+        $this->setEndMinute( 59 );
+        $this->setEndSecond( 59 );
+    }
+
+    public function setStartTimesAsStartOfToday( bool $override = false ) {
+        if ( $override ):
+            $this->setStartHour( 0 );
+            $this->setStartMinute( 0 );
+            $this->setStartSecond( 0 );
+        else:
+            $this->startHour   = isset( $this->startHour ) ? $this->startHour : $this->setStartHour( 0 );
+            $this->startMinute = isset( $this->startMinute ) ? $this->startMinute : $this->setStartMinute( 0 );
+            $this->startSecond = isset( $this->startSecond ) ? $this->startSecond : $this->setStartSecond( 0 );
+        endif;
+
+    }
+
+    public function setEndTimesAsEndOfToday( bool $override = false ) {
+        if ( $override ):
+            $this->setEndHour( 0 );
+            $this->setEndMinute( 0 );
+            $this->setEndSecond( 0 );
+        else:
+            $this->endHour   = isset( $this->endHour ) ? $this->endHour : $this->setEndHour( 0 );
+            $this->endMinute = isset( $this->endMinute ) ? $this->endMinute : $this->setEndMinute( 0 );
+            $this->endSecond = isset( $this->endSecond ) ? $this->endSecond : $this->setEndSecond( 0 );
+        endif;
     }
 
 
