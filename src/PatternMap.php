@@ -108,9 +108,7 @@ class PatternMap {
          * @var \MichaelDrennen\NaturalDate\PatternModifiers\PatternModifier $patternModifier
          */
         foreach ( $this->patternModifiers as $label => $patternModifier ):
-            //echo "\nPattern Modifier: " . get_class( $patternModifier ) . "\n";
             $matched = $patternModifier->match( $input );
-            //var_dump( $matched );
             if ( true === $matched ):
                 $this->matchedPatternLabel = $label;
                 return $patternModifier;

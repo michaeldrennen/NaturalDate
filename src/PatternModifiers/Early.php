@@ -22,7 +22,7 @@ class Early extends PatternModifier {
      * @throws \Exception
      */
     public function modify( NaturalDate $naturalDate ): NaturalDate {
-
+        $naturalDate->addDebugMessage( "    Early->modify(): Just entered." );
 
         $pregMatchMatches = $naturalDate->getPregMatchMatches();
 
@@ -32,7 +32,7 @@ class Early extends PatternModifier {
         if ( empty( $pregMatchMatches ) ):
             $naturalDate->setStartDateTimeAsStartOfToday();
             $naturalDate->setEndDateTimeAsEndOfToday();
-            $this->modifyDate( $naturalDate );
+            $naturalDate->addDebugMessage( "    Early->modify(): the user just passed in the string \"early\", then assume they mean early today." );
             return $naturalDate;
         endif;
 
@@ -40,8 +40,9 @@ class Early extends PatternModifier {
         /**
          * There should only ever be one captured element based on the regex pattern.
          */
-        $datePart     = $pregMatchMatches[ 0 ];
-        $capturedDate = NaturalDate::parse( $datePart, $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $naturalDate->getPatternModifiers() );
+        $datePart = $pregMatchMatches[ 0 ];
+
+        $capturedDate = NaturalDate::parse( $datePart, $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $naturalDate->getPatternModifiers(), $naturalDate );
 
 
         switch ( $capturedDate->getType() ):
@@ -51,6 +52,7 @@ class Early extends PatternModifier {
                 break;
 
             case NaturalDate::month:
+                $capturedDate->addDebugMessage( "   Early->modify(): The captured string was a month." );
                 $this->modifyMonth( $capturedDate );
                 break;
 
@@ -83,6 +85,11 @@ class Early extends PatternModifier {
 
         $naturalDate->setStartDay( 1 );
         $naturalDate->setEndDay( 9 );
+
+
+        $this->setStartYearIfNotSetAlready( $naturalDate, date( 'Y' ) );
+        $this->setEndYearIfNotSetAlready( $naturalDate, date( 'Y' ) );
+
         $naturalDate->setStartTimesAsStartOfToday();
         $naturalDate->setEndTimesAsEndOfToday();
         $naturalDate->setType( NaturalDate::month );
@@ -98,5 +105,17 @@ class Early extends PatternModifier {
         $naturalDate->setType( NaturalDate::date );
     }
 
+
+    protected function setStartYearIfNotSetAlready( NaturalDate &$naturalDate, int $year ) {
+        if ( is_null( $naturalDate->getStartYear() ) ):
+            $naturalDate->setStartYear( $year );
+        endif;
+    }
+
+    protected function setEndYearIfNotSetAlready( NaturalDate &$naturalDate, int $year ) {
+        if ( is_null( $naturalDate->getEndYear() ) ):
+            $naturalDate->setEndYear( $year );
+        endif;
+    }
 
 }

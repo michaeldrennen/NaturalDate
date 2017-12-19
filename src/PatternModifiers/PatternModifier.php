@@ -2,8 +2,6 @@
 
 namespace MichaelDrennen\NaturalDate\PatternModifiers;
 
-use MichaelDrennen\NaturalDate\NaturalDate;
-
 abstract class PatternModifier implements PatternModifierInterface {
 
     protected $patterns = [];
@@ -18,25 +16,6 @@ abstract class PatternModifier implements PatternModifierInterface {
         $this->patterns = array_merge( $this->getPatterns(), $patterns );
     }
 
-    /**
-     * @param \MichaelDrennen\NaturalDate\NaturalDate $naturalDate
-     *
-     * @return \MichaelDrennen\NaturalDate\NaturalDate
-     * @throws \Exception
-     */
-    public function modify( NaturalDate $naturalDate ): NaturalDate {
-        $unprocessedNaturalDates = $naturalDate->getUnprocessedNaturalDates();
-        foreach ( $unprocessedNaturalDates as $i => $unprocessedNaturalDate ) {
-            echo "\n\n>>>>>>>>>>>>>>>>>>>>>>>Processing an unprocessed natural date object\n";
-            $naturalDate = NaturalDate::parse( $unprocessedNaturalDate->getInput(), $unprocessedNaturalDate->getTimezoneId(), $unprocessedNaturalDate->getLanguageCode(), $unprocessedNaturalDate->getPatternModifiers(), $naturalDate );
-            if ( true === $naturalDate->getProcessed() ):
-                unset( $unprocessedNaturalDates[ $i ] );
-            endif;
-        }
-        $naturalDate->setUnprocessedNaturalDates( $unprocessedNaturalDates );
-
-        return $naturalDate;
-    }
 
 
     public function match( string $input ): bool {

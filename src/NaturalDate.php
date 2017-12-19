@@ -24,6 +24,10 @@ class NaturalDate {
     const season  = 'season';
     const quarter = 'quarter';
 
+    const SET_START_AND_END_DATES = 'SET_START_AND_END';
+    const SET_START_DATE          = 'SET_START_DATE';
+    const SET_END_DATE            = 'SET_END_DATE';
+
     /**
      * @var string $input The string that the user submitted. EX: "summer of 87"
      */
@@ -172,30 +176,35 @@ class NaturalDate {
      * @throws \Exception;
      */
     public static function parse( string $string = '', string $timezoneId = 'UTC', string $languageCode = 'en', $patternModifiers = [], NaturalDate $existingNaturalDate = null ): NaturalDate {
+
         date_default_timezone_set( $timezoneId );
 
 
         // Run the whole string through the patterns. I take the first pattern that matches.
         try {
 
-            //if ( isset( $existingNaturalDate ) ) {
-            //    $naturalDate = $existingNaturalDate;
-            //    $naturalDate->setInput( $string );
-            //    $naturalDate->setTimezoneId( $timezoneId );
-            //    $naturalDate->setLanguageCode( $languageCode );
-            //    $naturalDate->setPatternModifiers( $patternModifiers );
-            //} else {
-            //    $naturalDate = new static( $string, $timezoneId, $languageCode, null, null, '', $patternModifiers );
-            //}
-            $naturalDate = new static( $string, $timezoneId, $languageCode, null, null, '', $patternModifiers );
+            if ( isset( $existingNaturalDate ) ) {
+                $naturalDate = $existingNaturalDate;
+                $naturalDate->addDebugMessage( "parse(), and an existing NaturalDate object was passed in." );
+                $naturalDate->setInput( $string );
+                $naturalDate->setTimezoneId( $timezoneId );
+                $naturalDate->setLanguageCode( $languageCode );
 
+            } else {
+                $naturalDate = new static( $string, $timezoneId, $languageCode, null, null, '', $patternModifiers );
+                $naturalDate->addDebugMessage( "parse(), and NO NaturalDate object was passed in." );
+            }
+            //$naturalDate = new static( $string, $timezoneId, $languageCode, null, null, '', $patternModifiers );
+
+            $naturalDate->setPatternModifiers( $patternModifiers );
 
             // Assign the pattern map that contains all of the pattern modifiers.
             $naturalDate->setPatternMap( $naturalDate->getLanguageCode() );
             $naturalDate->setMatchedPattern();
-            $naturalDate->addDebugMessage( "In parse(): The matched pattern is: [" . get_class( $naturalDate->getMatchedPatternModifier() ) . "]." );
+            $naturalDate->addDebugMessage( "    The matched pattern is: [" . get_class( $naturalDate->getMatchedPatternModifier() ) . "]." );
 
             $naturalDate = $naturalDate->modify();
+
             $naturalDate->setLocalDateTimes();
 
             return $naturalDate;
@@ -219,7 +228,7 @@ class NaturalDate {
     }
 
     public function addDebugMessage( string $message ) {
-        $this->debugMessages[] = $message;
+        $this->debugMessages[] = "(" . $this->getInput() . ")" . $message;
     }
 
     public function getDebugMessages(): array {
@@ -252,6 +261,8 @@ class NaturalDate {
     protected function setMatchedPattern() {
         $input                        = $this->getInput();
         $this->matchedPatternModifier = $this->patternMap->setMatchedPattern( $input );
+        $this->addDebugMessage( "Inside NaturalDate->setMatchedPattern(): String is [" . $input . "]" );
+        $this->addDebugMessage( "    still inside NaturalDate->setMatchedPattern(): matchedPatternModifier is [" . get_class( $this->matchedPatternModifier ) . "]" );
     }
 
     /**
@@ -286,6 +297,10 @@ class NaturalDate {
     }
 
 
+    /**
+     * @return \MichaelDrennen\NaturalDate\NaturalDate
+     * @throws \Exception
+     */
     protected function modify(): NaturalDate {
         return $this->matchedPatternModifier->modify( $this );
     }
@@ -329,7 +344,8 @@ class NaturalDate {
 
     public function setLocalStart( Carbon $localStart = null ) {
         if ( is_null( $localStart ) ) {
-            $this->localStart = Carbon::parse( $this->getStartDate() );
+            $this->addDebugMessage( "Inside setLocalStart(): No Carbon date was passed in so going to set localStart to " . $this->getStartDate() );
+            $this->localStart = $this->getStartDate();
         } else {
             $this->localStart = $localStart;
         }
@@ -338,7 +354,8 @@ class NaturalDate {
 
     public function setLocalEnd( Carbon $localEnd = null ) {
         if ( is_null( $localEnd ) ) {
-            $this->localEnd = Carbon::parse( $this->getEndDate() );
+            $this->addDebugMessage( "Inside setLocalEnd(): No Carbon date was passed in so going to set localEnd to " . $this->getEndDate() );
+            $this->localEnd = $this->getEndDate();
         } else {
             $this->localEnd = $localEnd;
         }
@@ -386,9 +403,40 @@ class NaturalDate {
 
     /**
      * @param string $type See the constants above like 'year' for valid types.
+     *
+     * @throws \Exception
      */
     public function setType( string $type = '' ) {
-        $this->type = $type;
+
+        if ( isset( $this->type ) ):
+            $orderOfSpecificity = [
+                NaturalDate::year,
+                NaturalDate::season,
+                NaturalDate::quarter,
+                NaturalDate::month,
+                NaturalDate::week,
+                NaturalDate::date,
+            ];
+
+            $keyOfNewType = array_search( $type, $orderOfSpecificity );
+
+            if ( false === $keyOfNewType ):
+                throw new \Exception( "You are trying to set the 'type' of NaturalDate to " . $type . " which has not been coded for." );
+            endif;
+
+            $keyOfExistingType = array_search( $this->type, $orderOfSpecificity );
+
+            if ( $keyOfNewType > $keyOfExistingType ):
+                $this->type = $type;
+                $this->addDebugMessage( "Type of NaturalDate set to " . $type );
+            elseif ( $keyOfNewType == $keyOfExistingType ):
+                $this->addDebugMessage( "Type of NaturalDate is equal to existing type of " . $type );
+            elseif ( $keyOfNewType < $keyOfExistingType ):
+                $this->addDebugMessage( "Type of NaturalDate is is more specific than  [" . $type . "] so type will remain unchanged." );
+            endif;
+        else:
+            $this->type = $type;
+        endif;
     }
 
     /**
@@ -427,6 +475,7 @@ class NaturalDate {
      * @return \Carbon\Carbon
      */
     public function getUtcStart(): Carbon {
+        $this->addDebugMessage( "Inside getUtcStart(): " . $this->localStart );
         return $this->localStart->setTimezone( 'UTC' );
     }
 
@@ -470,6 +519,7 @@ class NaturalDate {
      * @param array          $patternModifiers
      *
      * @throws \MichaelDrennen\NaturalDate\Exceptions\InvalidTimezone
+     * @throws \Exception
      */
     public function __construct(
         string $input = '',
@@ -477,15 +527,15 @@ class NaturalDate {
         string $languageCode = '',
         Carbon $localStartDateTime = null,
         Carbon $localEndDateTime = null,
-        string $type = '',
+        string $type = null,
         array $patternModifiers = [] ) {
         $this->setInput( $input );
         $this->setTimezoneId( $timezoneId );
         $this->setLanguageCode( $languageCode );
         //$this->setLocalStart( $localStartDateTime );
         //$this->setLocalEnd( $localEndDateTime );
-        $this->setType( $type );
-        $this->setPatternModifiers( $patternModifiers );
+        //$this->setType( $type );
+        //$this->setPatternModifiers( $patternModifiers );
     }
 
     public function setStartYear( string $year ) {
@@ -555,6 +605,9 @@ class NaturalDate {
         $this->setEndSecond( 59 );
     }
 
+    /**
+     * @param bool $override If times were already set, do you want to override them with zeros?
+     */
     public function setStartTimesAsStartOfToday( bool $override = false ) {
         if ( $override ):
             $this->setStartHour( 0 );
@@ -630,7 +683,12 @@ class NaturalDate {
         return $this->endSecond;
     }
 
-    public function getStartDate(): string {
+    /**
+     * Returns a string of all the local start datetime values, or defaults if elements aren't set.
+     *
+     * @return Carbon
+     */
+    public function getStartDate(): Carbon {
         $year   = $this->getStartYear() ? $this->getStartYear() : '0000';
         $month  = $this->getStartMonth() ? $this->getStartMonth() : '01';
         $day    = $this->getStartDay() ? $this->getStartDay() : '01';
@@ -638,10 +696,18 @@ class NaturalDate {
         $minute = $this->getStartMinute() ? $this->getStartMinute() : '00';
         $second = $this->getStartSecond() ? $this->getStartSecond() : '00';
 
-        return $year . '-' . $month . '-' . $day . 'T' . $hour . ':' . $minute . ':' . $second;
+        $string = $year . '-' . $month . '-' . $day . 'T' . $hour . ':' . $minute . ':' . $second;
+        return Carbon::parse( $string, $this->getTimezoneId() );
+
+
     }
 
-    public function getEndDate(): string {
+    /**
+     * Returns a Carbon of local end datetime, or defaults if elements aren't set.
+     *
+     * @return Carbon
+     */
+    public function getEndDate(): Carbon {
         $year   = $this->getEndYear() ? $this->getEndYear() : '0000';
         $month  = $this->getEndMonth() ? $this->getEndMonth() : '01';
         $day    = $this->getEndDay() ? $this->getEndDay() : '01';
@@ -649,30 +715,31 @@ class NaturalDate {
         $minute = $this->getEndMinute() ? $this->getEndMinute() : '59';
         $second = $this->getEndSecond() ? $this->getEndSecond() : '59';
 
-        return $year . '-' . $month . '-' . $day . 'T' . $hour . ':' . $minute . ':' . $second;
+        $string = $year . '-' . $month . '-' . $day . 'T' . $hour . ':' . $minute . ':' . $second;
+        return Carbon::parse( $string, $this->getTimezoneId() );
     }
 
-    public function pushUnprocessedNaturalDate( NaturalDate $naturalDate ) {
-        array_push( $this->unprocessedNaturalDates, $naturalDate );
-    }
-
-    public function popUnprocessedNaturalDate(): NaturalDate {
-        return array_pop( $this->unprocessedNaturalDates );
-    }
-
-    public function getUnprocessedNaturalDates(): array {
-        return $this->unprocessedNaturalDates;
-    }
-
-    public function setUnprocessedNaturalDates( $unprocessedNaturalDates ) {
-        $this->unprocessedNaturalDates = $unprocessedNaturalDates;
-    }
-
-    public function setProcessed( bool $processed ) {
-        $this->processed = $processed;
-    }
-
-    public function getProcessed(): bool {
-        return $this->processed;
-    }
+    //public function pushUnprocessedNaturalDate( NaturalDate $naturalDate ) {
+    //    array_push( $this->unprocessedNaturalDates, $naturalDate );
+    //}
+    //
+    //public function popUnprocessedNaturalDate(): NaturalDate {
+    //    return array_pop( $this->unprocessedNaturalDates );
+    //}
+    //
+    //public function getUnprocessedNaturalDates(): array {
+    //    return $this->unprocessedNaturalDates;
+    //}
+    //
+    //public function setUnprocessedNaturalDates( $unprocessedNaturalDates ) {
+    //    $this->unprocessedNaturalDates = $unprocessedNaturalDates;
+    //}
+    //
+    //public function setProcessed( bool $processed ) {
+    //    $this->processed = $processed;
+    //}
+    //
+    //public function getProcessed(): bool {
+    //    return $this->processed;
+    //}
 }

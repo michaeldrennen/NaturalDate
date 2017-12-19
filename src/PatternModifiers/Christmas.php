@@ -17,22 +17,23 @@ class Christmas extends PatternModifier {
 
         $naturalDate->setStartMonth( 12 );
         $naturalDate->setStartDay( 25 );
-        $naturalDate->setStartHour( 0 );
-        $naturalDate->setStartMinute( 0 );
-        $naturalDate->setStartSecond( 0 );
+        $naturalDate->setStartTimesAsStartOfToday();
         $naturalDate->setEndMonth( 12 );
         $naturalDate->setEndDay( 25 );
-        $naturalDate->setEndHour( 23 );
-        $naturalDate->setEndMinute( 59 );
-        $naturalDate->setEndSecond( 59 );
+        $naturalDate->setEndTimesAsEndOfToday();
 
         $naturalDate->setType( NaturalDate::date );
 
         $pregMatchMatches = $naturalDate->getPregMatchMatches();
 
-        foreach ( $pregMatchMatches as $i => $string ):
+        /**
+         * At most, there can only be one matching section.
+         */
+        if ( ! empty( $pregMatchMatches ) ):
+            $string = $pregMatchMatches[ 0 ];
+            $naturalDate->addDebugMessage( "Inside Christmas->modify(), and about to parse this string [" . $string . "]" );
             $naturalDate = NaturalDate::parse( $string, $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $naturalDate->getPatternModifiers(), $naturalDate );
-        endforeach;
+        endif;
 
         return $naturalDate;
     }

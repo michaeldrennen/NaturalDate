@@ -9,8 +9,8 @@ class PatternMapForLanguage extends PatternMap {
     // Those will tell the code what further processing to do on this string.
     protected $patterns = [
         PatternMap::early     => [ '/^early(.*)$/i' ],
-        PatternMap::late      => [ '/^late\s*(.*)$/i' ],
-        PatternMap::beginning => [ '/^beginning\s*(of)?\s*(.*)$/i' ],
+        PatternMap::late      => [ '/^late(.*)$/i' ],
+        PatternMap::beginning => [ '/^beginning(of)?\s*(.*)$/i' ],
         PatternMap::middle    => [ '/^middle\s*(of)?\s*(.*)$/i' ],
         PatternMap::end       => [ '/^end\s*(of)?\s*(.*)$/i' ],
         PatternMap::between   => [ '/between\s*(.*)(and|&|\+)\s*(.*)/i' ],
