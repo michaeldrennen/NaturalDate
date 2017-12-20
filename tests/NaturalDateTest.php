@@ -87,9 +87,8 @@ class NaturalDateTest extends TestCase {
 
 
         $this->assertEquals( Carbon::parse( Carbon::parse( date( 'Y-m-d 07:00:00' ) ), 'UTC' ), $startDate );
-        $this->assertEquals( Carbon::parse( Carbon::parse( date( 'Y-m-d 06:59:59' ) )->addDay(), 'UTC' ), $endDate );
+        $this->assertEquals( Carbon::parse( Carbon::parse( date( 'Y-m-d 13:59:59' ) ), 'UTC' ), $endDate );
     }
-
 
     public function testEarlyModifierYear() {
         $string           = 'early 2016';

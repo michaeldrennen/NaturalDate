@@ -30,8 +30,18 @@ class Early extends PatternModifier {
          * If the user just passed in the string "early", then assume they mean early today.
          */
         if ( empty( $pregMatchMatches ) ):
-            $naturalDate->setStartDateTimeAsStartOfToday();
-            $naturalDate->setEndDateTimeAsEndOfToday();
+            $naturalDate->setStartYear( date( 'Y' ) );
+            $naturalDate->setStartMonth( date( 'm' ) );
+            $naturalDate->setStartDay( date( 'd' ) );
+            $naturalDate->setStartHour( 0 );
+            $naturalDate->setStartMinute( 0 );
+            $naturalDate->setStartSecond( 0 );
+            $naturalDate->setEndYear( date( 'Y' ) );
+            $naturalDate->setEndMonth( date( 'm' ) );
+            $naturalDate->setEndDay( date( 'd' ) );
+            $naturalDate->setEndHour( 6 );
+            $naturalDate->setEndMinute( 59 );
+            $naturalDate->setEndSecond( 59 );
             $naturalDate->addDebugMessage( "    Early->modify(): the user just passed in the string \"early\", then assume they mean early today." );
             return $naturalDate;
         endif;
@@ -76,8 +86,8 @@ class Early extends PatternModifier {
         $naturalDate->setStartDay( 1 );
         $naturalDate->setEndMonth( 4 );
         $naturalDate->setEndDay( 30 );
-        $naturalDate->setStartTimesAsStartOfToday();
-        $naturalDate->setEndTimesAsEndOfToday();
+        $naturalDate->setStartTimesAsStartOfDay();
+        $naturalDate->setEndTimesAsEndOfDay();
         $naturalDate->setType( NaturalDate::year );
     }
 
@@ -90,8 +100,8 @@ class Early extends PatternModifier {
         $this->setStartYearIfNotSetAlready( $naturalDate, date( 'Y' ) );
         $this->setEndYearIfNotSetAlready( $naturalDate, date( 'Y' ) );
 
-        $naturalDate->setStartTimesAsStartOfToday();
-        $naturalDate->setEndTimesAsEndOfToday();
+        $naturalDate->setStartTimesAsStartOfDay();
+        $naturalDate->setEndTimesAsEndOfDay();
         $naturalDate->setType( NaturalDate::month );
     }
 

@@ -4,6 +4,7 @@ namespace MichaelDrennen\NaturalDate;
 
 use Carbon\Carbon;
 use DateTimeZone;
+use MichaelDrennen\NaturalDate\Exceptions\InvalidLanguageCode;
 use MichaelDrennen\NaturalDate\Exceptions\InvalidTimezone;
 use MichaelDrennen\NaturalDate\Exceptions\NaturalDateException;
 use MichaelDrennen\NaturalDate\Exceptions\NoMatchingPatternFound;
@@ -177,19 +178,16 @@ class NaturalDate {
      */
     public static function parse( string $string = '', string $timezoneId = 'UTC', string $languageCode = 'en', $patternModifiers = [], NaturalDate $existingNaturalDate = null ): NaturalDate {
 
-        date_default_timezone_set( $timezoneId );
-
 
         // Run the whole string through the patterns. I take the first pattern that matches.
         try {
 
             if ( isset( $existingNaturalDate ) ) {
                 $naturalDate = $existingNaturalDate;
-                $naturalDate->addDebugMessage( "parse(), and an existing NaturalDate object was passed in." );
-                $naturalDate->setInput( $string );
                 $naturalDate->setTimezoneId( $timezoneId );
+                $naturalDate->setInput( $string );
                 $naturalDate->setLanguageCode( $languageCode );
-
+                $naturalDate->addDebugMessage( "parse(), and an existing NaturalDate object was passed in." );
             } else {
                 $naturalDate = new static( $string, $timezoneId, $languageCode, null, null, '', $patternModifiers );
                 $naturalDate->addDebugMessage( "parse(), and NO NaturalDate object was passed in." );
@@ -241,17 +239,17 @@ class NaturalDate {
     }
 
     /**
-     * @param string $languageCode
+     * @param string $languageCode Ex: "en" for english
      *
-     * @throws \Exception
+     * @throws \MichaelDrennen\NaturalDate\Exceptions\InvalidLanguageCode
      */
     protected function setPatternMap( string $languageCode ) {
         switch ( $languageCode ):
             case 'en':
-                $this->patternMap = new \MichaelDrennen\NaturalDate\Languages\En\PatternMapForLanguage( $this->patternModifiers );
+                $this->patternMap = new Languages\En\PatternMapForLanguage( $this->patternModifiers );
                 break;
             default:
-                throw new \Exception( "The Pattern class for language code of [$languageCode] has not been coded yet." );
+                throw new InvalidLanguageCode( "The Pattern class for language code of [$languageCode] has not been coded yet." );
         endswitch;
     }
 
@@ -325,6 +323,7 @@ class NaturalDate {
         if ( false === in_array( $timezoneId, $timeZones ) ) {
             throw new InvalidTimezone( "The timezone id you passed in [" . $timezoneId . "] is not valid because it is not found in the array returned by DateTimeZone::listIdentifiers()" );
         }
+        date_default_timezone_set( $timezoneId );
         $this->timezoneId = $timezoneId;
     }
 
@@ -608,28 +607,44 @@ class NaturalDate {
     /**
      * @param bool $override If times were already set, do you want to override them with zeros?
      */
-    public function setStartTimesAsStartOfToday( bool $override = false ) {
+    public function setStartTimesAsStartOfDay( bool $override = false ) {
         if ( $override ):
             $this->setStartHour( 0 );
             $this->setStartMinute( 0 );
             $this->setStartSecond( 0 );
         else:
-            $this->startHour   = isset( $this->startHour ) ? $this->startHour : $this->setStartHour( 0 );
-            $this->startMinute = isset( $this->startMinute ) ? $this->startMinute : $this->setStartMinute( 0 );
-            $this->startSecond = isset( $this->startSecond ) ? $this->startSecond : $this->setStartSecond( 0 );
+            if ( ! isset( $this->startHour ) ):
+                $this->setStartHour( 0 );
+            endif;
+
+            if ( ! isset( $this->startMinute ) ):
+                $this->setStartMinute( 0 );
+            endif;
+
+            if ( ! isset( $this->startSecond ) ):
+                $this->setStartSecond( 0 );
+            endif;
         endif;
 
     }
 
-    public function setEndTimesAsEndOfToday( bool $override = false ) {
+    public function setEndTimesAsEndOfDay( bool $override = false ) {
         if ( $override ):
-            $this->setEndHour( 0 );
-            $this->setEndMinute( 0 );
-            $this->setEndSecond( 0 );
+            $this->setEndHour( 23 );
+            $this->setEndMinute( 59 );
+            $this->setEndSecond( 59 );
         else:
-            $this->endHour   = isset( $this->endHour ) ? $this->endHour : $this->setEndHour( 0 );
-            $this->endMinute = isset( $this->endMinute ) ? $this->endMinute : $this->setEndMinute( 0 );
-            $this->endSecond = isset( $this->endSecond ) ? $this->endSecond : $this->setEndSecond( 0 );
+            if ( ! isset( $this->endHour ) ):
+                $this->setEndHour( 23 );
+            endif;
+
+            if ( ! isset( $this->endMinute ) ):
+                $this->setEndMinute( 59 );
+            endif;
+
+            if ( ! isset( $this->endSecond ) ):
+                $this->setEndSecond( 59 );
+            endif;
         endif;
     }
 

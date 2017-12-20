@@ -17,10 +17,10 @@ class Christmas extends PatternModifier {
 
         $naturalDate->setStartMonth( 12 );
         $naturalDate->setStartDay( 25 );
-        $naturalDate->setStartTimesAsStartOfToday();
+        $naturalDate->setStartTimesAsStartOfDay();
         $naturalDate->setEndMonth( 12 );
         $naturalDate->setEndDay( 25 );
-        $naturalDate->setEndTimesAsEndOfToday();
+        $naturalDate->setEndTimesAsEndOfDay();
 
         $naturalDate->setType( NaturalDate::date );
 
