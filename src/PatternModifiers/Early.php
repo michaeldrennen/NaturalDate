@@ -116,16 +116,5 @@ class Early extends PatternModifier {
     }
 
 
-    protected function setStartYearIfNotSetAlready( NaturalDate &$naturalDate, int $year ) {
-        if ( is_null( $naturalDate->getStartYear() ) ):
-            $naturalDate->setStartYear( $year );
-        endif;
-    }
-
-    protected function setEndYearIfNotSetAlready( NaturalDate &$naturalDate, int $year ) {
-        if ( is_null( $naturalDate->getEndYear() ) ):
-            $naturalDate->setEndYear( $year );
-        endif;
-    }
 
 }

@@ -8,7 +8,7 @@ use MichaelDrennen\NaturalDate\NaturalDate;
  * Class Late
  *
  * @package MichaelDrennen\NaturalDate\PatternModifiers
- * @pattern en  PatternMap::early     => [ '/^late(.*)$/i' ],
+ * @pattern en  PatternMap::late     => [ '/^late(.*)$/i' ],
  */
 class Late extends PatternModifier {
 
@@ -33,7 +33,7 @@ class Late extends PatternModifier {
             $naturalDate->setStartYear( date( 'Y' ) );
             $naturalDate->setStartMonth( date( 'm' ) );
             $naturalDate->setStartDay( date( 'd' ) );
-            $naturalDate->setStartHour( 18 );
+            $naturalDate->setStartHour( 20 );
             $naturalDate->setStartMinute( 0 );
             $naturalDate->setStartSecond( 0 );
             $naturalDate->setEndYear( date( 'Y' ) );
@@ -81,6 +81,11 @@ class Late extends PatternModifier {
         return $capturedDate;
     }
 
+    /**
+     * @param \MichaelDrennen\NaturalDate\NaturalDate $naturalDate
+     *
+     * @throws \Exception
+     */
     protected function modifyYear( NaturalDate &$naturalDate ) {
         $naturalDate->addDebugMessage( "Inside modifyYear(), setting dates to Sep 1 and Dec 31th, and leaving times alone if they were not already set." );
         $naturalDate->setStartMonth( 9 );
@@ -94,8 +99,17 @@ class Late extends PatternModifier {
 
     protected function modifyMonth( NaturalDate &$naturalDate ) {
 
-        $naturalDate->setStartDay( 1 );
-        $naturalDate->setEndDay( 9 );
+        print( $naturalDate );
+
+        $naturalDate->setStartDay( 21 );
+
+        var_dump( $naturalDate->getEndDate() );
+
+        $lastDayOfTheMonth = $naturalDate->getEndDate()->modify( 'last day of this month' );
+
+        var_dump( $lastDayOfTheMonth );
+
+        $naturalDate->setEndDay( $lastDayOfTheMonth );
 
 
         $this->setStartYearIfNotSetAlready( $naturalDate, date( 'Y' ) );
@@ -106,27 +120,20 @@ class Late extends PatternModifier {
         $naturalDate->setType( NaturalDate::month );
     }
 
+    /**
+     * @param \MichaelDrennen\NaturalDate\NaturalDate $naturalDate
+     *
+     * @throws \Exception
+     */
     protected function modifyDate( NaturalDate &$naturalDate ) {
-        $naturalDate->setStartHour( 0 );
+        $naturalDate->setStartHour( 17 );
         $naturalDate->setStartMinute( 0 );
         $naturalDate->setEndSecond( 0 );
-        $naturalDate->setEndHour( 7 );
+        $naturalDate->setEndHour( 23 );
         $naturalDate->setEndMinute( 59 );
         $naturalDate->setEndSecond( 59 );
         $naturalDate->setType( NaturalDate::date );
     }
 
-
-    protected function setStartYearIfNotSetAlready( NaturalDate &$naturalDate, int $year ) {
-        if ( is_null( $naturalDate->getStartYear() ) ):
-            $naturalDate->setStartYear( $year );
-        endif;
-    }
-
-    protected function setEndYearIfNotSetAlready( NaturalDate &$naturalDate, int $year ) {
-        if ( is_null( $naturalDate->getEndYear() ) ):
-            $naturalDate->setEndYear( $year );
-        endif;
-    }
 
 }

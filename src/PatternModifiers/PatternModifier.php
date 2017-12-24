@@ -2,6 +2,8 @@
 
 namespace MichaelDrennen\NaturalDate\PatternModifiers;
 
+use MichaelDrennen\NaturalDate\NaturalDate;
+
 abstract class PatternModifier implements PatternModifierInterface {
 
     protected $patterns = [];
@@ -17,12 +19,11 @@ abstract class PatternModifier implements PatternModifierInterface {
     }
 
 
-
     public function match( string $input ): bool {
-        $patterns = $this->getPatterns();
+        $patterns          = $this->getPatterns();
         foreach ( $patterns as $pattern ):
             //echo "\nPATTERN: " . $pattern . "\n";
-            $matched       = preg_match( $pattern, $input, $this->matches );
+            $matched = preg_match( $pattern, $input, $this->matches );
             $this->matches = array_map( 'trim', $this->matches );   // Trim the whitespace.
             $this->matches = array_filter( $this->matches );                // Remove empties from the matches array.
             if ( 1 === $matched ):
@@ -43,6 +44,18 @@ abstract class PatternModifier implements PatternModifierInterface {
      */
     public function getMatches(): array {
         return $this->matches;
+    }
+
+    protected function setStartYearIfNotSetAlready( NaturalDate &$naturalDate, int $year ) {
+        if ( is_null( $naturalDate->getStartYear() ) ):
+            $naturalDate->setStartYear( $year );
+        endif;
+    }
+
+    protected function setEndYearIfNotSetAlready( NaturalDate &$naturalDate, int $year ) {
+        if ( is_null( $naturalDate->getEndYear() ) ):
+            $naturalDate->setEndYear( $year );
+        endif;
     }
 
 }

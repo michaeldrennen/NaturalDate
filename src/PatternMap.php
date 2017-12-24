@@ -4,6 +4,7 @@ namespace MichaelDrennen\NaturalDate;
 use MichaelDrennen\NaturalDate\Exceptions\NoMatchingPatternFound;
 use MichaelDrennen\NaturalDate\PatternModifiers\Christmas;
 use MichaelDrennen\NaturalDate\PatternModifiers\Early;
+use MichaelDrennen\NaturalDate\PatternModifiers\Late;
 use MichaelDrennen\NaturalDate\PatternModifiers\Month;
 use MichaelDrennen\NaturalDate\PatternModifiers\PatternModifier;
 use MichaelDrennen\NaturalDate\PatternModifiers\Year;
@@ -82,7 +83,9 @@ class PatternMap {
 
     protected function initializePatternModifierObjects( array $overridePatterns ) {
         $this->patternModifiers = [
-            PatternMap::early     => new Early( $this->patterns[ PatternMap::early ] ),
+            PatternMap::early => new Early( $this->patterns[ PatternMap::early ] ),
+            PatternMap::late  => new Late( $this->patterns[ PatternMap::late ] ),
+
             PatternMap::year      => new Year( $this->patterns[ PatternMap::year ] ),
             PatternMap::month     => new Month( $this->patterns[ PatternMap::month ] ),
             PatternMap::christmas => new Christmas( $this->patterns[ PatternMap::christmas ] ),

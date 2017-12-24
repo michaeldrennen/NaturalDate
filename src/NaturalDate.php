@@ -6,8 +6,8 @@ use Carbon\Carbon;
 use DateTimeZone;
 use MichaelDrennen\NaturalDate\Exceptions\InvalidLanguageCode;
 use MichaelDrennen\NaturalDate\Exceptions\InvalidTimezone;
-use MichaelDrennen\NaturalDate\Exceptions\NaturalDateException;
 use MichaelDrennen\NaturalDate\Exceptions\NoMatchingPatternFound;
+use MichaelDrennen\NaturalDate\Exceptions\UnparsableString;
 use MichaelDrennen\NaturalDate\PatternModifiers\PatternModifier;
 
 
@@ -222,8 +222,28 @@ class NaturalDate {
             throw $exception;
         }
 
-        throw new NaturalDateException( "Unable to parse the date: [" . $string . "]" );
+        throw new UnparsableString( "Unable to parse the date: [" . $string . "]" );
     }
+
+
+    public function __toString() {
+        $string = '';
+
+        $string        .= "\n\n\nNATURAL DATE OBJECT";
+        $string        .= "\ninput:        " . $this->getInput();
+        $string        .= "\ntimezoneId:   " . $this->getTimezoneId();
+        $string        .= "\nlanguageCode: " . $this->getLanguageCode();
+        $string        .= "\nlocalStart:   " . $this->localStart->toDateTimeString();
+        $string        .= "\nlocalEnd:     " . $this->localEnd->toDateTimeString();
+        $string        .= "\ndebugMessages:";
+        $debugMessages = $this->getDebugMessages();
+        foreach ( $debugMessages as $i => $message ):
+            $string .= "\n $i: " . $message;
+        endforeach;
+        $string .= "\nEND OF NATURAL DATE OBJECT\n\n\n";
+        return $string;
+    }
+
 
     public function addDebugMessage( string $message ) {
         $this->debugMessages[] = "(" . $this->getInput() . ")" . $message;
