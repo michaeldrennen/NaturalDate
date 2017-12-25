@@ -26,4 +26,38 @@ class NaturalDateBetweenTest extends TestCase {
     }
 
 
+    public function testBetweenTwoMonthYearCombos() {
+        $string           = 'between Feb 2000 and March 2000';
+        $timezoneId       = 'America/Denver';
+        $languageCode     = 'en';
+        $patternModifiers = [];
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
+        $startDate        = $naturalDate->getUtcStart();
+        $endDate          = $naturalDate->getUtcEnd();
+
+        $localStart = $startDate->setTimezone( $timezoneId );
+        $localEnd   = $endDate->setTimezone( $timezoneId );
+
+        $this->assertEquals( Carbon::parse( '2000-02-01 00:00:00', $timezoneId ), $localStart );
+        $this->assertEquals( Carbon::parse( '2000-03-31 23:59:59', $timezoneId ), $localEnd );
+    }
+
+
+    public function testBetweenTwoSpecificDates() {
+        $string           = 'between Feb 14, 2017 and March 14, 2017';
+        $timezoneId       = 'America/Denver';
+        $languageCode     = 'en';
+        $patternModifiers = [];
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
+        $startDate        = $naturalDate->getUtcStart();
+        $endDate          = $naturalDate->getUtcEnd();
+
+        $localStart = $startDate->setTimezone( $timezoneId );
+        $localEnd   = $endDate->setTimezone( $timezoneId );
+
+        $this->assertEquals( Carbon::parse( '2017-02-14 00:00:00', $timezoneId ), $localStart );
+        $this->assertEquals( Carbon::parse( '2017-03-14 23:59:59', $timezoneId ), $localEnd );
+    }
+
+
 }

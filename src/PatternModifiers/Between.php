@@ -5,7 +5,7 @@ namespace MichaelDrennen\NaturalDate\PatternModifiers;
 use MichaelDrennen\NaturalDate\NaturalDate;
 
 /**
- * Class Early
+ * Class Between
  *
  * @package MichaelDrennen\NaturalDate\PatternModifiers
  * @pattern en  PatternMap::between     => [ '/between\s*(.*)(and|&|\+)\s*(.*)/i' ],
@@ -13,8 +13,8 @@ use MichaelDrennen\NaturalDate\NaturalDate;
 class Between extends PatternModifier {
 
     /**
-     * When this function is called we know the string starts with "early" and the first match is something that should
-     * be able to be parsed by NaturalDate::parse().
+     * When this function is called we know the string starts with "between" and there are two captured strings that
+     * should be able to be parsed by NaturalDate.
      *
      * @param \MichaelDrennen\NaturalDate\NaturalDate $naturalDate
      *
@@ -23,9 +23,7 @@ class Between extends PatternModifier {
      */
     public function modify( NaturalDate $naturalDate ): NaturalDate {
         $naturalDate->addDebugMessage( "    Between->modify(): Just entered." );
-
         $pregMatchMatches = $naturalDate->getPregMatchMatches();
-
 
         /**
          * There should only ever be one captured element based on the regex pattern.

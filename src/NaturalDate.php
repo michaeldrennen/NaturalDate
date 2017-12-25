@@ -193,7 +193,12 @@ class NaturalDate {
 
                 $naturalDate = new static( $string, $timezoneId, $languageCode, $carbon, $carbon, NaturalDate::date, $patternModifiers );
                 $naturalDate->setLocalDateTimes();
-
+                $naturalDate->setStartHour( null );
+                $naturalDate->setStartMinute( null );
+                $naturalDate->setStartSecond( null );
+                $naturalDate->setEndHour( null );
+                $naturalDate->setEndMinute( null );
+                $naturalDate->setEndSecond( null );
                 return $naturalDate;
             endif;
 
