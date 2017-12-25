@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use DateTimeZone;
 use MichaelDrennen\NaturalDate\Exceptions\InvalidLanguageCode;
 use MichaelDrennen\NaturalDate\Exceptions\InvalidTimezone;
+use MichaelDrennen\NaturalDate\Exceptions\NaturalDateException;
 use MichaelDrennen\NaturalDate\Exceptions\NoMatchingPatternFound;
 use MichaelDrennen\NaturalDate\Exceptions\UnparsableString;
 use MichaelDrennen\NaturalDate\PatternModifiers\PatternModifier;
@@ -85,28 +86,6 @@ class NaturalDate {
     protected $endSecond;
 
 
-    // I think I will make all of these calculated fields.
-    // Only need to store the local start and end times, and modify them on get()
-    ///**
-    // * @var Carbon $utcStart When the user does not supply an exact timestamp, this Carbon date serves
-    // *      as a "bookend". The event represented by this NaturalDate instance did not happen before this value.
-    // */
-    //protected $utcStart;
-    //
-    ///**
-    // * @var Carbon $utcEnd The other "bookend". The event did not happen after this value.
-    // */
-    //protected $utcEnd;
-    //
-    //
-    //protected $spreadInSeconds;
-    //
-    ///**
-    // * @var Carbon $utcBestDate (mid point anchor + confidence window / 2)
-    // */
-    //protected $utcBestDate;
-
-
     /**
      * @var \MichaelDrennen\NaturalDate\PatternMap
      */
@@ -178,7 +157,6 @@ class NaturalDate {
      */
     public static function parse( string $string = '', string $timezoneId = 'UTC', string $languageCode = 'en', $patternModifiers = [], NaturalDate $existingNaturalDate = null ): NaturalDate {
 
-
         // Run the whole string through the patterns. I take the first pattern that matches.
         try {
 
@@ -192,7 +170,6 @@ class NaturalDate {
                 $naturalDate = new static( $string, $timezoneId, $languageCode, null, null, '', $patternModifiers );
                 $naturalDate->addDebugMessage( "parse(), and NO NaturalDate object was passed in." );
             }
-            //$naturalDate = new static( $string, $timezoneId, $languageCode, null, null, '', $patternModifiers );
 
             $naturalDate->setPatternModifiers( $patternModifiers );
 
@@ -218,14 +195,21 @@ class NaturalDate {
 
                 return $naturalDate;
             endif;
-        } catch ( \Exception $exception ) {
+
+        } catch ( NaturalDateException $exception ) {
             throw $exception;
+        } catch ( \Exception $exception ) {
+            $debugMessages = isset( $naturalDate ) ? $naturalDate->getDebugMessages() : [];
+            throw new NaturalDateException( $exception->getMessage(), $exception->getCode(), $exception, $debugMessages );
         }
 
         throw new UnparsableString( "Unable to parse the date: [" . $string . "]" );
     }
 
 
+    /**
+     * @return string
+     */
     public function __toString() {
         $string = '';
 
@@ -233,8 +217,6 @@ class NaturalDate {
         $string        .= "\ninput:        " . $this->getInput();
         $string        .= "\ntimezoneId:   " . $this->getTimezoneId();
         $string        .= "\nlanguageCode: " . $this->getLanguageCode();
-        $string        .= "\nlocalStart:   " . $this->localStart->toDateTimeString();
-        $string        .= "\nlocalEnd:     " . $this->localEnd->toDateTimeString();
         $string        .= "\ndebugMessages:";
         $debugMessages = $this->getDebugMessages();
         foreach ( $debugMessages as $i => $message ):
@@ -245,17 +227,27 @@ class NaturalDate {
     }
 
 
+    /**
+     * @param string $message
+     */
     public function addDebugMessage( string $message ) {
         $this->debugMessages[] = "(" . $this->getInput() . ")" . $message;
     }
 
+    /**
+     * @return array
+     */
     public function getDebugMessages(): array {
         return $this->debugMessages;
     }
 
-    public function setLocalDateTimes() {
-        $this->setLocalStart();
-        $this->setLocalEnd();
+    /**
+     * @param \Carbon\Carbon|null $start
+     * @param \Carbon\Carbon|null $end
+     */
+    public function setLocalDateTimes( Carbon $start = null, Carbon $end = null ) {
+        $this->setLocalStart( $start );
+        $this->setLocalEnd( $end );
     }
 
     /**
@@ -366,6 +358,7 @@ class NaturalDate {
             $this->addDebugMessage( "Inside setLocalStart(): No Carbon date was passed in so going to set localStart to " . $this->getStartDate() );
             $this->localStart = $this->getStartDate();
         } else {
+            $this->addDebugMessage( "Inside setLocalStart(): A Carbon date was passed in so going to set localStart to " . $localStart->toDateTimeString() );
             $this->localStart = $localStart;
         }
 
@@ -376,6 +369,7 @@ class NaturalDate {
             $this->addDebugMessage( "Inside setLocalEnd(): No Carbon date was passed in so going to set localEnd to " . $this->getEndDate() );
             $this->localEnd = $this->getEndDate();
         } else {
+            $this->addDebugMessage( "Inside setLocalEnd(): A Carbon date was passed in so going to set localEnd to " . $localEnd->toDateTimeString() );
             $this->localEnd = $localEnd;
         }
 
@@ -389,36 +383,6 @@ class NaturalDate {
         return $this->localEnd;
     }
 
-    /**
-     * @param Carbon $utcStart
-     * * @param string $timezoneId Ex: America/Denver
-     */
-    //public function setUtcStart( Carbon $utcStart = null, string $timezoneId ) {
-    //    $this->utcStart = $utcStart;
-    //}
-
-    /**
-     * @param Carbon $utcEnd
-     * @param string $timezoneId Ex: America/Denver
-     */
-    //public function setUtcEnd( Carbon $utcEnd = null, string $timezoneId ) {
-    //    $this->utcEnd = $utcEnd;
-    //}
-
-    /**
-     * @param mixed $spreadInSeconds
-     */
-    //public function setSpreadInSeconds( $spreadInSeconds ) {
-    //    $this->spreadInSeconds = $spreadInSeconds;
-    //}
-
-
-    /**
-     * @param mixed $utcBestDate
-     */
-    //public function setUtcBestDate( $utcBestDate ) {
-    //    $this->utcBestDate = $utcBestDate;
-    //}
 
     /**
      * @param string $type See the constants above like 'year' for valid types.
@@ -507,21 +471,6 @@ class NaturalDate {
     }
 
 
-    /**
-     * @return mixed
-     */
-    //public function getSpreadInSeconds() {
-    //    return $this->spreadInSeconds;
-    //}
-
-
-    /**
-     * @return mixed
-     */
-    //public function getUtcBestDate() {
-    //    return $this->utcBestDate;
-    //}
-
     public function getType(): string {
         return $this->type;
     }
@@ -540,21 +489,10 @@ class NaturalDate {
      * @throws \MichaelDrennen\NaturalDate\Exceptions\InvalidTimezone
      * @throws \Exception
      */
-    public function __construct(
-        string $input = '',
-        string $timezoneId = '',
-        string $languageCode = '',
-        Carbon $localStartDateTime = null,
-        Carbon $localEndDateTime = null,
-        string $type = null,
-        array $patternModifiers = [] ) {
+    public function __construct( string $input = '', string $timezoneId = '', string $languageCode = '', Carbon $localStartDateTime = null, Carbon $localEndDateTime = null, string $type = null, array $patternModifiers = [] ) {
         $this->setInput( $input );
         $this->setTimezoneId( $timezoneId );
         $this->setLanguageCode( $languageCode );
-        //$this->setLocalStart( $localStartDateTime );
-        //$this->setLocalEnd( $localEndDateTime );
-        //$this->setType( $type );
-        //$this->setPatternModifiers( $patternModifiers );
     }
 
     public function setStartYear( string $year ) {
@@ -751,30 +689,7 @@ class NaturalDate {
         $second = $this->getEndSecond() ? $this->getEndSecond() : '59';
 
         $string = $year . '-' . $month . '-' . $day . 'T' . $hour . ':' . $minute . ':' . $second;
+
         return Carbon::parse( $string, $this->getTimezoneId() );
     }
-
-    //public function pushUnprocessedNaturalDate( NaturalDate $naturalDate ) {
-    //    array_push( $this->unprocessedNaturalDates, $naturalDate );
-    //}
-    //
-    //public function popUnprocessedNaturalDate(): NaturalDate {
-    //    return array_pop( $this->unprocessedNaturalDates );
-    //}
-    //
-    //public function getUnprocessedNaturalDates(): array {
-    //    return $this->unprocessedNaturalDates;
-    //}
-    //
-    //public function setUnprocessedNaturalDates( $unprocessedNaturalDates ) {
-    //    $this->unprocessedNaturalDates = $unprocessedNaturalDates;
-    //}
-    //
-    //public function setProcessed( bool $processed ) {
-    //    $this->processed = $processed;
-    //}
-    //
-    //public function getProcessed(): bool {
-    //    return $this->processed;
-    //}
 }

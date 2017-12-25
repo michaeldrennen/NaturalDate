@@ -5,13 +5,9 @@ use Carbon\Carbon;
 use MichaelDrennen\NaturalDate\Exceptions\StrToTimeParseFailure;
 use MichaelDrennen\NaturalDate\Exceptions\UnparsableString;
 use MichaelDrennen\NaturalDate\NaturalDate;
-use MichaelDrennen\NaturalDate\PatternModifiers\JohnMcClanesBirthday;
 use PHPUnit\Framework\TestCase;
 
 class NaturalDateTest extends TestCase {
-
-
-
 
 
     public function testChristmas() {
@@ -26,7 +22,6 @@ class NaturalDateTest extends TestCase {
         $this->assertEquals( Carbon::parse( '1979-12-25 07:00:00', 'UTC' ), $startDate );
         $this->assertEquals( Carbon::parse( '1979-12-26 06:59:59', 'UTC' ), $endDate );
     }
-
 
 
     public function testNaturalDateInstantiation() {
@@ -52,23 +47,39 @@ class NaturalDateTest extends TestCase {
         // $this->assertEquals( Carbon::parse( '1979-01-01 06:59:59', 'UTC' ), $endDate );
     }
 
-
-
-    public function testParseWithAdditionalPatternModifierAsJohnMcClanesBirthday() {
-        $string           = "john mcclane's birthday";
+    /**
+     * @throws \Exception
+     * @group tick
+     */
+    public function testYearWithTickMark() {
+        $string           = "'78";
         $timezoneId       = 'America/Denver';
         $languageCode     = 'en';
-        $patternModifiers = [ 'JMBirthday' => new JohnMcClanesBirthday( [] ) ];
+        $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
+        $startDate        = $naturalDate->getUtcStart();
+        $endDate          = $naturalDate->getUtcEnd();
+        $localStart       = $startDate->setTimezone( $timezoneId );
+        $localEnd         = $endDate->setTimezone( $timezoneId );
+        $this->assertEquals( Carbon::parse( '1978-01-01 00:00:00', $timezoneId ), $localStart );
+        $this->assertEquals( Carbon::parse( '1978-12-31 23:59:59', $timezoneId ), $localEnd );
+    }
 
-
-        $startDate = $naturalDate->getUtcStart();
-        $endDate   = $naturalDate->getUtcEnd();
-        $type      = $naturalDate->getType();
-
-        $this->assertEquals( Carbon::parse( '1955-11-02 07:00:00', 'UTC' ), $startDate );
-        $this->assertEquals( Carbon::parse( '1955-11-03 06:59:59', 'UTC' ), $endDate );
-        $this->assertEquals( NaturalDate::date, $type );
+    /**
+     * @group 2d
+     */
+    public function testYearWithTwoDigits() {
+        $string           = "78";
+        $timezoneId       = 'America/Denver';
+        $languageCode     = 'en';
+        $patternModifiers = [];
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
+        $startDate        = $naturalDate->getUtcStart();
+        $endDate          = $naturalDate->getUtcEnd();
+        $localStart       = $startDate->setTimezone( $timezoneId );
+        $localEnd         = $endDate->setTimezone( $timezoneId );
+        $this->assertEquals( Carbon::parse( '1978-01-01 00:00:00', $timezoneId ), $localStart );
+        $this->assertEquals( Carbon::parse( '1978-12-31 23:59:59', $timezoneId ), $localEnd );
     }
 
     public function testNaturalDateWithUnparsableString() {

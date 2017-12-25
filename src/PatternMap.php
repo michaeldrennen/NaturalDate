@@ -83,16 +83,14 @@ class PatternMap {
 
     protected function initializePatternModifierObjects( array $overridePatterns ) {
         $this->patternModifiers = [
-            PatternMap::early => new Early( $this->patterns[ PatternMap::early ] ),
-            PatternMap::late  => new Late( $this->patterns[ PatternMap::late ] ),
-
+            PatternMap::early     => new Early( $this->patterns[ PatternMap::early ] ),
+            PatternMap::late      => new Late( $this->patterns[ PatternMap::late ] ),
             PatternMap::year      => new Year( $this->patterns[ PatternMap::year ] ),
             PatternMap::month     => new Month( $this->patterns[ PatternMap::month ] ),
             PatternMap::christmas => new Christmas( $this->patterns[ PatternMap::christmas ] ),
         ];
 
         foreach ( $overridePatterns as $tag => $patternModifier ):
-            //var_dump( $patternModifier );
             $this->patternModifiers[ $tag ] = $patternModifier;
         endforeach;
     }
@@ -117,6 +115,7 @@ class PatternMap {
                 return $patternModifier;
             endif;
         endforeach;
+
         throw new NoMatchingPatternFound( "No matching pattern found for input string: " . $input );
     }
 

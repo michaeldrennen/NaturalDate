@@ -2,7 +2,7 @@
 namespace MichaelDrennen\NaturalDate\PatternModifiers;
 
 use Carbon\Carbon;
-use MichaelDrennen\NaturalDate\Exceptions\NaturalDateException;
+use MichaelDrennen\NaturalDate\Exceptions\InvalidStringLengthForYear;
 use MichaelDrennen\NaturalDate\NaturalDate;
 
 
@@ -14,6 +14,7 @@ class Year extends PatternModifier {
      * @return \MichaelDrennen\NaturalDate\NaturalDate
      * @throws \Exception
      * @throws \MichaelDrennen\NaturalDate\Exceptions\NaturalDateException
+     * @throws \MichaelDrennen\NaturalDate\Exceptions\InvalidStringLengthForYear
      */
     public function modify( NaturalDate $naturalDate ): NaturalDate {
 
@@ -25,13 +26,14 @@ class Year extends PatternModifier {
                 break;
             case 3: // '16
                 $yearPart = substr( $naturalDate->getInput(), 1 );
-                $year     = Carbon::createFromFormat( 'y', $yearPart, $naturalDate->getTimezoneId() );
+                $year     = Carbon::createFromFormat( 'y', $yearPart, $naturalDate->getTimezoneId() )->year;
                 break;
             case 2: // 16
-                $year = Carbon::createFromFormat( 'y', $naturalDate->getInput(), $naturalDate->getTimezoneId() );
+                $year = Carbon::createFromFormat( 'y', $naturalDate->getInput(), $naturalDate->getTimezoneId() )->year;
                 break;
             default;
-                throw new NaturalDateException( "The length of the year passed in was unexpected. " );
+                // This would only be thrown if the developer supplied their own pattern for
+                throw new InvalidStringLengthForYear( "The length of the year passed in was unexpected." );
         endswitch;
 
         // @TODO Add some logic here to determine if both start and end year should be set...
@@ -39,19 +41,40 @@ class Year extends PatternModifier {
         $naturalDate->setEndYear( $year );
         $naturalDate->setType( NaturalDate::year );
 
+        $this->setStartMonthIfNotSet( $naturalDate );
+        $this->setEndMonthIfNotSet( $naturalDate );
+        $this->setStartDayIfNotSet( $naturalDate );
+        $this->setEndDayIfNotSet( $naturalDate );
 
         return $naturalDate;
+    }
 
-        //$start = Carbon::parse( $year . '-01-01 00:00:00' );
-        //$end   = Carbon::parse( $year . '-12-31 23:59:59' );
-        //
-        //return new NaturalDate( $naturalDate->getInput(),
-        //                        $naturalDate->getTimezoneId(),
-        //                        $naturalDate->getLanguageCode(),
-        //                        $start,
-        //                        $end,
-        //                        NaturalDate::year,
-        //                        $naturalDate->getPatternModifiers() );
+    protected function setStartDayIfNotSet( NaturalDate &$naturalDate ) {
+        $startDay = $naturalDate->getStartDay();
+        if ( is_null( $startDay ) ):
+            $naturalDate->setStartDay( 1 );
+        endif;
+    }
+
+    protected function setEndDayIfNotSet( NaturalDate &$naturalDate ) {
+        $endDay = $naturalDate->getEndDay();
+        if ( is_null( $endDay ) ):
+            $naturalDate->setEndDay( 31 );
+        endif;
+    }
+
+    protected function setStartMonthIfNotSet( NaturalDate &$naturalDate ) {
+        $startMonth = $naturalDate->getStartMonth();
+        if ( is_null( $startMonth ) ):
+            $naturalDate->setStartMonth( 1 );
+        endif;
+    }
+
+    protected function setEndMonthIfNotSet( NaturalDate &$naturalDate ) {
+        $endMonth = $naturalDate->getEndMonth();
+        if ( is_null( $endMonth ) ):
+            $naturalDate->setEndMonth( 12 );
+        endif;
     }
 
 

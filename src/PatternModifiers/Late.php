@@ -98,23 +98,11 @@ class Late extends PatternModifier {
     }
 
     protected function modifyMonth( NaturalDate &$naturalDate ) {
-
-        print( $naturalDate );
-
         $naturalDate->setStartDay( 21 );
-
-        var_dump( $naturalDate->getEndDate() );
-
-        $lastDayOfTheMonth = $naturalDate->getEndDate()->modify( 'last day of this month' );
-
-        var_dump( $lastDayOfTheMonth );
-
+        $lastDayOfTheMonth = $naturalDate->getEndDate()->format( 't' );
         $naturalDate->setEndDay( $lastDayOfTheMonth );
-
-
         $this->setStartYearIfNotSetAlready( $naturalDate, date( 'Y' ) );
         $this->setEndYearIfNotSetAlready( $naturalDate, date( 'Y' ) );
-
         $naturalDate->setStartTimesAsStartOfDay();
         $naturalDate->setEndTimesAsEndOfDay();
         $naturalDate->setType( NaturalDate::month );
