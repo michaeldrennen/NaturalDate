@@ -25,6 +25,7 @@ class NaturalDate {
     const year    = 'year';
     const season  = 'season';
     const quarter = 'quarter';
+    const range   = 'range';
 
     const SET_START_AND_END_DATES = 'SET_START_AND_END';
     const SET_START_DATE          = 'SET_START_DATE';
@@ -493,6 +494,32 @@ class NaturalDate {
         $this->setInput( $input );
         $this->setTimezoneId( $timezoneId );
         $this->setLanguageCode( $languageCode );
+        $this->setLocalStartDateTime( $localStartDateTime );
+        $this->setLocalEndDateTime( $localEndDateTime );
+    }
+
+    protected function setLocalStartDateTime( Carbon $start = null ) {
+        if ( is_null( $start ) ):
+            return;
+        endif;
+        $this->setStartYear( $start->year );
+        $this->setStartMonth( $start->month );
+        $this->setStartDay( $start->day );
+        $this->setStartHour( $start->hour );
+        $this->setStartMinute( $start->minute );
+        $this->setStartSecond( $start->second );
+    }
+
+    protected function setLocalEndDateTime( Carbon $end = null ) {
+        if ( is_null( $end ) ):
+            return;
+        endif;
+        $this->setEndYear( $end->year );
+        $this->setEndMonth( $end->month );
+        $this->setEndDay( $end->day );
+        $this->setEndHour( $end->hour );
+        $this->setEndMinute( $end->minute );
+        $this->setEndSecond( $end->second );
     }
 
     public function setStartYear( string $year ) {
