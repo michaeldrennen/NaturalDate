@@ -35,6 +35,14 @@ class Between extends PatternModifier {
         $capturedStartDate = NaturalDate::parse( $startDatePart, $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $naturalDate->getPatternModifiers() );
         $capturedEndDate   = NaturalDate::parse( $endDatePart, $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $naturalDate->getPatternModifiers() );
 
+        print_r( $capturedEndDate );
+
+        if ( NaturalDate::date == $capturedEndDate->getType() ):
+            $capturedEndDate->setEndHour( 23 );
+            $capturedEndDate->setEndMinute( 59 );
+            $capturedEndDate->setEndSecond( 59 );
+        endif;
+
         return new NaturalDate( $naturalDate->getInput(), $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $capturedStartDate->getLocalStart(), $capturedEndDate->getLocalEnd(), NaturalDate::range, $naturalDate->getPatternModifiers() );
     }
 

@@ -19,13 +19,14 @@ class NaturalDate {
      * know exactly how the date should be modified. For example if the "type" is year, and the "Early" PatternModifier
      * is used, then the NaturalDate will have it's start date changed to Jan 1, and it's end date set to June 30.
      */
-    const date    = 'date';
-    const week    = 'week';
-    const month   = 'month';
-    const year    = 'year';
-    const season  = 'season';
-    const quarter = 'quarter';
-    const range   = 'range';
+    const datetime = 'datetime'; // All the way out to the seconds position.
+    const date     = 'date';     // Just the year, month, and day
+    const week     = 'week';
+    const month    = 'month';
+    const year     = 'year';
+    const season   = 'season';
+    const quarter  = 'quarter';
+    const range    = 'range'; // A custom range between two NaturalDate objects of above ^ types.
 
     const SET_START_AND_END_DATES = 'SET_START_AND_END';
     const SET_START_DATE          = 'SET_START_DATE';
@@ -185,22 +186,33 @@ class NaturalDate {
 
             return $naturalDate;
         } catch ( NoMatchingPatternFound $exception ) {
-            $iAnchorTime = strtotime( $naturalDate->getInput() );
+            /**
+             * By now, none of the NaturalDate patterns have been matched. Let's give strtotime() a chance.
+             * I do this after checking NaturalDate patterns, because some NaturalDate patterns *can* be parsed by strtotime, but they don't get parsed correctly.
+             */
 
-            // If the string that is passed in can be parsed by PHP's strtotime() function, then our job is done.
-            if ( false !== $iAnchorTime ):
-                $carbon = Carbon::createFromTimestamp( $iAnchorTime, $naturalDate->getTimezoneId() );
+            //$iAnchorTime = strtotime( $naturalDate->getInput() );
 
+            $parsedParts = date_parse( $naturalDate->getInput() );
+
+            if ( $naturalDate->dateParseYieldsDate( $parsedParts ) ):
+                $carbon      = Carbon::create( $parsedParts[ 'year' ], $parsedParts[ 'month' ], $parsedParts[ 'day' ], 00, 00, 00, $timezoneId );
                 $naturalDate = new static( $string, $timezoneId, $languageCode, $carbon, $carbon, NaturalDate::date, $patternModifiers );
-                $naturalDate->setLocalDateTimes();
-                $naturalDate->setStartHour( null );
-                $naturalDate->setStartMinute( null );
-                $naturalDate->setStartSecond( null );
-                $naturalDate->setEndHour( null );
-                $naturalDate->setEndMinute( null );
-                $naturalDate->setEndSecond( null );
-                return $naturalDate;
+            elseif ( $naturalDate->dateParseYieldsDateTime( $parsedParts ) ):
+                $carbon      = Carbon::create( $parsedParts[ 'year' ], $parsedParts[ 'month' ], $parsedParts[ 'day' ], $parsedParts[ 'hour' ], $parsedParts[ 'minute' ], $parsedParts[ 'second' ], $timezoneId );
+                $naturalDate = new static( $string, $timezoneId, $languageCode, $carbon, $carbon, NaturalDate::datetime, $patternModifiers );
+            else:
+                //throw new NaturalDateException("The date you want parsed [" . $naturalDate->getInput() . "] doesn't parse squarely into a date or datetime. Additional code needs to be added to accommodate this string.");
+                throw new UnparsableString( "Unable to parse the date: [" . $string . "]" );
             endif;
+
+            return $naturalDate;
+            //$naturalDate = new static( $string, $timezoneId, $languageCode, $carbon, $carbon, NaturalDate::date, $patternModifiers );
+            //$naturalDate->setLocalDateTimes();
+            //if ( false !== $iAnchorTime ):
+            //    $carbon      = Carbon::createFromTimestamp( $iAnchorTime, $naturalDate->getTimezoneId() );
+            //    return $naturalDate;
+            //endif;
 
         } catch ( NaturalDateException $exception ) {
             throw $exception;
@@ -208,8 +220,63 @@ class NaturalDate {
             $debugMessages = isset( $naturalDate ) ? $naturalDate->getDebugMessages() : [];
             throw new NaturalDateException( $exception->getMessage(), $exception->getCode(), $exception, $debugMessages );
         }
+    }
 
-        throw new UnparsableString( "Unable to parse the date: [" . $string . "]" );
+
+    protected function dateParseYieldsDate( array $parts ) {
+        if (
+            ! empty( $parts[ 'year' ] ) &&
+            ! empty( $parts[ 'month' ] ) &&
+            ! empty( $parts[ 'day' ] ) &&
+            empty( $parts[ 'hour' ] ) &&
+            empty( $parts[ 'minute' ] ) &&
+            empty( $parts[ 'second' ] )
+        ):
+            return true;
+        endif;
+        return false;
+    }
+
+    protected function dateParseYieldsDateTime( array $parts ) {
+        if (
+            ! empty( $parts[ 'year' ] ) &&
+            ! empty( $parts[ 'month' ] ) &&
+            ! empty( $parts[ 'day' ] ) &&
+            ! empty( $parts[ 'hour' ] ) &&
+            ! empty( $parts[ 'minute' ] ) &&
+            ! empty( $parts[ 'second' ] )
+        ):
+            return true;
+        endif;
+        return false;
+    }
+
+    protected function dateParseYieldsHour( array $parts ) {
+        if (
+            ! empty( $parts[ 'year' ] ) &&
+            ! empty( $parts[ 'month' ] ) &&
+            ! empty( $parts[ 'day' ] ) &&
+            ! empty( $parts[ 'hour' ] ) &&
+            empty( $parts[ 'minute' ] ) &&
+            empty( $parts[ 'second' ] )
+        ):
+            return true;
+        endif;
+        return false;
+    }
+
+    protected function dateParseYieldsMinute( array $parts ) {
+        if (
+            ! empty( $parts[ 'year' ] ) &&
+            ! empty( $parts[ 'month' ] ) &&
+            ! empty( $parts[ 'day' ] ) &&
+            ! empty( $parts[ 'hour' ] ) &&
+            ! empty( $parts[ 'minute' ] ) &&
+            empty( $parts[ 'second' ] )
+        ):
+            return true;
+        endif;
+        return false;
     }
 
 
@@ -364,7 +431,7 @@ class NaturalDate {
             $this->addDebugMessage( "Inside setLocalStart(): No Carbon date was passed in so going to set localStart to " . $this->getStartDate() );
             $this->localStart = $this->getStartDate();
         } else {
-            $this->addDebugMessage( "Inside setLocalStart(): A Carbon date was passed in so going to set localStart to " . $localStart->toDateTimeString() );
+            $this->addDebugMessage( "Inside setLocalStart(): A Carbon date was passed in so going to set localStart to " . $localStart );
             $this->localStart = $localStart;
         }
 
@@ -375,7 +442,7 @@ class NaturalDate {
             $this->addDebugMessage( "Inside setLocalEnd(): No Carbon date was passed in so going to set localEnd to " . $this->getEndDate() );
             $this->localEnd = $this->getEndDate();
         } else {
-            $this->addDebugMessage( "Inside setLocalEnd(): A Carbon date was passed in so going to set localEnd to " . $localEnd->toDateTimeString() );
+            $this->addDebugMessage( "Inside setLocalEnd(): A Carbon date was passed in so going to set localEnd to " . $localEnd );
             $this->localEnd = $localEnd;
         }
 
@@ -501,18 +568,30 @@ class NaturalDate {
         $this->setLanguageCode( $languageCode );
         $this->setLocalStartDateTime( $localStartDateTime );
         $this->setLocalEndDateTime( $localEndDateTime );
+        $this->setType( $type );
     }
 
     protected function setLocalStartDateTime( Carbon $start = null ) {
         if ( is_null( $start ) ):
             return;
         endif;
+
         $this->setStartYear( $start->year );
         $this->setStartMonth( $start->month );
         $this->setStartDay( $start->day );
         $this->setStartHour( $start->hour );
         $this->setStartMinute( $start->minute );
         $this->setStartSecond( $start->second );
+
+        $this->setLocalStart( Carbon::create(
+            $this->getStartYear(),
+            $this->getStartMonth(),
+            $this->getStartDay(),
+            $this->getStartHour(),
+            $this->getStartMinute(),
+            $this->getStartSecond(),
+            $this->getTimezoneId()
+        ) );
     }
 
     protected function setLocalEndDateTime( Carbon $end = null ) {
@@ -525,55 +604,76 @@ class NaturalDate {
         $this->setEndHour( $end->hour );
         $this->setEndMinute( $end->minute );
         $this->setEndSecond( $end->second );
+
+        $this->setLocalEnd( Carbon::create(
+            $this->getEndYear(),
+            $this->getEndMonth(),
+            $this->getEndDay(),
+            $this->getEndHour(),
+            $this->getEndMinute(),
+            $this->getEndSecond(),
+            $this->getTimezoneId()
+        ) );
     }
 
     public function setStartYear( string $year ) {
-
         $this->startYear = $year;
+        $this->setLocalStartDateTime();
     }
 
     public function setStartMonth( string $month ) {
         $this->startMonth = str_pad( $month, 2, '0', STR_PAD_LEFT );
+        $this->setLocalStartDateTime();
     }
 
     public function setStartDay( string $day ) {
         $this->startDay = str_pad( $day, 2, '0', STR_PAD_LEFT );
+        $this->setLocalStartDateTime();
     }
 
     public function setStartHour( string $hour ) {
         $this->startHour = str_pad( $hour, 2, '0', STR_PAD_LEFT );
+        $this->setLocalStartDateTime();
     }
 
     public function setStartMinute( string $minute ) {
         $this->startMinute = str_pad( $minute, 2, '0', STR_PAD_LEFT );
+        $this->setLocalStartDateTime();
     }
 
     public function setStartSecond( string $second ) {
-        $this->startSecond = str_pad( $second, 2, '0', STR_PAD_LEFT );;
+        $this->startSecond = str_pad( $second, 2, '0', STR_PAD_LEFT );
+        $this->setLocalStartDateTime();
     }
 
     public function setEndYear( string $year ) {
         $this->endYear = $year;
+        $this->setLocalEndDateTime();
     }
 
     public function setEndMonth( string $month ) {
         $this->endMonth = str_pad( $month, 2, '0', STR_PAD_LEFT );
+        $this->setLocalEndDateTime();
     }
 
     public function setEndDay( string $day ) {
         $this->endDay = str_pad( $day, 2, '0', STR_PAD_LEFT );
+        $this->setLocalEndDateTime();
     }
 
     public function setEndHour( string $hour ) {
         $this->endHour = str_pad( $hour, 2, '0', STR_PAD_LEFT );
+        $this->setLocalEndDateTime();
     }
 
     public function setEndMinute( string $minute ) {
         $this->endMinute = str_pad( $minute, 2, '0', STR_PAD_LEFT );
+        $this->setLocalEndDateTime();
     }
 
     public function setEndSecond( string $second ) {
         $this->endSecond = str_pad( $second, 2, '0', STR_PAD_LEFT );
+        $this->setLocalEndDateTime();
     }
 
     public function setStartDateTimeAsStartOfToday() {

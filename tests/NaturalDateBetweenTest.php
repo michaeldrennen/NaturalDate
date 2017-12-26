@@ -43,14 +43,22 @@ class NaturalDateBetweenTest extends TestCase {
     }
 
 
+    /**
+     * @throws \Exception
+     * @group between
+     */
     public function testBetweenTwoSpecificDates() {
-        $string           = 'between Feb 14, 2017 and March 14, 2017';
+        $string = 'between Feb 14, 2017 and March 14, 2017';
+        //$string           = 'between asdf and qwer';
+        //$string           = 'between jan 1, 2000 9pm and jan 15, 2000';
         $timezoneId       = 'America/Denver';
         $languageCode     = 'en';
         $patternModifiers = [];
-        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
-        $startDate        = $naturalDate->getUtcStart();
-        $endDate          = $naturalDate->getUtcEnd();
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, null );
+
+        print_r( $naturalDate->getDebugMessages() );
+        $startDate = $naturalDate->getUtcStart();
+        $endDate   = $naturalDate->getUtcEnd();
 
         $localStart = $startDate->setTimezone( $timezoneId );
         $localEnd   = $endDate->setTimezone( $timezoneId );
