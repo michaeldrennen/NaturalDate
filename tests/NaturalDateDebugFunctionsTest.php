@@ -18,7 +18,7 @@ class NaturalDateDebugFunctionsTest extends TestCase {
         $timezoneId       = 'America/Denver';
         $languageCode     = 'en';
         $patternModifiers = [];
-        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, null, false );
         echo $naturalDate;
     }
 
@@ -27,7 +27,7 @@ class NaturalDateDebugFunctionsTest extends TestCase {
         $timezoneId       = 'America/Denver';
         $languageCode     = 'en';
         $patternModifiers = [];
-        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, null, false );
         $debugMessages    = $naturalDate->getDebugMessages();
         $this->assertTrue( is_array( $debugMessages ) );
     }

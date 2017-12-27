@@ -28,9 +28,6 @@ class NaturalDate {
     const quarter  = 'quarter';
     const range    = 'range'; // A custom range between two NaturalDate objects of above ^ types.
 
-    const SET_START_AND_END_DATES = 'SET_START_AND_END';
-    const SET_START_DATE          = 'SET_START_DATE';
-    const SET_END_DATE            = 'SET_END_DATE';
 
     /**
      * @var string $input The string that the user submitted. EX: "summer of 87"
@@ -49,24 +46,9 @@ class NaturalDate {
 
 
     /**
-     * @var Carbon $utcAnchorDate
-     */
-    protected $utcAnchorDate;
-
-    /**
      * @var string $type EX: decade, year, month, day, hour, minute, second. I forget why I wanted this.
      */
     protected $type;
-
-    /**
-     * @var Carbon $localStart
-     */
-    protected $localStart;
-
-    /**
-     * @var Carbon $localEnd
-     */
-    protected $localEnd;
 
 
     /**
@@ -104,10 +86,6 @@ class NaturalDate {
      */
     protected $matchedPatternModifier;
 
-    /**
-     * @var array The PatternModifiers has a list of all of the matched groups from preg_match.
-     */
-    protected $matchesArrayFromPregMatch = [];
 
     /**
      * @var array
@@ -115,27 +93,60 @@ class NaturalDate {
     protected $patternModifiers = [];
 
     /**
-     * @NOTE Not sure I need this anymore
-     * @var array It's possible that a PatternModifier can be triggered, but it doesn't have enough information to know
-     *      how to modify the NaturalDate. For example: "early xmas 1979". In that case, "early" will get triggered
-     *      first, but it doesn't know if the user meant early in the day or early in the year, etc. So place this
-     *      NaturalDate object into an array and pass it forward. During the next iteration, I may have enough
-     *      information to use that PatternModifier.
-     */
-    protected $unprocessedNaturalDates = [];
-
-    /**
-     * @NOTE Not sure I need this anymore
-     * @var bool $processed Set to true if the modify() function was able to successfully modify this NaturalDate. This
-     *      is related to the $unprocessedNaturalDates array.
-     */
-    protected $processed = false;
-
-    /**
      * @var array
      */
     protected $debugMessages = [];
 
+
+    /**
+     * NaturalDate constructor.
+     *
+     * @param string         $input        Ex: early 2016
+     * @param string         $timezoneId   Ex: America\Denver
+     * @param string         $languageCode Ex: en
+     * @param \Carbon\Carbon $localStartDateTime
+     * @param \Carbon\Carbon $localEndDateTime
+     * @param string         $type
+     * @param array          $patternModifiers
+     *
+     * @throws \MichaelDrennen\NaturalDate\Exceptions\InvalidTimezone
+     * @throws \Exception
+     */
+    public function __construct( string $input = '', string $timezoneId = '', string $languageCode = '', Carbon $localStartDateTime = null, Carbon $localEndDateTime = null, string $type = null, array $patternModifiers = [] ) {
+        $this->setInput( $input );
+        $this->setTimezoneId( $timezoneId );
+        $this->setLanguageCode( $languageCode );
+        $this->setLocalStartDateTime( $localStartDateTime );
+        $this->setLocalEndDateTime( $localEndDateTime );
+
+        // This will be set if the NaturalDate object is created "manually" from the output of date_parse()
+        if ( isset( $type ) ):
+            $this->setType( $type );
+        endif;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString() {
+        $string = '';
+
+        $string .= "\n\n\nNATURAL DATE OBJECT";
+        $string .= "\ninput:        " . $this->getInput();
+        $string .= "\ntimezoneId:   " . $this->getTimezoneId();
+        $string .= "\nlanguageCode: " . $this->getLanguageCode();
+        $string .= "\nlocal start:  " . $this->getLocalStart();
+        $string .= "\nlocal end:    " . $this->getLocalEnd();
+        $string .= "\ntype:         " . $this->getType();
+
+        $string        .= "\n\ndebugMessages:";
+        $debugMessages = $this->getDebugMessages();
+        foreach ( $debugMessages as $i => $entry ):
+            $string .= "\n $i: " . implode( "\t", $entry );
+        endforeach;
+        $string .= "\nEND OF NATURAL DATE OBJECT\n\n\n";
+        return $string;
+    }
 
     /**
      * @param string                                  $string              Ex: 'Summer of 78'
@@ -153,11 +164,14 @@ class NaturalDate {
      *                                                                     together to create a single NaturalDate
      *                                                                     object that accounts for all of the
      *                                                                     modifiers.
+     * @param bool                                    $cleanOutput         Set to false if you want all of the
+     *                                                                     debugging messages returned with the
+     *                                                                     NaturalDate object.
      *
      * @return static
      * @throws \Exception;
      */
-    public static function parse( string $string = '', string $timezoneId = 'UTC', string $languageCode = 'en', $patternModifiers = [], NaturalDate $existingNaturalDate = null ): NaturalDate {
+    public static function parse( string $string = '', string $timezoneId = 'UTC', string $languageCode = 'en', $patternModifiers = [], NaturalDate $existingNaturalDate = null, bool $cleanOutput = true ): NaturalDate {
 
         // Run the whole string through the patterns. I take the first pattern that matches.
         try {
@@ -181,7 +195,7 @@ class NaturalDate {
 
             $naturalDate = $naturalDate->modify();
 
-            return $naturalDate;
+            return self::cleanOutput( $naturalDate, $cleanOutput );
         } catch ( NoMatchingPatternFound $exception ) {
             /**
              * By now, none of the NaturalDate patterns have been matched. Let's give strtotime() a chance.
@@ -201,29 +215,65 @@ class NaturalDate {
                 $carbon      = Carbon::create( $parsedParts[ 'year' ], $parsedParts[ 'month' ], $parsedParts[ 'day' ], (int)$parsedParts[ 'hour' ], (int)$parsedParts[ 'minute' ], (int)$parsedParts[ 'second' ], $timezoneId );
                 $naturalDate = new static( $string, $timezoneId, $languageCode, $carbon, $carbon, NaturalDate::datetime, $patternModifiers );
             else:
-                //throw new NaturalDateException( "The date you want parsed [" . $naturalDate->getInput() . "] doesn't parse squarely into a date or datetime. Additional code needs to be added to accommodate this string." );
                 throw new UnparsableString( "Unable to parse the date: [" . $string . "]" );
             endif;
 
-            return $naturalDate;
-            //$naturalDate = new static( $string, $timezoneId, $languageCode, $carbon, $carbon, NaturalDate::date, $patternModifiers );
-            //$naturalDate->setLocalDateTimes();
-            //if ( false !== $iAnchorTime ):
-            //    $carbon      = Carbon::createFromTimestamp( $iAnchorTime, $naturalDate->getTimezoneId() );
-            //    return $naturalDate;
-            //endif;
+            return self::cleanOutput( $naturalDate, $cleanOutput );
 
         } catch ( NaturalDateException $exception ) {
             throw $exception;
         } catch ( \Exception $exception ) {
             $debugMessages = isset( $naturalDate ) ? $naturalDate->getDebugMessages() : [];
-            //print_r( $exception->getTrace()[0] );
-            //echo $exception->getTraceAsString();
-            throw new NaturalDateException( "{{{{" . $exception->getMessage() . "}}}}", $exception->getCode(), $exception, $debugMessages );
+            throw new NaturalDateException( $exception->getMessage(), $exception->getCode(), $exception, $debugMessages );
         }
     }
 
+    protected static function cleanOutput( NaturalDate $naturalDate, bool $cleanOutput = false ): NaturalDate {
+        if ( $cleanOutput ):
+            /**
+             * These 4 fields are dynamically declared, so users of this class have clear and easy access to the
+             * bookend dates created by NaturalDate.
+             */
+            $naturalDate->utcStart   = $naturalDate->getUtcStart();
+            $naturalDate->utcEnd     = $naturalDate->getUtcEnd();
+            $naturalDate->localStart = $naturalDate->getLocalStart();
+            $naturalDate->localEnd   = $naturalDate->getLocalEnd();
 
+            /**
+             * These fields are not needed by the end user of this class.
+             */
+            unset( $naturalDate->patternMap );
+            unset( $naturalDate->matchedPatternLabel );
+            unset( $naturalDate->matchedPatternModifier );
+            unset( $naturalDate->patternModifiers );
+            unset( $naturalDate->debugMessages );
+            //unset( $naturalDate->startYear );
+            //unset( $naturalDate->startMonth );
+            //unset( $naturalDate->startDay );
+            //unset( $naturalDate->startHour );
+            //unset( $naturalDate->startMinute );
+            //unset( $naturalDate->startSecond );
+            //unset( $naturalDate->endYear );
+            //unset( $naturalDate->endMonth );
+            //unset( $naturalDate->endMinute );
+            //unset( $naturalDate->endHour );
+            //unset( $naturalDate->endMinute );
+            //unset( $naturalDate->endSecond );
+        endif;
+        return $naturalDate;
+    }
+
+
+    /**
+     * Examine the output from PHP's date_parse() function, and return true if only date elements are returned. Not
+     * time elements.
+     *
+     * @link http://php.net/manual/en/function.date-parse.php
+     *
+     * @param array $parts The output from date_parse()
+     *
+     * @return bool
+     */
     protected function dateParseYieldsDate( array $parts ) {
 
         if (
@@ -239,6 +289,15 @@ class NaturalDate {
         return false;
     }
 
+    /**
+     * Examine the output from PHP's date_parse() function, and return true if both date and time elements are returned.
+     *
+     * @link http://php.net/manual/en/function.date-parse.php
+     *
+     * @param array $parts The output from date_parse()
+     *
+     * @return bool
+     */
     protected function dateParseYieldsDateTime( array $parts ) {
         if (
             ! empty( $parts[ 'year' ] ) &&
@@ -253,93 +312,34 @@ class NaturalDate {
         return false;
     }
 
-    protected function dateParseYieldsHour( array $parts ) {
-        if (
-            ! empty( $parts[ 'year' ] ) &&
-            ! empty( $parts[ 'month' ] ) &&
-            ! empty( $parts[ 'day' ] ) &&
-            false !== $parts[ 'hour' ] &&
-            false === $parts[ 'minute' ] &&
-            false === $parts[ 'second' ]
-        ):
-            return true;
-        endif;
-        return false;
-    }
-
-    protected function dateParseYieldsMinute( array $parts ) {
-        if (
-            ! empty( $parts[ 'year' ] ) &&
-            ! empty( $parts[ 'month' ] ) &&
-            ! empty( $parts[ 'day' ] ) &&
-            false !== $parts[ 'hour' ] &&
-            false !== $parts[ 'minute' ] &&
-            false === $parts[ 'second' ]
-        ):
-            return true;
-        endif;
-        return false;
-    }
-
 
     /**
-     * @return string
-     */
-    public function __toString() {
-        $string = '';
-
-        $string .= "\n\n\nNATURAL DATE OBJECT";
-        $string .= "\ninput:        " . $this->getInput();
-        $string .= "\ntimezoneId:   " . $this->getTimezoneId();
-        $string .= "\nlanguageCode: " . $this->getLanguageCode();
-        $string .= "\nlocal start:  " . $this->getLocalStart();
-        $string .= "\nlocal end:    " . $this->getLocalEnd();
-        $string .= "\ntype:         " . $this->getType();
-
-        $string        .= "\n\ndebugMessages:";
-        $debugMessages = $this->getDebugMessages();
-        foreach ( $debugMessages as $i => $message ):
-            $string .= "\n $i: " . $message;
-        endforeach;
-        $string .= "\nEND OF NATURAL DATE OBJECT\n\n\n";
-        return $string;
-    }
-
-
-    /**
+     * I added this function to aid in development and debugging.
+     *
      * @param string $message
      * @param string $function __FUNCTION__
      * @param string $class    __CLASS__
      */
     public function addDebugMessage( string $message, string $function = null, string $class = null ) {
-        $string = str_pad( "(" . $this->getInput() . ")", 20, " ", STR_PAD_RIGHT );
-
-        if ( isset( $class ) ):
-            $string .= str_pad( substr( strrchr( $class, "\\" ), 1 ), 40, " ", STR_PAD_RIGHT );
-        endif;
-
-        if ( isset( $function ) ):
-            $string .= str_pad( basename( $function ), 20, " ", STR_PAD_RIGHT );
-        endif;
-        $string                .= $message;
-        $this->debugMessages[] = $string;
+        $this->debugMessages[] = [
+            'input'    => $this->getInput(),
+            'class'    => $class,
+            'function' => $function,
+            'message'  => $message,
+        ];
     }
 
     /**
      * @return array
      */
     public function getDebugMessages(): array {
-        return $this->debugMessages;
+        if ( isset( $this->debugMessages ) ):
+            return $this->debugMessages;
+        else:
+            return [];
+        endif;
     }
 
-    /**
-     * @param \Carbon\Carbon|null $start
-     * @param \Carbon\Carbon|null $end
-     */
-    //protected function setCarbonLocalStartAndEnd( Carbon $start = null, Carbon $end = null ) {
-    //    $this->setCarbonLocalStart( $start );
-    //    $this->setCarbonLocalEnd( $end );
-    //}
 
     /**
      * @param string $languageCode Ex: "en" for english
@@ -436,34 +436,7 @@ class NaturalDate {
         $this->languageCode = $languageCode;
     }
 
-    /**
-     * @param mixed $utcAnchorDate
-     */
-    public function setUtcAnchorDate( $utcAnchorDate ) {
-        $this->utcAnchorDate = $utcAnchorDate;
-    }
 
-    //public function setCarbonLocalStart( Carbon $localStart = null ) {
-    //    if ( is_null( $localStart ) ) {
-    //        $this->addDebugMessage( "Inside setLocalStart(): No Carbon date was passed in so going to set localStart to " . $this->getStartDate() );
-    //        $this->localStart = $this->getStartDate();
-    //    } else {
-    //        $this->addDebugMessage( "Inside setLocalStart(): A Carbon date was passed in so going to set localStart to " . $localStart );
-    //        $this->localStart = $localStart;
-    //    }
-    //
-    //}
-
-    //public function setCarbonLocalEnd( Carbon $localEnd = null ) {
-    //    if ( is_null( $localEnd ) ) {
-    //        $this->addDebugMessage( "Inside setLocalEnd(): No Carbon date was passed in so going to set localEnd to " . $this->getEndDate() );
-    //        $this->localEnd = $this->getEndDate();
-    //    } else {
-    //        $this->addDebugMessage( "Inside setLocalEnd(): A Carbon date was passed in so going to set localEnd to " . $localEnd );
-    //        $this->localEnd = $localEnd;
-    //    }
-    //
-    //}
 
     //public function getLocalStart(): Carbon {
     //    return $this->localStart;
@@ -543,14 +516,8 @@ class NaturalDate {
 
 
     /**
-     * @return mixed
-     */
-    public function getUtcAnchorDate() {
-        return $this->utcAnchorDate;
-    }
-
-
-    /**
+     * Public accessor to the UTC converted local Carbon start date.
+     *
      * @return \Carbon\Carbon
      */
     public function getUtcStart(): Carbon {
@@ -559,6 +526,8 @@ class NaturalDate {
 
 
     /**
+     * Public accessor to the UTC converted local Carbon end date.
+     *
      * @return \Carbon\Carbon
      */
     public function getUtcEnd(): Carbon {
@@ -566,38 +535,21 @@ class NaturalDate {
     }
 
 
+    /**
+     * @return string
+     */
     public function getType(): string {
         return $this->type;
     }
 
+
     /**
-     * NaturalDate constructor.
+     * Used in the constructor when the parse() function is able to find a date using date_parse();
      *
-     * @param string         $input        Ex: early 2016
-     * @param string         $timezoneId   Ex: America\Denver
-     * @param string         $languageCode Ex: en
-     * @param \Carbon\Carbon $localStartDateTime
-     * @param \Carbon\Carbon $localEndDateTime
-     * @param string         $type
-     * @param array          $patternModifiers
+     * @see \MichaelDrennen\NaturalDate\NaturalDate::parse()
      *
-     * @throws \MichaelDrennen\NaturalDate\Exceptions\InvalidTimezone
-     * @throws \Exception
+     * @param \Carbon\Carbon|null $start
      */
-    public function __construct( string $input = '', string $timezoneId = '', string $languageCode = '', Carbon $localStartDateTime = null, Carbon $localEndDateTime = null, string $type = null, array $patternModifiers = [] ) {
-        $this->setInput( $input );
-        $this->setTimezoneId( $timezoneId );
-        $this->setLanguageCode( $languageCode );
-        $this->setLocalStartDateTime( $localStartDateTime );
-        $this->setLocalEndDateTime( $localEndDateTime );
-
-        // This will be set if the NaturalDate object is created "manually" from the output of date_parse()
-        if ( isset( $type ) ):
-            $this->setType( $type );
-        endif;
-
-    }
-
     protected function setLocalStartDateTime( Carbon $start = null ) {
         if ( is_null( $start ) ):
             return;
@@ -609,18 +561,15 @@ class NaturalDate {
         $this->setStartHour( $start->hour );
         $this->setStartMinute( $start->minute );
         $this->setStartSecond( $start->second );
-
-        //$this->setCarbonLocalStart( Carbon::create(
-        //    $this->getStartYear(),
-        //    $this->getStartMonth(),
-        //    $this->getStartDay(),
-        //    $this->getStartHour(),
-        //    $this->getStartMinute(),
-        //    $this->getStartSecond(),
-        //    $this->getTimezoneId()
-        //) );
     }
 
+    /**
+     * Used in the constructor when the parse() function is able to find a date using date_parse();
+     *
+     * @see \MichaelDrennen\NaturalDate\NaturalDate::parse()
+     *
+     * @param \Carbon\Carbon|null $end
+     */
     protected function setLocalEndDateTime( Carbon $end = null ) {
         if ( is_null( $end ) ):
             return;
@@ -631,16 +580,6 @@ class NaturalDate {
         $this->setEndHour( $end->hour );
         $this->setEndMinute( $end->minute );
         $this->setEndSecond( $end->second );
-
-        //$this->setCarbonLocalEnd( Carbon::create(
-        //    $this->getEndYear(),
-        //    $this->getEndMonth(),
-        //    $this->getEndDay(),
-        //    $this->getEndHour(),
-        //    $this->getEndMinute(),
-        //    $this->getEndSecond(),
-        //    $this->getTimezoneId()
-        //) );
     }
 
     public function setStartYear( string $year ) {
@@ -711,7 +650,10 @@ class NaturalDate {
     }
 
     /**
-     * @param bool $override If times were already set, do you want to override them with zeros?
+     * use to set the start hour:min:sec to 00:00:00 (at the beginning of the day). By default, it will not overwrite
+     * any values that are set in startHour, startMinute, or startSecond.
+     *
+     * @param bool $override Set to true if you want to ignore any existing values and overwrite with 00:00:00
      */
     public function setStartTimesAsStartOfDay( bool $override = false ) {
         if ( $override ):
@@ -734,6 +676,12 @@ class NaturalDate {
 
     }
 
+    /**
+     * Useful if you want to set the hour:min:sec to 23:59:59 (at the end of the day). By default, it will not overwrite
+     * any values that are set in endHour, endMinute, or endSecond.
+     *
+     * @param bool $override Set to true if you want to ignore any existing values and overwrite with 23:59:59
+     */
     public function setEndTimesAsEndOfDay( bool $override = false ) {
         if ( $override ):
             $this->setEndHour( 23 );
@@ -754,8 +702,6 @@ class NaturalDate {
         endif;
     }
 
-
-    // GETTERS
 
     /**
      * @return string|null

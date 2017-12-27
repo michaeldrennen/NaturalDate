@@ -2,6 +2,7 @@
 
 namespace MichaelDrennen\NaturalDate\PatternModifiers;
 
+use Carbon\Carbon;
 use MichaelDrennen\NaturalDate\NaturalDate;
 
 /**
@@ -36,9 +37,6 @@ class Between extends PatternModifier {
         $capturedEndDate   = NaturalDate::parse( $endDatePart, $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $naturalDate->getPatternModifiers() );
 
 
-        echo $capturedStartDate;
-        echo $capturedEndDate;
-
         if ( NaturalDate::date == $capturedEndDate->getType() ):
             $capturedEndDate->addDebugMessage( "capturedEndDate was of type date, so setting hh:mm:ss to 23:59:59", __FUNCTION__ );
             $capturedEndDate->setEndHour( 23 );
@@ -46,8 +44,28 @@ class Between extends PatternModifier {
             $capturedEndDate->setEndSecond( 59 );
         endif;
 
+        /**
+         * If the end year is null, look at the startYear in the capturedStartDate object. If it makes sense to use that
+         * year, then do it. If not, take the next year.
+         */
+        if ( is_null( $capturedEndDate->getEndYear() ) &&
+             ! is_null( $capturedEndDate->getEndMonth() ) &&
+             ! is_null( $capturedEndDate->getEndDay() )
+        ):
+            $testCarbon = Carbon::create( $capturedStartDate->getStartYear(), $capturedEndDate->getEndMonth(), $capturedEndDate->getEndDay(), null, null, null, $capturedEndDate->getTimezoneId() );
+            if ( $testCarbon >= $capturedStartDate->getLocalStart() ):
+                $capturedEndDate->setEndYear( $capturedStartDate->getStartYear() );
+            else:
+                $endYear = $capturedStartDate->getStartYear() + 1;
+                $capturedEndDate->setEndYear( $endYear );
+            endif;
+        endif;
 
-        return new NaturalDate( $naturalDate->getInput(), $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $capturedStartDate->getLocalStart(), $capturedEndDate->getLocalEnd(), NaturalDate::range, $naturalDate->getPatternModifiers() );
+
+        return new NaturalDate( $naturalDate->getInput(),
+                                $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(),
+                                $capturedStartDate->getLocalStart(), $capturedEndDate->getLocalEnd(),
+                                NaturalDate::range, $naturalDate->getPatternModifiers() );
     }
 
 }

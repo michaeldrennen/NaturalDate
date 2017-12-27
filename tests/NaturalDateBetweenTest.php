@@ -126,4 +126,23 @@ class NaturalDateBetweenTest extends TestCase {
         $this->assertEquals( Carbon::parse( date( 'Y' ) . '-12-31 23:59:59', $timezoneId ), $naturalDate->getLocalEnd() );
     }
 
+
+    /**
+     * @throws \Exception
+     * @group thisyear
+     */
+    public function testBetweenWithReversedSpecialDatesHavingStartDateThisYear() {
+        $string           = 'between thanksgiving and halloween';
+        $timezoneId       = 'America/Denver';
+        $languageCode     = 'en';
+        $patternModifiers = [];
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, null );
+
+        $dayOfThanksgivingThisYear = Carbon::parse( 'fourth thursday of november ' . date( 'Y' ) )->day;
+        $startYear                 = date( 'Y' );
+        $nextYear                  = $startYear + 1;
+        $this->assertEquals( Carbon::parse( $startYear . '-11-' . $dayOfThanksgivingThisYear . ' 00:00:00', $timezoneId ), $naturalDate->getLocalStart() );
+        $this->assertEquals( Carbon::parse( $nextYear . '-10-31 23:59:59', $timezoneId ), $naturalDate->getLocalEnd() );
+    }
+
 }
