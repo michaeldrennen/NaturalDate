@@ -99,7 +99,7 @@ class Late extends PatternModifier {
 
     protected function modifyMonth( NaturalDate &$naturalDate ) {
         $naturalDate->setStartDay( 21 );
-        $lastDayOfTheMonth = $naturalDate->getEndDate()->format( 't' );
+        $lastDayOfTheMonth = $naturalDate->getLocalEnd()->format( 't' );
         $naturalDate->setEndDay( $lastDayOfTheMonth );
         $this->setStartYearIfNotSetAlready( $naturalDate, date( 'Y' ) );
         $this->setEndYearIfNotSetAlready( $naturalDate, date( 'Y' ) );

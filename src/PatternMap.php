@@ -5,9 +5,13 @@ use MichaelDrennen\NaturalDate\Exceptions\NoMatchingPatternFound;
 use MichaelDrennen\NaturalDate\PatternModifiers\Between;
 use MichaelDrennen\NaturalDate\PatternModifiers\Christmas;
 use MichaelDrennen\NaturalDate\PatternModifiers\Early;
+use MichaelDrennen\NaturalDate\PatternModifiers\Halloween;
 use MichaelDrennen\NaturalDate\PatternModifiers\Late;
 use MichaelDrennen\NaturalDate\PatternModifiers\Month;
+use MichaelDrennen\NaturalDate\PatternModifiers\NewYears;
+use MichaelDrennen\NaturalDate\PatternModifiers\NewYearsEve;
 use MichaelDrennen\NaturalDate\PatternModifiers\PatternModifier;
+use MichaelDrennen\NaturalDate\PatternModifiers\Thanksgiving;
 use MichaelDrennen\NaturalDate\PatternModifiers\Year;
 
 class PatternMap {
@@ -24,7 +28,11 @@ class PatternMap {
     const year  = 'year';
     const month = 'month';
 
-    const christmas = 'christmas';
+    const newYears     = 'newYears';
+    const halloween    = 'halloween';
+    const thanksgiving = 'thanksgiving';
+    const christmas    = 'christmas';
+    const newYearsEve  = 'newYearsEve';
 
 
     // I think I want to put classes or objects as the values in this array.
@@ -42,7 +50,12 @@ class PatternMap {
         PatternMap::year  => null,
         PatternMap::month => null,
 
-        PatternMap::christmas => null,
+        PatternMap::newYears     => null,
+        PatternMap::halloween    => null,
+        PatternMap::thanksgiving => null,
+        PatternMap::christmas    => null,
+        PatternMap::newYearsEve  => null,
+
 
     ];
 
@@ -59,8 +72,11 @@ class PatternMap {
         PatternMap::year  => null,
         PatternMap::month => null,
 
-        PatternMap::christmas => null,
-
+        PatternMap::newYears     => null,
+        PatternMap::halloween    => null,
+        PatternMap::thanksgiving => null,
+        PatternMap::christmas    => null,
+        PatternMap::newYearsEve  => null,
     ];
 
     /**
@@ -87,12 +103,17 @@ class PatternMap {
      */
     protected function initializePatternModifierObjects( array $overridePatterns ) {
         $this->patternModifiers = [
-            PatternMap::early     => new Early( $this->patterns[ PatternMap::early ] ),
-            PatternMap::late      => new Late( $this->patterns[ PatternMap::late ] ),
-            PatternMap::between   => new Between( $this->patterns[ PatternMap::between ] ),
-            PatternMap::year      => new Year( $this->patterns[ PatternMap::year ] ),
-            PatternMap::month     => new Month( $this->patterns[ PatternMap::month ] ),
-            PatternMap::christmas => new Christmas( $this->patterns[ PatternMap::christmas ] ),
+            PatternMap::early   => new Early( $this->patterns[ PatternMap::early ] ),
+            PatternMap::late    => new Late( $this->patterns[ PatternMap::late ] ),
+            PatternMap::between => new Between( $this->patterns[ PatternMap::between ] ),
+            PatternMap::year    => new Year( $this->patterns[ PatternMap::year ] ),
+            PatternMap::month   => new Month( $this->patterns[ PatternMap::month ] ),
+
+            PatternMap::newYears     => new NewYears( $this->patterns[ PatternMap::newYears ] ),
+            PatternMap::halloween    => new Halloween( $this->patterns[ PatternMap::halloween ] ),
+            PatternMap::thanksgiving => new Thanksgiving( $this->patterns[ PatternMap::thanksgiving ] ),
+            PatternMap::christmas    => new Christmas( $this->patterns[ PatternMap::christmas ] ),
+            PatternMap::newYearsEve  => new NewYearsEve( $this->patterns[ PatternMap::newYearsEve ] ),
         ];
 
         foreach ( $overridePatterns as $tag => $patternModifier ):

@@ -22,7 +22,7 @@ class Between extends PatternModifier {
      * @throws \Exception
      */
     public function modify( NaturalDate $naturalDate ): NaturalDate {
-        $naturalDate->addDebugMessage( "    Between->modify(): Just entered." );
+        $naturalDate->addDebugMessage( "Just entered.", __FUNCTION__ );
         $pregMatchMatches = $naturalDate->getPregMatchMatches();
 
         /**
@@ -35,13 +35,17 @@ class Between extends PatternModifier {
         $capturedStartDate = NaturalDate::parse( $startDatePart, $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $naturalDate->getPatternModifiers() );
         $capturedEndDate   = NaturalDate::parse( $endDatePart, $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $naturalDate->getPatternModifiers() );
 
-        print_r( $capturedEndDate );
+
+        echo $capturedStartDate;
+        echo $capturedEndDate;
 
         if ( NaturalDate::date == $capturedEndDate->getType() ):
+            $capturedEndDate->addDebugMessage( "capturedEndDate was of type date, so setting hh:mm:ss to 23:59:59", __FUNCTION__ );
             $capturedEndDate->setEndHour( 23 );
             $capturedEndDate->setEndMinute( 59 );
             $capturedEndDate->setEndSecond( 59 );
         endif;
+
 
         return new NaturalDate( $naturalDate->getInput(), $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $capturedStartDate->getLocalStart(), $capturedEndDate->getLocalEnd(), NaturalDate::range, $naturalDate->getPatternModifiers() );
     }

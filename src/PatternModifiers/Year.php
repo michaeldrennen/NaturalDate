@@ -17,6 +17,7 @@ class Year extends PatternModifier {
      * @throws \MichaelDrennen\NaturalDate\Exceptions\InvalidStringLengthForYear
      */
     public function modify( NaturalDate $naturalDate ): NaturalDate {
+        $naturalDate->addDebugMessage( "Just entered.", __FUNCTION__, __CLASS__ );
 
         // $naturalDate input will be a year of type: 2016, or 16, or '16
         $strLen = strlen( $naturalDate->getInput() );
@@ -36,15 +37,21 @@ class Year extends PatternModifier {
                 throw new InvalidStringLengthForYear( "The length of the year passed in was unexpected." );
         endswitch;
 
+        $naturalDate->addDebugMessage( "Parsed year is [" . $year . "]", __FUNCTION__, __CLASS__ );
+
         // @TODO Add some logic here to determine if both start and end year should be set...
         $naturalDate->setStartYear( $year );
         $naturalDate->setEndYear( $year );
-        $naturalDate->setType( NaturalDate::year );
+
 
         $this->setStartMonthIfNotSet( $naturalDate );
         $this->setEndMonthIfNotSet( $naturalDate );
         $this->setStartDayIfNotSet( $naturalDate );
         $this->setEndDayIfNotSet( $naturalDate );
+
+        $naturalDate->setType( NaturalDate::year );
+
+        $naturalDate->addDebugMessage( "naturalDate object had type set to [" . $naturalDate->getType() . "]", __FUNCTION__, __CLASS__ );
 
         return $naturalDate;
     }

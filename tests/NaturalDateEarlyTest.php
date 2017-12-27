@@ -54,17 +54,23 @@ class NaturalDateEarlyTest extends TestCase {
         $this->assertEquals( Carbon::parse( Carbon::parse( date( 'Y-m-d 13:59:59' ) ), 'UTC' ), $endDate );
     }
 
+    /**
+     * @throws \Exception
+     * @group early
+     */
     public function testEarlyModifierYear() {
         $string           = 'early 2016';
         $timezoneId       = 'America/Denver';
         $languageCode     = 'en';
         $patternModifiers = [];
-        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
-        $startDate        = $naturalDate->getUtcStart();
-        $endDate          = $naturalDate->getUtcEnd();
 
-        $this->assertEquals( Carbon::parse( '2016-01-01 07:00:00', 'UTC' ), $startDate );
-        $this->assertEquals( Carbon::parse( '2016-05-01 05:59:59', 'UTC' ), $endDate );
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
+
+        $startDate = $naturalDate->getLocalStart();
+        $endDate   = $naturalDate->getLocalEnd();
+
+        $this->assertEquals( Carbon::parse( '2016-01-01 00:00:00', $timezoneId ), $startDate );
+        $this->assertEquals( Carbon::parse( '2016-04-30 23:59:59', $timezoneId ), $endDate );
     }
 
     public function testEarlyModifierWithMonthAndYear() {

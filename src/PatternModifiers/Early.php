@@ -22,7 +22,7 @@ class Early extends PatternModifier {
      * @throws \Exception
      */
     public function modify( NaturalDate $naturalDate ): NaturalDate {
-        $naturalDate->addDebugMessage( "    Early->modify(): Just entered." );
+        $naturalDate->addDebugMessage( "Just entered.", __FUNCTION__, __CLASS__ );
 
         $pregMatchMatches = $naturalDate->getPregMatchMatches();
 
@@ -30,6 +30,7 @@ class Early extends PatternModifier {
          * If the user just passed in the string "early", then assume they mean early today.
          */
         if ( empty( $pregMatchMatches ) ):
+            $naturalDate->addDebugMessage( "User just passed in the string \"early\", then assume they mean early today.", __FUNCTION__, __CLASS__ );
             $naturalDate->setStartYear( date( 'Y' ) );
             $naturalDate->setStartMonth( date( 'm' ) );
             $naturalDate->setStartDay( date( 'd' ) );
@@ -42,7 +43,6 @@ class Early extends PatternModifier {
             $naturalDate->setEndHour( 6 );
             $naturalDate->setEndMinute( 59 );
             $naturalDate->setEndSecond( 59 );
-            $naturalDate->addDebugMessage( "    Early->modify(): the user just passed in the string \"early\", then assume they mean early today." );
             return $naturalDate;
         endif;
 
@@ -52,17 +52,21 @@ class Early extends PatternModifier {
          */
         $datePart = $pregMatchMatches[ 0 ];
 
+        $naturalDate->addDebugMessage( "Passing the captured string [" . $datePart . "] to NaturalDate::parse()", __FUNCTION__, __CLASS__ );
+
         $capturedDate = NaturalDate::parse( $datePart, $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $naturalDate->getPatternModifiers(), $naturalDate );
 
+        $naturalDate->addDebugMessage( "The captured date is of type [" . $capturedDate->getType() . "], and entering switch now.", __FUNCTION__, __CLASS__ );
 
         switch ( $capturedDate->getType() ):
             case NaturalDate::year:
-                $capturedDate->addDebugMessage( "In Early: The captured date was of type [" . $capturedDate->getType() . "], so now calling modifyYear()." );
+                $capturedDate->addDebugMessage( "In Early: The captured date was of type [" . $capturedDate->getType() . "], so now calling modifyYear().", __FUNCTION__, __CLASS__ );
                 $this->modifyYear( $capturedDate );
+
                 break;
 
             case NaturalDate::month:
-                $capturedDate->addDebugMessage( "   Early->modify(): The captured string was a month." );
+                $capturedDate->addDebugMessage( "   Early->modify(): The captured string was a month.", __FUNCTION__, __CLASS__ );
                 $this->modifyMonth( $capturedDate );
                 break;
 
@@ -71,12 +75,13 @@ class Early extends PatternModifier {
                 break;
 
             default:
-                $capturedDate->addDebugMessage( "In Early: The captured date was of type [" . $capturedDate->getType() . "] which Early doesn't have the code to modify it." );
-                $capturedDate->addDebugMessage( "In Early: The captured string was [" . $capturedDate->getInput() . "]." );
-
+                $capturedDate->addDebugMessage( "In Early: The captured date was of type [" . $capturedDate->getType() . "] which Early doesn't have the code to modify it.", __FUNCTION__, __CLASS__ );
+                $capturedDate->addDebugMessage( "In Early: The captured string was [" . $capturedDate->getInput() . "].", __FUNCTION__, __CLASS__ );
+                //print_r($capturedDate->getDebugMessages());
                 return $capturedDate;
         endswitch;
 
+        //print_r($capturedDate->getDebugMessages());
         return $capturedDate;
     }
 
@@ -88,7 +93,7 @@ class Early extends PatternModifier {
         $naturalDate->setEndDay( 30 );
         $naturalDate->setStartTimesAsStartOfDay();
         $naturalDate->setEndTimesAsEndOfDay();
-        $naturalDate->setType( NaturalDate::year );
+        //$naturalDate->setType( NaturalDate::year );
     }
 
     protected function modifyMonth( NaturalDate &$naturalDate ) {
@@ -114,7 +119,6 @@ class Early extends PatternModifier {
         $naturalDate->setEndSecond( 59 );
         $naturalDate->setType( NaturalDate::date );
     }
-
 
 
 }

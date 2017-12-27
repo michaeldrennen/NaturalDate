@@ -24,6 +24,19 @@ class NaturalDateTest extends TestCase {
     }
 
 
+    public function testNewYears() {
+        $string           = 'new years 1979';
+        $timezoneId       = 'America/Denver';
+        $languageCode     = 'en';
+        $patternModifiers = [];
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
+
+
+        $this->assertEquals( Carbon::parse( '1979-01-01 00:00:00', $timezoneId ), $naturalDate->getLocalStart() );
+        $this->assertEquals( Carbon::parse( '1979-01-01 23:59:59', $timezoneId ), $naturalDate->getLocalEnd() );
+    }
+
+
     public function testNaturalDateInstantiation() {
         $string           = 'Last Friday of December 2016 11:30pm';
         $timezoneId       = 'America/Denver';

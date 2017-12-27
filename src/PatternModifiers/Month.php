@@ -37,7 +37,7 @@ class Month extends PatternModifier {
         $naturalDate->setEndMonth( $month );
 
         $naturalDate->setStartDay( 1 );
-        $naturalDate->setEndDay( Carbon::parse( $naturalDate->getEndDate() )
+        $naturalDate->setEndDay( Carbon::parse( $naturalDate->getLocalEnd() )
                                        ->copy()
                                        ->modify( 'last day of this month' )->day );
 
