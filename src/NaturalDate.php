@@ -19,14 +19,15 @@ class NaturalDate {
      * know exactly how the date should be modified. For example if the "type" is year, and the "Early" PatternModifier
      * is used, then the NaturalDate will have it's start date changed to Jan 1, and it's end date set to June 30.
      */
-    const datetime = 'datetime'; // All the way out to the seconds position.
-    const date     = 'date';     // Just the year, month, and day
-    const week     = 'week';
-    const month    = 'month';
-    const year     = 'year';
-    const season   = 'season';
-    const quarter  = 'quarter';
-    const range    = 'range'; // A custom range between two NaturalDate objects of above ^ types.
+    const datetime     = 'datetime'; // All the way out to the seconds position.
+    const date         = 'date';     // Just the year, month, and day
+    const yearlessDate = 'yearlessDate'; // For holidays, but the user didn't give the year.
+    const week         = 'week';
+    const month        = 'month';
+    const year         = 'year';
+    const season       = 'season';
+    const quarter      = 'quarter';
+    const range        = 'range'; // A custom range between two NaturalDate objects of above ^ types.
 
 
     /**
@@ -463,6 +464,7 @@ class NaturalDate {
                 NaturalDate::month,
                 NaturalDate::week,
                 NaturalDate::date,
+                NaturalDate::yearlessDate,
                 NaturalDate::datetime,
                 NaturalDate::range,
             ];

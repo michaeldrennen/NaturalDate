@@ -33,42 +33,46 @@ class Between extends PatternModifier {
         $connectorString = $pregMatchMatches[ 1 ];
         $endDatePart     = $pregMatchMatches[ 2 ];
 
-        $capturedStartDate = NaturalDate::parse( $startDatePart, $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $naturalDate->getPatternModifiers(), $naturalDate, false );
-        $capturedEndDate   = NaturalDate::parse( $endDatePart, $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $naturalDate->getPatternModifiers(), $naturalDate, false );
+        $capturedStartDate = NaturalDate::parse( $startDatePart, $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $naturalDate->getPatternModifiers(), null, false );
+
+        //echo $capturedStartDate;
+
+        $capturedEndDate = NaturalDate::parse( $endDatePart, $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $naturalDate->getPatternModifiers(), null, false );
+
+        //echo $capturedEndDate;
 
         $naturalDate->addDebugMessage( "Captured start date is: " . $capturedStartDate->getLocalStart(), __FUNCTION__, __CLASS__ );
         $naturalDate->addDebugMessage( "Captured end date is: " . $capturedEndDate->getLocalEnd(), __FUNCTION__, __CLASS__ );
 
-        if ( NaturalDate::date == $capturedEndDate->getType() ):
-            $naturalDate->addDebugMessage( "capturedEndDate was of type date, so setting hh:mm:ss to 23:59:59", __FUNCTION__, __CLASS__ );
-            $capturedEndDate->setEndHour( 23 );
-            $capturedEndDate->setEndMinute( 59 );
-            $capturedEndDate->setEndSecond( 59 );
-        endif;
-
-        /**
-         * If the end year is null, look at the startYear in the capturedStartDate object. If it makes sense to use that
-         * year, then do it. If not, take the next year.
-         */
-        if ( is_null( $capturedEndDate->getEndYear() ) &&
-             ! is_null( $capturedEndDate->getEndMonth() ) &&
-             ! is_null( $capturedEndDate->getEndDay() )
-        ):
-            $testCarbon = Carbon::create( $capturedStartDate->getStartYear(), $capturedEndDate->getEndMonth(), $capturedEndDate->getEndDay(), null, null, null, $capturedEndDate->getTimezoneId() );
-            if ( $testCarbon >= $capturedStartDate->getLocalStart() ):
-                $capturedEndDate->setEndYear( $capturedStartDate->getStartYear() );
-            else:
-                $endYear = $capturedStartDate->getStartYear() + 1;
-                $naturalDate->addDebugMessage( "capturedEndDate year was null and setting it to the startDate's year would put the end before the start. So setting the endYear to the next year [" . $endYear . "]", __FUNCTION__, __CLASS__ );
-                $capturedEndDate->setEndYear( $endYear );
-            endif;
-        elseif ( $capturedStartDate <= $capturedEndDate ):
-            $endYear = $capturedStartDate->getStartYear() + 1;
-            $naturalDate->addDebugMessage( "capturedEndDate less than capturedStartDate so setting the endYear to the next year [" . $endYear . "]", __FUNCTION__, __CLASS__ );
-            $capturedEndDate->setEndYear( $endYear );
-        endif;
-
-        print_r( $naturalDate->getDebugMessages() );
+        switch ( $capturedEndDate->getType() ):
+            case NaturalDate::date:
+                $naturalDate->addDebugMessage( "capturedEndDate was of type date, so setting hh:mm:ss to 23:59:59", __FUNCTION__, __CLASS__ );
+                $capturedEndDate->setEndHour( 23 );
+                $capturedEndDate->setEndMinute( 59 );
+                $capturedEndDate->setEndSecond( 59 );
+                break;
+            //case NaturalDate::datetime:
+            // Made temp variables here because its cleaner to include in the debug message.
+            //$hour   = $capturedEndDate->getEndHour();
+            //$minute = $capturedEndDate->getEndMinute();
+            //$second = $capturedEndDate->getEndSecond();
+            //$naturalDate->addDebugMessage( "capturedEndDate was of type datetime, so setting hh:mm:ss to $hour:$minute:$second", __FUNCTION__, __CLASS__ );
+            //break;
+            /**
+             * If the end year is null, look at the startYear in the capturedStartDate object. If it makes sense to use that
+             * year, then do it. If not, take the next year.
+             */
+            case NaturalDate::yearlessDate:
+                $testCarbon = Carbon::create( $capturedStartDate->getStartYear(), $capturedEndDate->getEndMonth(), $capturedEndDate->getEndDay(), $capturedEndDate->getEndHour(), $capturedEndDate->getEndMinute(), $capturedEndDate->getEndSecond(), $capturedEndDate->getTimezoneId() );
+                if ( $testCarbon >= $capturedStartDate->getLocalStart() ):
+                    $capturedEndDate->setEndYear( $capturedStartDate->getStartYear() );
+                else:
+                    $endYear = $capturedStartDate->getStartYear() + 1;
+                    $naturalDate->addDebugMessage( "capturedEndDate year was null and setting it to the startDate's year would put the end before the start. So setting the endYear to the next year [" . $endYear . "]", __FUNCTION__, __CLASS__ );
+                    $capturedEndDate->setEndYear( $endYear );
+                endif;
+                break;
+        endswitch;
 
         return new NaturalDate( $naturalDate->getInput(),
                                 $naturalDate->getTimezoneId(),

@@ -8,6 +8,10 @@ use PHPUnit\Framework\TestCase;
 class NaturalDateBetweenTest extends TestCase {
 
 
+    /**
+     * @throws \Exception
+     * @group btw
+     */
     public function testBetweenTwoYears() {
         $string           = 'between 2000 and 2010';
         $timezoneId       = 'America/Denver';
@@ -111,7 +115,6 @@ class NaturalDateBetweenTest extends TestCase {
 
     /**
      * @throws \Exception
-     * @group thisyear
      */
     public function testBetweenThanksgivingAndNewYearsEveForThisYear() {
         $string           = 'between thanksgiving and new years eve';
@@ -129,7 +132,6 @@ class NaturalDateBetweenTest extends TestCase {
 
     /**
      * @throws \Exception
-     * @group thisyear
      */
     public function testBetweenWithReversedSpecialDatesHavingStartDateThisYear() {
         $string           = 'between thanksgiving and halloween';
@@ -137,8 +139,6 @@ class NaturalDateBetweenTest extends TestCase {
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, null, false );
-
-        echo $naturalDate;
 
         $dayOfThanksgivingThisYear = Carbon::parse( 'fourth thursday of november ' . date( 'Y' ) )->day;
         $startYear                 = date( 'Y' );

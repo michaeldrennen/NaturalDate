@@ -31,7 +31,7 @@ class Thanksgiving extends PatternModifier {
          */
         if ( empty( $pregMatchMatches ) ):
             $carbonThanksgiving = Carbon::parse( 'fourth thursday of november ' . date( 'Y' ) );
-            return new NaturalDate( $naturalDate->getInput(), $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $carbonThanksgiving, $carbonThanksgiving, NaturalDate::date, $naturalDate->getPatternModifiers() );
+            return new NaturalDate( $naturalDate->getInput(), $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $carbonThanksgiving, $carbonThanksgiving, NaturalDate::yearlessDate, $naturalDate->getPatternModifiers() );
         endif;
 
 
