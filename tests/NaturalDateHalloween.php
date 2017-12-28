@@ -7,7 +7,7 @@ use MichaelDrennen\NaturalDate\Exceptions\UnparsableString;
 use MichaelDrennen\NaturalDate\NaturalDate;
 use PHPUnit\Framework\TestCase;
 
-class NaturalDateHalloween extends TestCase {
+class NaturalDateHalloweenTest extends TestCase {
 
 
     public function testHalloweenOfThisYear() {

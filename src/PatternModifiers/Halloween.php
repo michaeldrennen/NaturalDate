@@ -24,15 +24,29 @@ class Halloween extends PatternModifier {
 
         $naturalDate->setType( NaturalDate::date );
 
-        $pregMatchMatches = $naturalDate->getPregMatchMatches();
+        /**
+         * If there is no date string after the word "Halloween" then I assume they mean Halloween of this year.
+         */
+        if ( empty( $pregMatchMatches ) ):
+            $naturalDate->setStartYear( date( 'Y' ) );
+            $naturalDate->setEndYear( date( 'Y' ) );
+            return $naturalDate;
+        endif;
+
 
         /**
          * At most, there can only be one matching section.
          */
-        if ( ! empty( $pregMatchMatches ) ):
-            $string = $pregMatchMatches[ 0 ];
-            $naturalDate->addDebugMessage( "Parsing this string [" . $string . "]", __FUNCTION__, __CLASS__ );
-            $naturalDate = NaturalDate::parse( $string, $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $naturalDate->getPatternModifiers(), $naturalDate );
+        $string = $pregMatchMatches[ 0 ];
+        $naturalDate->addDebugMessage( "Parsing this string [" . $string . "]", __FUNCTION__, __CLASS__ );
+        $capturedDate = NaturalDate::parse( $string, $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $naturalDate->getPatternModifiers() );
+
+        if ( isset( $capturedDate ) && NaturalDate::year == $capturedDate->getType() ):
+            $year = $capturedDate->getStartYear();
+            $naturalDate->setStartYear( $year );
+            $naturalDate->setEndYear( $year );
+        else:
+            throw new NaturalDateException( "The Halloween PatternModifier needs the captured date to be of type: year. What else would make sense there?" );
         endif;
 
         return $naturalDate;
