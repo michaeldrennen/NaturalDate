@@ -2,6 +2,7 @@
 
 namespace MichaelDrennen\NaturalDate\PatternModifiers;
 
+use MichaelDrennen\NaturalDate\Exceptions\NaturalDateException;
 use MichaelDrennen\NaturalDate\NaturalDate;
 
 class NewYearsEve extends PatternModifier {

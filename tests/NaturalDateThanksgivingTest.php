@@ -2,7 +2,7 @@
 namespace MichaelDrennen\NaturalDate\Tests;
 
 use Carbon\Carbon;
-use MichaelDrennen\NaturalDate\Exceptions\StrToTimeParseFailure;
+use MichaelDrennen\NaturalDate\Exceptions\NaturalDateException;
 use MichaelDrennen\NaturalDate\NaturalDate;
 use PHPUnit\Framework\TestCase;
 
@@ -21,5 +21,14 @@ class NaturalDateThanksgivingTest extends TestCase {
         $this->assertEquals( Carbon::parse( '2017-11-23 23:59:59', $timezoneId ), $naturalDate->getLocalEnd() );
     }
 
+
+    public function testThanksgivingFollowedByMonthShouldThrowException() {
+        $this->expectException( NaturalDateException::class );
+        $string           = 'thanksgiving of january';
+        $timezoneId       = 'America/Denver';
+        $languageCode     = 'en';
+        $patternModifiers = [];
+        NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
+    }
 
 }

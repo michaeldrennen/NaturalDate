@@ -25,28 +25,28 @@ class PatternMapForLanguage extends PatternMap {
             '/^(jan|feb|mar|apr|jun|jul|aug|sep|oct|nov|dec)\s*(\d{4}|\'\d{2}|\d{2})$/i',
         ],
         PatternMap::newYears     => [
-            '/^new years[\s]*(\d{2,4})$/i',
-            '/^new year\'s[\s]*(\d{2,4})$/i',
-            '/^new years\'[\s]*(\d{2,4})$/i',
-            '/^ny[\s]*(\d{2,4})$/i', // "ny2017" or "ny 2017"
+            '/^new years[\s]*(?:of)?[\s]*(\d{2,4})$/i',
+            '/^new year\'s[\s]*(?:of)?[\s]*(\d{2,4})$/i',
+            '/^new years\'[\s]*(?:of)?[\s]*(\d{2,4})$/i',
+            '/^ny[\s]*(?:of)?[\s]*(\d{2,4})$/i', // "ny2017" or "ny 2017"
         ],
         PatternMap::halloween    => [
-            "/^halloween[\s]*(.*)/i",
+            "/^halloween[\s]*(?:of)?[\s]*(.*)/i",
         ],
         PatternMap::thanksgiving => [
-            "/^thanksgiving[\s]*(.*)/i",
-            "/^turkey day[\s]*(.*)/i",
-            "/^thxgiving[\s]*(.*)/i",
+            "/^thanksgiving[\s]*(?:of)?[\s]*(.*)/i",
+            "/^turkey day[\s]*(?:of)?[\s]*(.*)/i",
+            "/^thxgiving[\s]*(?:of)?[\s]*(.*)/i",
         ],
         PatternMap::christmas    => [
-            "/^christmas[\s]*(.*)/i",
-            "/^xmas[\s]*(.*)/i",
+            "/^christmas[\s]*(?:of)?[\s]*(.*)/i",
+            "/^xmas[\s]*(?:of)?[\s]*(.*)/i",
         ],
         PatternMap::newYearsEve  => [
-            "/^new years eve[\s]*(.*)/i",
-            '/^new year\'s eve[\s]*(.*)/i',
-            '/^new years\' eve[\s]*(.*)/i',
-            "/^nye[\s]*(.*)/i",
+            "/^new years eve[\s]*(?:of)?[\s]*(.*)/i",
+            '/^new year\'s eve[\s]*(?:of)?[\s]*(.*)/i',
+            '/^new years\' eve[\s]*(?:of)?[\s]*(.*)/i',
+            "/^nye[\s]*(?:of)?[\s]*(.*)/i",
         ],
 
 

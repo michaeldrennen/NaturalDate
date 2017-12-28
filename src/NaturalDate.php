@@ -5,11 +5,11 @@ namespace MichaelDrennen\NaturalDate;
 use Carbon\Carbon;
 use DateTimeZone;
 use MichaelDrennen\NaturalDate\Exceptions\InvalidLanguageCode;
+use MichaelDrennen\NaturalDate\Exceptions\InvalidNaturalDateType;
 use MichaelDrennen\NaturalDate\Exceptions\InvalidTimezone;
 use MichaelDrennen\NaturalDate\Exceptions\NaturalDateException;
 use MichaelDrennen\NaturalDate\Exceptions\NoMatchingPatternFound;
 use MichaelDrennen\NaturalDate\Exceptions\UnparsableString;
-use MichaelDrennen\NaturalDate\PatternModifiers\PatternModifier;
 
 
 class NaturalDate {
@@ -202,9 +202,6 @@ class NaturalDate {
              * By now, none of the NaturalDate patterns have been matched. Let's give strtotime() a chance.
              * I do this after checking NaturalDate patterns, because some NaturalDate patterns *can* be parsed by strtotime, but they don't get parsed correctly.
              */
-
-            //$iAnchorTime = strtotime( $naturalDate->getInput() );
-
             $parsedParts = date_parse( $naturalDate->getInput() );
 
             if ( $naturalDate->dateParseYieldsDate( $parsedParts ) ):
@@ -366,14 +363,6 @@ class NaturalDate {
         $this->addDebugMessage( "matchedPatternModifier is [" . get_class( $this->matchedPatternModifier ) . "]", __FUNCTION__, __CLASS__ );
     }
 
-    /**
-     * Used solely for debugging right now.
-     *
-     * @return \MichaelDrennen\NaturalDate\PatternModifiers\PatternModifier
-     */
-    public function getMatchedPatternModifier(): PatternModifier {
-        return $this->matchedPatternModifier;
-    }
 
     protected function setPatternModifiers( array $patternModifiers ) {
         $this->patternModifiers = $patternModifiers;
@@ -456,41 +445,43 @@ class NaturalDate {
     public function setType( string $type = null ) {
         $this->addDebugMessage( "Just entered.", __FUNCTION__, __CLASS__ );
 
-        if ( isset( $type ) ):
-            $orderOfSpecificity = [
-                NaturalDate::year,
-                NaturalDate::season,
-                NaturalDate::quarter,
-                NaturalDate::month,
-                NaturalDate::week,
-                NaturalDate::date,
-                NaturalDate::yearlessDate,
-                NaturalDate::datetime,
-                NaturalDate::range,
-            ];
-
-            $keyOfNewType = array_search( $type, $orderOfSpecificity );
-
-            if ( false === $keyOfNewType ):
-                throw new NaturalDateException( "You are trying to set the 'type' of NaturalDate to [" . $type . "] which has not been coded for." );
-            endif;
-
-            $keyOfExistingType = array_search( $this->type, $orderOfSpecificity );
-
-            if ( false === $keyOfExistingType ):
-                $this->type = $type;
-                $this->addDebugMessage( "Type of NaturalDate was not set before, so setting it to [" . $this->getType() . "]", __FUNCTION__, __CLASS__ );
-            elseif ( $keyOfNewType > $keyOfExistingType ):
-                $this->type = $type;
-                $this->addDebugMessage( "Type of NaturalDate set to [" . $this->getType() . "]", __FUNCTION__, __CLASS__ );
-            elseif ( $keyOfNewType == $keyOfExistingType ):
-                $this->addDebugMessage( "Type of NaturalDate is equal to existing type of [" . $this->type . "]", __FUNCTION__, __CLASS__ );
-            elseif ( $keyOfNewType < $keyOfExistingType ):
-                $this->addDebugMessage( "Type of NaturalDate is is more specific than  [" . $this->type . "] so type will remain unchanged.", __FUNCTION__, __CLASS__ );
-            endif;
-        else:
-            throw new NaturalDateException( "You are trying to set the type to null, and that isn't allowed. It starts null. It doesn't go back to null." );
+        if ( is_null( $type ) ):
+            throw new InvalidNaturalDateType( "You are trying to set the type to null, and that isn't allowed. It starts null. It doesn't go back to null." );
         endif;
+
+
+        $orderOfSpecificity = [
+            NaturalDate::year,
+            NaturalDate::season,
+            NaturalDate::quarter,
+            NaturalDate::month,
+            NaturalDate::week,
+            NaturalDate::date,
+            NaturalDate::yearlessDate,
+            NaturalDate::datetime,
+            NaturalDate::range,
+        ];
+
+        $keyOfNewType = array_search( $type, $orderOfSpecificity );
+
+        if ( false === $keyOfNewType ):
+            throw new InvalidNaturalDateType( "You are trying to set the 'type' of NaturalDate to [" . $type . "] which has not been coded for." );
+        endif;
+
+        $keyOfExistingType = array_search( $this->type, $orderOfSpecificity );
+
+        if ( false === $keyOfExistingType ):
+            $this->type = $type;
+            $this->addDebugMessage( "Type of NaturalDate was not set before, so setting it to [" . $this->getType() . "]", __FUNCTION__, __CLASS__ );
+        elseif ( $keyOfNewType > $keyOfExistingType ):
+            $this->type = $type;
+            $this->addDebugMessage( "Type of NaturalDate set to [" . $this->getType() . "]", __FUNCTION__, __CLASS__ );
+        elseif ( $keyOfNewType == $keyOfExistingType ):
+            $this->addDebugMessage( "Type of NaturalDate is equal to existing type of [" . $this->type . "]", __FUNCTION__, __CLASS__ );
+        elseif ( $keyOfNewType < $keyOfExistingType ):
+            $this->addDebugMessage( "Type of NaturalDate is is more specific than  [" . $this->type . "] so type will remain unchanged.", __FUNCTION__, __CLASS__ );
+        endif;
+
     }
 
     /**

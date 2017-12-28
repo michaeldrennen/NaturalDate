@@ -147,4 +147,25 @@ class NaturalDateBetweenTest extends TestCase {
         $this->assertEquals( Carbon::parse( $nextYear . '-10-31 23:59:59', $timezoneId ), $naturalDate->getLocalEnd() );
     }
 
+
+    /**
+     * @throws \Exception
+     */
+    public function testBetweenYesterdayAndToday() {
+        $string           = 'between yesterday and today';
+        $timezoneId       = 'America/Denver';
+        $languageCode     = 'en';
+        $patternModifiers = [];
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, null );
+
+        $yesterdayString = date( 'Y-m-d', time() - 86400 );
+        $todayString     = date( 'Y-m-d', time() );
+
+        $yesterday = Carbon::parse( $yesterdayString, $timezoneId );
+        $today     = Carbon::parse( $todayString, $timezoneId );
+
+        $this->assertEquals( $yesterday, $naturalDate->getLocalStart() );
+        $this->assertEquals( $today, $naturalDate->getLocalEnd() );
+    }
+
 }
