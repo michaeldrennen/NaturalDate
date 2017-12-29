@@ -10,6 +10,10 @@ use PHPUnit\Framework\TestCase;
 class NaturalDateNewYearsEveTest extends TestCase {
 
 
+    /**
+     * @throws \Exception
+     * @group nye
+     */
     public function testNyeForThisYear() {
         $string           = 'new years eve';
         $timezoneId       = 'America/Denver';

@@ -115,6 +115,7 @@ class NaturalDateBetweenTest extends TestCase {
 
     /**
      * @throws \Exception
+     * @group 2
      */
     public function testBetweenThanksgivingAndNewYearsEveForThisYear() {
         $string           = 'between thanksgiving and new years eve';
@@ -125,8 +126,11 @@ class NaturalDateBetweenTest extends TestCase {
 
         $dayOfThanksgivingThisYear = Carbon::parse( 'fourth thursday of november ' . date( 'Y' ) )->day;
 
-        $this->assertEquals( Carbon::parse( date( 'Y' ) . '-11-' . $dayOfThanksgivingThisYear . ' 00:00:00', $timezoneId ), $naturalDate->getLocalStart() );
-        $this->assertEquals( Carbon::parse( date( 'Y' ) . '-12-31 23:59:59', $timezoneId ), $naturalDate->getLocalEnd() );
+        $expectedStart = date( 'Y' ) . '-11-' . $dayOfThanksgivingThisYear . ' 00:00:00';
+        $expectedEnd   = date( 'Y' ) . '-12-31 23:59:59';
+
+        $this->assertEquals( Carbon::parse( $expectedStart, $timezoneId ), $naturalDate->getLocalStart() );
+        $this->assertEquals( Carbon::parse( $expectedEnd, $timezoneId ), $naturalDate->getLocalEnd() );
     }
 
 
@@ -158,14 +162,34 @@ class NaturalDateBetweenTest extends TestCase {
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, null );
 
-        $yesterdayString = date( 'Y-m-d', time() - 86400 );
-        $todayString     = date( 'Y-m-d', time() );
+        $yesterdayString = date( 'Y-m-d 00:00:00', time() - 86400 );
+        $todayString     = date( 'Y-m-d 23:59:59', time() );
 
         $yesterday = Carbon::parse( $yesterdayString, $timezoneId );
         $today     = Carbon::parse( $todayString, $timezoneId );
 
         $this->assertEquals( $yesterday, $naturalDate->getLocalStart() );
         $this->assertEquals( $today, $naturalDate->getLocalEnd() );
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testBetweenTodayAndTomorrow() {
+        $string           = 'between today and tomorrow';
+        $timezoneId       = 'America/Denver';
+        $languageCode     = 'en';
+        $patternModifiers = [];
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, null );
+
+        $todayString    = date( 'Y-m-d 00:00:00', time() );
+        $tomorrowString = date( 'Y-m-d 23:59:59', time() + 86400 );
+
+        $today    = Carbon::parse( $todayString, $timezoneId );
+        $tomorrow = Carbon::parse( $tomorrowString, $timezoneId );
+
+        $this->assertEquals( $today, $naturalDate->getLocalStart() );
+        $this->assertEquals( $tomorrow, $naturalDate->getLocalEnd() );
     }
 
 }

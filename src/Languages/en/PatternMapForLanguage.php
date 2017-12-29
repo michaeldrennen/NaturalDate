@@ -17,32 +17,40 @@ class PatternMapForLanguage extends PatternMap {
         PatternMap::before    => [ '/^before[\s]*(.*)$/i' ],
         PatternMap::after     => [ '/^after[\s]*(.*)$/i' ],
 
-        PatternMap::year         => [ '/^(\d{4}|\'\d{2}|\d{2})$/' ],
-        PatternMap::month        => [
+        PatternMap::yesterday => [ '/^yesterday$/i' ],
+        PatternMap::today     => [ '/^today/i' ],
+        PatternMap::tomorrow  => [ '/^tomorrow$/i' ],
+
+        PatternMap::year          => [ '/^(\d{4}|\'\d{2}|\d{2})$/' ],
+        PatternMap::month         => [
             '/^(january|february|march|april|june|july|august|september|october|november|december)$/i',
             '/^(january|february|march|april|june|july|august|september|october|november|december)\s*(\d{4}|\'\d{2}|\d{2})$/i',
             '/^(jan|feb|mar|apr|jun|jul|aug|sep|oct|nov|dec)$/i',
             '/^(jan|feb|mar|apr|jun|jul|aug|sep|oct|nov|dec)\s*(\d{4}|\'\d{2}|\d{2})$/i',
         ],
-        PatternMap::newYears     => [
+        PatternMap::newYears      => [
             '/^new years[\s]*(?:of)?[\s]*(\d{2,4})$/i',
             '/^new year\'s[\s]*(?:of)?[\s]*(\d{2,4})$/i',
             '/^new years\'[\s]*(?:of)?[\s]*(\d{2,4})$/i',
             '/^ny[\s]*(?:of)?[\s]*(\d{2,4})$/i', // "ny2017" or "ny 2017"
         ],
-        PatternMap::halloween    => [
+        PatternMap::valentinesDay => [
+            '/^valentines day[\s]*(?:of)?[\s]*(.*)/i',
+            '/^valentine\'s day[\s]*(?:of)?[\s]*(.*)/i',
+        ],
+        PatternMap::halloween     => [
             "/^halloween[\s]*(?:of)?[\s]*(.*)/i",
         ],
-        PatternMap::thanksgiving => [
+        PatternMap::thanksgiving  => [
             "/^thanksgiving[\s]*(?:of)?[\s]*(.*)/i",
             "/^turkey day[\s]*(?:of)?[\s]*(.*)/i",
             "/^thxgiving[\s]*(?:of)?[\s]*(.*)/i",
         ],
-        PatternMap::christmas    => [
+        PatternMap::christmas     => [
             "/^christmas[\s]*(?:of)?[\s]*(.*)/i",
             "/^xmas[\s]*(?:of)?[\s]*(.*)/i",
         ],
-        PatternMap::newYearsEve  => [
+        PatternMap::newYearsEve   => [
             "/^new years eve[\s]*(?:of)?[\s]*(.*)/i",
             '/^new year\'s eve[\s]*(?:of)?[\s]*(.*)/i',
             '/^new years\' eve[\s]*(?:of)?[\s]*(.*)/i',

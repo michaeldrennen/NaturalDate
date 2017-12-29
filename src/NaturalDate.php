@@ -213,7 +213,7 @@ class NaturalDate {
                 $carbon      = Carbon::create( $parsedParts[ 'year' ], $parsedParts[ 'month' ], $parsedParts[ 'day' ], (int)$parsedParts[ 'hour' ], (int)$parsedParts[ 'minute' ], (int)$parsedParts[ 'second' ], $timezoneId );
                 $naturalDate = new static( $string, $timezoneId, $languageCode, $carbon, $carbon, NaturalDate::datetime, $patternModifiers );
             else:
-                throw new UnparsableString( "Unable to parse the date: [" . $string . "]" );
+                throw new UnparsableString( "Unable to parse the date: [" . $string . "]. You are probably missing a regex pattern from the PatternMapForLanguage.php file in the Languages/" . $languageCode . "/ directory." );
             endif;
 
             return self::cleanOutput( $naturalDate, $cleanOutput );

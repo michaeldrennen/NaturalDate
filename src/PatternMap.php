@@ -12,7 +12,11 @@ use MichaelDrennen\NaturalDate\PatternModifiers\NewYears;
 use MichaelDrennen\NaturalDate\PatternModifiers\NewYearsEve;
 use MichaelDrennen\NaturalDate\PatternModifiers\PatternModifier;
 use MichaelDrennen\NaturalDate\PatternModifiers\Thanksgiving;
+use MichaelDrennen\NaturalDate\PatternModifiers\Today;
+use MichaelDrennen\NaturalDate\PatternModifiers\Tomorrow;
+use MichaelDrennen\NaturalDate\PatternModifiers\ValentinesDay;
 use MichaelDrennen\NaturalDate\PatternModifiers\Year;
+use MichaelDrennen\NaturalDate\PatternModifiers\Yesterday;
 
 class PatternMap {
 
@@ -25,14 +29,20 @@ class PatternMap {
     const before    = 'before';
     const after     = 'after';
 
+    const yesterday = 'yesterday';
+    const today     = 'today';
+    const tomorrow  = 'tomorrow';
+
+
     const year  = 'year';
     const month = 'month';
 
-    const newYears     = 'newYears';
-    const halloween    = 'halloween';
-    const thanksgiving = 'thanksgiving';
-    const christmas    = 'christmas';
-    const newYearsEve  = 'newYearsEve';
+    const newYears      = 'newYears';
+    const valentinesDay = 'valentinesDay';
+    const halloween     = 'halloween';
+    const thanksgiving  = 'thanksgiving';
+    const christmas     = 'christmas';
+    const newYearsEve   = 'newYearsEve';
 
 
     // I think I want to put classes or objects as the values in this array.
@@ -47,14 +57,20 @@ class PatternMap {
         PatternMap::before    => null,
         PatternMap::after     => null,
 
+        PatternMap::yesterday => null,
+        PatternMap::today     => null,
+        PatternMap::tomorrow  => null,
+
+
         PatternMap::year  => null,
         PatternMap::month => null,
 
-        PatternMap::newYears     => null,
-        PatternMap::halloween    => null,
-        PatternMap::thanksgiving => null,
-        PatternMap::christmas    => null,
-        PatternMap::newYearsEve  => null,
+        PatternMap::newYears      => null,
+        PatternMap::valentinesDay => null,
+        PatternMap::halloween     => null,
+        PatternMap::thanksgiving  => null,
+        PatternMap::christmas     => null,
+        PatternMap::newYearsEve   => null,
 
 
     ];
@@ -69,14 +85,19 @@ class PatternMap {
         PatternMap::before    => null,
         PatternMap::after     => null,
 
+        PatternMap::yesterday => null,
+        PatternMap::today     => null,
+        PatternMap::tomorrow  => null,
+
         PatternMap::year  => null,
         PatternMap::month => null,
 
-        PatternMap::newYears     => null,
-        PatternMap::halloween    => null,
-        PatternMap::thanksgiving => null,
-        PatternMap::christmas    => null,
-        PatternMap::newYearsEve  => null,
+        PatternMap::newYears      => null,
+        PatternMap::valentinesDay => null,
+        PatternMap::halloween     => null,
+        PatternMap::thanksgiving  => null,
+        PatternMap::christmas     => null,
+        PatternMap::newYearsEve   => null,
     ];
 
     /**
@@ -109,7 +130,13 @@ class PatternMap {
             PatternMap::year    => new Year( $this->patterns[ PatternMap::year ] ),
             PatternMap::month   => new Month( $this->patterns[ PatternMap::month ] ),
 
-            PatternMap::newYears     => new NewYears( $this->patterns[ PatternMap::newYears ] ),
+            PatternMap::yesterday => new Yesterday( $this->patterns[ PatternMap::yesterday ] ),
+            PatternMap::today     => new Today( $this->patterns[ PatternMap::today ] ),
+            PatternMap::tomorrow  => new Tomorrow( $this->patterns[ PatternMap::tomorrow ] ),
+
+            PatternMap::newYears      => new NewYears( $this->patterns[ PatternMap::newYears ] ),
+            PatternMap::valentinesDay => new ValentinesDay( $this->patterns[ PatternMap::valentinesDay ] ),
+
             PatternMap::halloween    => new Halloween( $this->patterns[ PatternMap::halloween ] ),
             PatternMap::thanksgiving => new Thanksgiving( $this->patterns[ PatternMap::thanksgiving ] ),
             PatternMap::christmas    => new Christmas( $this->patterns[ PatternMap::christmas ] ),
