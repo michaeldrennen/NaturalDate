@@ -1,4 +1,5 @@
 <?php
+
 namespace MichaelDrennen\NaturalDate\Tests;
 
 use Carbon\Carbon;
@@ -55,7 +56,7 @@ class NaturalDateBetweenTest extends TestCase {
         $timezoneId       = 'America/Denver';
         $languageCode     = 'en';
         $patternModifiers = [];
-        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, null );
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL );
 
         $startDate = $naturalDate->getLocalStart();
         $endDate   = $naturalDate->getLocalEnd();
@@ -70,7 +71,7 @@ class NaturalDateBetweenTest extends TestCase {
         $timezoneId       = 'America/Denver';
         $languageCode     = 'en';
         $patternModifiers = [];
-        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, null );
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL );
 
         $this->assertEquals( Carbon::parse( '1979-12-25 00:00:00', $timezoneId ), $naturalDate->getLocalStart() );
         $this->assertEquals( Carbon::parse( '2017-12-25 23:59:59', $timezoneId ), $naturalDate->getLocalEnd() );
@@ -82,7 +83,7 @@ class NaturalDateBetweenTest extends TestCase {
         $timezoneId       = 'America/Denver';
         $languageCode     = 'en';
         $patternModifiers = [];
-        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, null );
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL );
 
         $this->assertEquals( Carbon::parse( '1978-12-25 00:00:00', $timezoneId ), $naturalDate->getLocalStart() );
         $this->assertEquals( Carbon::parse( '1979-01-01 23:59:59', $timezoneId ), $naturalDate->getLocalEnd() );
@@ -94,7 +95,7 @@ class NaturalDateBetweenTest extends TestCase {
         $timezoneId       = 'America/Denver';
         $languageCode     = 'en';
         $patternModifiers = [];
-        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, null );
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL );
 
         $this->assertEquals( Carbon::parse( '2017-11-23 00:00:00', $timezoneId ), $naturalDate->getLocalStart() );
         $this->assertEquals( Carbon::parse( '2017-12-25 23:59:59', $timezoneId ), $naturalDate->getLocalEnd() );
@@ -106,7 +107,7 @@ class NaturalDateBetweenTest extends TestCase {
         $timezoneId       = 'America/Denver';
         $languageCode     = 'en';
         $patternModifiers = [];
-        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, null );
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL );
 
         $this->assertEquals( Carbon::parse( '2017-11-23 00:00:00', $timezoneId ), $naturalDate->getLocalStart() );
         $this->assertEquals( Carbon::parse( '2017-12-31 23:59:59', $timezoneId ), $naturalDate->getLocalEnd() );
@@ -122,7 +123,7 @@ class NaturalDateBetweenTest extends TestCase {
         $timezoneId       = 'America/Denver';
         $languageCode     = 'en';
         $patternModifiers = [];
-        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, null );
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL );
 
         $dayOfThanksgivingThisYear = Carbon::parse( 'fourth thursday of november ' . date( 'Y' ) )->day;
 
@@ -142,12 +143,13 @@ class NaturalDateBetweenTest extends TestCase {
         $timezoneId       = 'America/Denver';
         $languageCode     = 'en';
         $patternModifiers = [];
-        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, null, false );
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL, FALSE );
 
         $dayOfThanksgivingThisYear = Carbon::parse( 'fourth thursday of november ' . date( 'Y' ) )->day;
         $startYear                 = date( 'Y' );
         $nextYear                  = $startYear + 1;
-        $this->assertEquals( Carbon::parse( $startYear . '-11-' . $dayOfThanksgivingThisYear . ' 00:00:00', $timezoneId ), $naturalDate->getLocalStart() );
+        $this->assertEquals( Carbon::parse( $startYear . '-11-' . $dayOfThanksgivingThisYear . ' 00:00:00',
+                                            $timezoneId ), $naturalDate->getLocalStart() );
         $this->assertEquals( Carbon::parse( $nextYear . '-10-31 23:59:59', $timezoneId ), $naturalDate->getLocalEnd() );
     }
 
@@ -160,7 +162,7 @@ class NaturalDateBetweenTest extends TestCase {
         $timezoneId       = 'America/Denver';
         $languageCode     = 'en';
         $patternModifiers = [];
-        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, null );
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL );
 
         $yesterdayString = date( 'Y-m-d 00:00:00', time() - 86400 );
         $todayString     = date( 'Y-m-d 23:59:59', time() );
@@ -180,7 +182,7 @@ class NaturalDateBetweenTest extends TestCase {
         $timezoneId       = 'America/Denver';
         $languageCode     = 'en';
         $patternModifiers = [];
-        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, null );
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL );
 
         $todayString    = date( 'Y-m-d 00:00:00', time() );
         $tomorrowString = date( 'Y-m-d 23:59:59', time() + 86400 );

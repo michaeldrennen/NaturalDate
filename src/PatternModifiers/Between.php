@@ -30,23 +30,46 @@ class Between extends PatternModifier {
          * There should only ever be one captured element based on the regex pattern.
          */
         $startDatePart   = $pregMatchMatches[ 0 ];
-        $connectorString = $pregMatchMatches[ 1 ];
+        //$connectorString = $pregMatchMatches[ 1 ];
         $endDatePart     = $pregMatchMatches[ 2 ];
 
-        $capturedStartDate = NaturalDate::parse( $startDatePart, $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $naturalDate->getPatternModifiers(), null, false );
+        $capturedStartDate = NaturalDate::parse( $startDatePart,
+                                                 $naturalDate->getTimezoneId(),
+                                                 $naturalDate->getLanguageCode(),
+                                                 $naturalDate->getPatternModifiers(),
+                                                 NULL, FALSE );
+        $capturedEndDate   = NaturalDate::parse( $endDatePart,
+                                                 $naturalDate->getTimezoneId(),
+                                                 $naturalDate->getLanguageCode(),
+                                                 $naturalDate->getPatternModifiers(),
+                                                 NULL, FALSE );
 
-        //echo $capturedStartDate;
 
-        $capturedEndDate = NaturalDate::parse( $endDatePart, $naturalDate->getTimezoneId(), $naturalDate->getLanguageCode(), $naturalDate->getPatternModifiers(), null, false );
+        $naturalDate->addDebugMessage( "Captured start date is: " . $capturedStartDate->getLocalStart(), __FUNCTION__,
+                                       __CLASS__ );
+        $naturalDate->addDebugMessage( "Captured end date is: " . $capturedEndDate->getLocalEnd(), __FUNCTION__,
+                                       __CLASS__ );
 
-        //echo $capturedEndDate;
 
-        $naturalDate->addDebugMessage( "Captured start date is: " . $capturedStartDate->getLocalStart(), __FUNCTION__, __CLASS__ );
-        $naturalDate->addDebugMessage( "Captured end date is: " . $capturedEndDate->getLocalEnd(), __FUNCTION__, __CLASS__ );
+        /**
+         * Why the need for this code?
+         * EXAMPLE STRING: Between Thanksgiving and Christmas 2017
+         */
+        if(NaturalDate::yearlessDate == $capturedStartDate->getType()):
+            $startDatePart .= $capturedEndDate->getEndYear();
+            $capturedStartDate = NaturalDate::parse( $startDatePart,
+                                                     $naturalDate->getTimezoneId(),
+                                                     $naturalDate->getLanguageCode(),
+                                                     $naturalDate->getPatternModifiers(),
+                                                     NULL, FALSE );
+        endif;
+
+
 
         switch ( $capturedEndDate->getType() ):
             case NaturalDate::date:
-                $naturalDate->addDebugMessage( "capturedEndDate was of type date, so setting hh:mm:ss to 23:59:59", __FUNCTION__, __CLASS__ );
+                $naturalDate->addDebugMessage( "capturedEndDate was of type date, so setting hh:mm:ss to 23:59:59",
+                                               __FUNCTION__, __CLASS__ );
                 $capturedEndDate->setEndHour( 23 );
                 $capturedEndDate->setEndMinute( 59 );
                 $capturedEndDate->setEndSecond( 59 );
@@ -63,16 +86,23 @@ class Between extends PatternModifier {
              * year, then do it. If not, take the next year.
              */
             case NaturalDate::yearlessDate:
-                $testCarbon = Carbon::create( $capturedStartDate->getStartYear(), $capturedEndDate->getEndMonth(), $capturedEndDate->getEndDay(), $capturedEndDate->getEndHour(), $capturedEndDate->getEndMinute(), $capturedEndDate->getEndSecond(), $capturedEndDate->getTimezoneId() );
+                $testCarbon = Carbon::create( $capturedStartDate->getStartYear(), $capturedEndDate->getEndMonth(),
+                                              $capturedEndDate->getEndDay(), $capturedEndDate->getEndHour(),
+                                              $capturedEndDate->getEndMinute(), $capturedEndDate->getEndSecond(),
+                                              $capturedEndDate->getTimezoneId() );
                 if ( $testCarbon >= $capturedStartDate->getLocalStart() ):
                     $capturedEndDate->setEndYear( $capturedStartDate->getStartYear() );
                 else:
                     $endYear = $capturedStartDate->getStartYear() + 1;
-                    $naturalDate->addDebugMessage( "capturedEndDate year was null and setting it to the startDate's year would put the end before the start. So setting the endYear to the next year [" . $endYear . "]", __FUNCTION__, __CLASS__ );
+                    $naturalDate->addDebugMessage( "capturedEndDate year was null and setting it to the startDate's year would put the end before the start. So setting the endYear to the next year [" . $endYear . "]",
+                                                   __FUNCTION__, __CLASS__ );
                     $capturedEndDate->setEndYear( $endYear );
                 endif;
                 break;
         endswitch;
+
+
+
 
         return new NaturalDate( $naturalDate->getInput(),
                                 $naturalDate->getTimezoneId(),
