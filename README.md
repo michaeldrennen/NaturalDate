@@ -106,6 +106,56 @@ For convenience, I've added a toJson() method that returns the NaturalDate objec
 I also created an implementation of the magic __toString() method, so if you echo the NaturalDate object, you will get a prettified output describing the NaturalDate object.
 
 ## Missing holidays? Just ask for them.
-If you see that NaturalDate is missing some holidays (it is), create an issue on GitHub and I will add them.
+If you see that NaturalDate is missing some holidays (it is), create an issue on GitHub and I will add them. Holidays from all countries should be part of the base library.
 
 ## Building onto the PatternModifiers
+This is the really cool thing. You can create your own PatternModifiers. What does that mean exactly?
+
+Think about this scenario... 
+You want to let your users enter a date like:
+"my freshman year in high school"
+
+Well obviously NaturalDate doesn't know when that is. So you could create your own PatternModifier to pass into the parse() method.
+
+Your pattern modifier would need a regular expression that would trigger it, and dates to fill in when triggered.
+
+Use the class named **JohnMcClanesBirthday** in the PatternModifiers directory as a model.
+
+It should be pretty easy for you to copy that and modify it to suit your needs.
+
+```php
+
+use MichaelDrennen\NaturalDate\PatternModifiers\PatternModifier;
+use MichaelDrennen\NaturalDate\NaturalDate;
+
+
+class JohnMcClanesBirthday extends PatternModifier {
+
+    protected $patterns = [
+        "/john mcclane\'s birthday/i",
+        "/john mcclanes birthday/i",
+        "/john mcclane birthday/i",
+    ];
+
+
+    public function modify( NaturalDate $naturalDate ): NaturalDate {
+        $naturalDate->setStartYear( 1955 );
+        $naturalDate->setStartMonth( 11 );
+        $naturalDate->setStartDay( 2 );
+        $naturalDate->setStartHour( 0 );
+        $naturalDate->setStartMinute( 0 );
+        $naturalDate->setStartSecond( 0 );
+
+        $naturalDate->setEndYear( 1955 );
+        $naturalDate->setEndMonth( 11 );
+        $naturalDate->setEndDay( 2 );
+        $naturalDate->setEndHour( 23 );
+        $naturalDate->setEndMinute( 59 );
+        $naturalDate->setEndSecond( 59 );
+
+        $naturalDate->setType( NaturalDate::date );
+
+        return $naturalDate;
+    }
+}
+```

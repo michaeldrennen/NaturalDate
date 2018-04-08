@@ -2,8 +2,8 @@
 
 namespace MichaelDrennen\NaturalDate\PatternModifiers;
 
-use Carbon\Carbon;
 use MichaelDrennen\NaturalDate\NaturalDate;
+
 
 class JohnMcClanesBirthday extends PatternModifier {
 
@@ -28,7 +28,7 @@ class JohnMcClanesBirthday extends PatternModifier {
         $naturalDate->setEndMinute( 59 );
         $naturalDate->setEndSecond( 59 );
 
-        $naturalDate->setType(NaturalDate::date);
+        $naturalDate->setType( NaturalDate::date );
 
         return $naturalDate;
     }
