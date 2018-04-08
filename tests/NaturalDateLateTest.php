@@ -85,8 +85,6 @@ class NaturalDateLateTest extends TestCase {
 
         $this->assertEquals( Carbon::parse( '2016-09-01 06:00:00', 'UTC' ), $startDate );
         $this->assertEquals( Carbon::parse( '2017-01-01 06:59:59', 'UTC' ), $endDate );
-
-        print($naturalDate->toJson());
     }
 
 

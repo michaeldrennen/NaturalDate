@@ -47,7 +47,8 @@ class NaturalDate {
 
 
     /**
-     * @var string $type EX: decade, year, month, day, hour, minute, second. I forget why I wanted this.
+     * @var string $type EX: date, datetime, yearlessDate, week, year, month, season, quarter, range. This gives the
+     *      user an idea of the confidence of the actual date.
      */
     protected $type;
 
@@ -113,7 +114,7 @@ class NaturalDate {
      * @throws \MichaelDrennen\NaturalDate\Exceptions\InvalidTimezone
      * @throws \Exception
      */
-    public function __construct( string $input = '', string $timezoneId = '', string $languageCode = '', Carbon $localStartDateTime = null, Carbon $localEndDateTime = null, string $type = null, array $patternModifiers = [] ) {
+    public function __construct( string $input = '', string $timezoneId = '', string $languageCode = '', Carbon $localStartDateTime = NULL, Carbon $localEndDateTime = NULL, string $type = NULL, array $patternModifiers = [] ) {
         $this->setInput( $input );
         $this->setTimezoneId( $timezoneId );
         $this->setLanguageCode( $languageCode );
@@ -149,8 +150,8 @@ class NaturalDate {
         return $string;
     }
 
-    public function toJson(){
-        echo json_encode($this);
+    public function toJson() {
+        echo json_encode( $this );
     }
 
     /**
@@ -176,7 +177,7 @@ class NaturalDate {
      * @return static
      * @throws \Exception;
      */
-    public static function parse( string $string = '', string $timezoneId = 'UTC', string $languageCode = 'en', $patternModifiers = [], NaturalDate $existingNaturalDate = null, bool $cleanOutput = true ): NaturalDate {
+    public static function parse( string $string = '', string $timezoneId = 'UTC', string $languageCode = 'en', $patternModifiers = [], NaturalDate $existingNaturalDate = NULL, bool $cleanOutput = TRUE ): NaturalDate {
 
         // Run the whole string through the patterns. I take the first pattern that matches.
         try {
@@ -188,7 +189,7 @@ class NaturalDate {
                 $naturalDate->setLanguageCode( $languageCode );
                 $naturalDate->addDebugMessage( "Existing NaturalDate object was passed in.", __FUNCTION__, __CLASS__ );
             } else {
-                $naturalDate = new static( $string, $timezoneId, $languageCode, null, null, null, $patternModifiers );
+                $naturalDate = new static( $string, $timezoneId, $languageCode, NULL, NULL, NULL, $patternModifiers );
                 $naturalDate->addDebugMessage( "NO NaturalDate object was passed in.", __FUNCTION__, __CLASS__ );
             }
 
@@ -210,12 +211,17 @@ class NaturalDate {
 
             if ( $naturalDate->dateParseYieldsDate( $parsedParts ) ):
                 $naturalDate->addDebugMessage( "    date_parse yielded a date. No time." );
-                $carbon      = Carbon::create( $parsedParts[ 'year' ], $parsedParts[ 'month' ], $parsedParts[ 'day' ], '00', '00', '00', $timezoneId );
-                $naturalDate = new static( $string, $timezoneId, $languageCode, $carbon, $carbon, NaturalDate::date, $patternModifiers );
+                $carbon      = Carbon::create( $parsedParts[ 'year' ], $parsedParts[ 'month' ], $parsedParts[ 'day' ],
+                                               '00', '00', '00', $timezoneId );
+                $naturalDate = new static( $string, $timezoneId, $languageCode, $carbon, $carbon, NaturalDate::date,
+                                           $patternModifiers );
             elseif ( $naturalDate->dateParseYieldsDateTime( $parsedParts ) ):
                 $naturalDate->addDebugMessage( "    date_parse yielded a datetime." );
-                $carbon      = Carbon::create( $parsedParts[ 'year' ], $parsedParts[ 'month' ], $parsedParts[ 'day' ], (int)$parsedParts[ 'hour' ], (int)$parsedParts[ 'minute' ], (int)$parsedParts[ 'second' ], $timezoneId );
-                $naturalDate = new static( $string, $timezoneId, $languageCode, $carbon, $carbon, NaturalDate::datetime, $patternModifiers );
+                $carbon      = Carbon::create( $parsedParts[ 'year' ], $parsedParts[ 'month' ], $parsedParts[ 'day' ],
+                                               (int)$parsedParts[ 'hour' ], (int)$parsedParts[ 'minute' ],
+                                               (int)$parsedParts[ 'second' ], $timezoneId );
+                $naturalDate = new static( $string, $timezoneId, $languageCode, $carbon, $carbon, NaturalDate::datetime,
+                                           $patternModifiers );
             else:
                 throw new UnparsableString( "Unable to parse the date: [" . $string . "]. You are probably missing a regex pattern from the PatternMapForLanguage.php file in the Languages/" . $languageCode . "/ directory." );
             endif;
@@ -226,11 +232,12 @@ class NaturalDate {
             throw $exception;
         } catch ( \Exception $exception ) {
             $debugMessages = isset( $naturalDate ) ? $naturalDate->getDebugMessages() : [];
-            throw new NaturalDateException( $exception->getMessage(), $exception->getCode(), $exception, $debugMessages );
+            throw new NaturalDateException( $exception->getMessage(), $exception->getCode(), $exception,
+                                            $debugMessages );
         }
     }
 
-    protected static function cleanOutput( NaturalDate $naturalDate, bool $cleanOutput = false ): NaturalDate {
+    protected static function cleanOutput( NaturalDate $naturalDate, bool $cleanOutput = FALSE ): NaturalDate {
         if ( $cleanOutput ):
             /**
              * These 4 fields are dynamically declared, so users of this class have clear and easy access to the
@@ -282,13 +289,13 @@ class NaturalDate {
             ! empty( $parts[ 'year' ] ) &&
             ! empty( $parts[ 'month' ] ) &&
             ! empty( $parts[ 'day' ] ) &&
-            false === $parts[ 'hour' ] &&
-            false === $parts[ 'minute' ] &&
-            false === $parts[ 'second' ]
+            FALSE === $parts[ 'hour' ] &&
+            FALSE === $parts[ 'minute' ] &&
+            FALSE === $parts[ 'second' ]
         ):
-            return true;
+            return TRUE;
         endif;
-        return false;
+        return FALSE;
     }
 
     /**
@@ -305,13 +312,13 @@ class NaturalDate {
             ! empty( $parts[ 'year' ] ) &&
             ! empty( $parts[ 'month' ] ) &&
             ! empty( $parts[ 'day' ] ) &&
-            false !== $parts[ 'hour' ] &&
-            false !== $parts[ 'minute' ] &&
-            false !== $parts[ 'second' ]
+            FALSE !== $parts[ 'hour' ] &&
+            FALSE !== $parts[ 'minute' ] &&
+            FALSE !== $parts[ 'second' ]
         ):
-            return true;
+            return TRUE;
         endif;
-        return false;
+        return FALSE;
     }
 
 
@@ -322,7 +329,7 @@ class NaturalDate {
      * @param string $function __FUNCTION__
      * @param string $class    __CLASS__
      */
-    public function addDebugMessage( string $message, string $function = null, string $class = null ) {
+    public function addDebugMessage( string $message, string $function = NULL, string $class = NULL ) {
         $this->debugMessages[] = [
             'input'    => $this->getInput(),
             'class'    => $class,
@@ -364,7 +371,8 @@ class NaturalDate {
     protected function setMatchedPattern() {
         $input                        = $this->getInput();
         $this->matchedPatternModifier = $this->patternMap->setMatchedPattern( $input );
-        $this->addDebugMessage( "matchedPatternModifier is [" . get_class( $this->matchedPatternModifier ) . "]", __FUNCTION__, __CLASS__ );
+        $this->addDebugMessage( "matchedPatternModifier is [" . get_class( $this->matchedPatternModifier ) . "]",
+                                __FUNCTION__, __CLASS__ );
     }
 
 
@@ -413,10 +421,10 @@ class NaturalDate {
      * @throws \MichaelDrennen\NaturalDate\Exceptions\InvalidTimezone
      * @link http://php.net/manual/en/datetimezone.listabbreviations.php
      */
-    public function setTimezoneId( string $timezoneId = null ) {
+    public function setTimezoneId( string $timezoneId = NULL ) {
         // Validate Timezone Id;
         $timeZones = DateTimeZone::listIdentifiers();
-        if ( false === in_array( $timezoneId, $timeZones ) ) {
+        if ( FALSE === in_array( $timezoneId, $timeZones ) ) {
             throw new InvalidTimezone( "The timezone id you passed in [" . $timezoneId . "] is not valid because it is not found in the array returned by DateTimeZone::listIdentifiers()" );
         }
         date_default_timezone_set( $timezoneId );
@@ -426,7 +434,7 @@ class NaturalDate {
     /**
      * @param string $languageCode EX: "en"
      */
-    public function setLanguageCode( string $languageCode = null ) {
+    public function setLanguageCode( string $languageCode = NULL ) {
         $this->languageCode = $languageCode;
     }
 
@@ -446,7 +454,7 @@ class NaturalDate {
      *
      * @throws \MichaelDrennen\NaturalDate\Exceptions\NaturalDateException
      */
-    public function setType( string $type = null ) {
+    public function setType( string $type = NULL ) {
         $this->addDebugMessage( "Just entered.", __FUNCTION__, __CLASS__ );
 
         if ( is_null( $type ) ):
@@ -468,22 +476,25 @@ class NaturalDate {
 
         $keyOfNewType = array_search( $type, $orderOfSpecificity );
 
-        if ( false === $keyOfNewType ):
+        if ( FALSE === $keyOfNewType ):
             throw new InvalidNaturalDateType( "You are trying to set the 'type' of NaturalDate to [" . $type . "] which has not been coded for." );
         endif;
 
         $keyOfExistingType = array_search( $this->type, $orderOfSpecificity );
 
-        if ( false === $keyOfExistingType ):
+        if ( FALSE === $keyOfExistingType ):
             $this->type = $type;
-            $this->addDebugMessage( "Type of NaturalDate was not set before, so setting it to [" . $this->getType() . "]", __FUNCTION__, __CLASS__ );
+            $this->addDebugMessage( "Type of NaturalDate was not set before, so setting it to [" . $this->getType() . "]",
+                                    __FUNCTION__, __CLASS__ );
         elseif ( $keyOfNewType > $keyOfExistingType ):
             $this->type = $type;
             $this->addDebugMessage( "Type of NaturalDate set to [" . $this->getType() . "]", __FUNCTION__, __CLASS__ );
         elseif ( $keyOfNewType == $keyOfExistingType ):
-            $this->addDebugMessage( "Type of NaturalDate is equal to existing type of [" . $this->type . "]", __FUNCTION__, __CLASS__ );
+            $this->addDebugMessage( "Type of NaturalDate is equal to existing type of [" . $this->type . "]",
+                                    __FUNCTION__, __CLASS__ );
         elseif ( $keyOfNewType < $keyOfExistingType ):
-            $this->addDebugMessage( "Type of NaturalDate is is more specific than  [" . $this->type . "] so type will remain unchanged.", __FUNCTION__, __CLASS__ );
+            $this->addDebugMessage( "Type of NaturalDate is is more specific than  [" . $this->type . "] so type will remain unchanged.",
+                                    __FUNCTION__, __CLASS__ );
         endif;
 
     }
@@ -547,7 +558,7 @@ class NaturalDate {
      *
      * @param \Carbon\Carbon|null $start
      */
-    protected function setLocalStartDateTime( Carbon $start = null ) {
+    protected function setLocalStartDateTime( Carbon $start = NULL ) {
         if ( is_null( $start ) ):
             return;
         endif;
@@ -567,7 +578,7 @@ class NaturalDate {
      *
      * @param \Carbon\Carbon|null $end
      */
-    protected function setLocalEndDateTime( Carbon $end = null ) {
+    protected function setLocalEndDateTime( Carbon $end = NULL ) {
         if ( is_null( $end ) ):
             return;
         endif;
@@ -652,7 +663,7 @@ class NaturalDate {
      *
      * @param bool $override Set to true if you want to ignore any existing values and overwrite with 00:00:00
      */
-    public function setStartTimesAsStartOfDay( bool $override = false ) {
+    public function setStartTimesAsStartOfDay( bool $override = FALSE ) {
         if ( $override ):
             $this->setStartHour( 0 );
             $this->setStartMinute( 0 );
@@ -679,7 +690,7 @@ class NaturalDate {
      *
      * @param bool $override Set to true if you want to ignore any existing values and overwrite with 23:59:59
      */
-    public function setEndTimesAsEndOfDay( bool $override = false ) {
+    public function setEndTimesAsEndOfDay( bool $override = FALSE ) {
         if ( $override ):
             $this->setEndHour( 23 );
             $this->setEndMinute( 59 );
