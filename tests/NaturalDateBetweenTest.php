@@ -145,12 +145,15 @@ class NaturalDateBetweenTest extends TestCase {
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL, FALSE );
 
-        $dayOfThanksgivingThisYear = Carbon::parse( 'fourth thursday of november ' . date( 'Y' ) )->day;
-        $startYear                 = date( 'Y' );
-        $nextYear                  = $startYear + 1;
-        $this->assertEquals( Carbon::parse( $startYear . '-11-' . $dayOfThanksgivingThisYear . ' 00:00:00',
+        $dayOfThanksgivingThisYear        = Carbon::parse( 'fourth thursday of november ' . date( 'Y' ) )->day;
+        $startYear                        = date( 'Y' );
+        $previousYear                     = $startYear - 1;
+        $nextYear                         = $startYear + 1;
+        $dayOfThanksgivingThePreviousYear = Carbon::parse( 'fourth thursday of november ' . $previousYear )->day;
+        $this->assertEquals( Carbon::parse( $previousYear . '-11-' . $dayOfThanksgivingThePreviousYear . ' 00:00:00',
                                             $timezoneId ), $naturalDate->getLocalStart() );
-        $this->assertEquals( Carbon::parse( $nextYear . '-10-31 23:59:59', $timezoneId ), $naturalDate->getLocalEnd() );
+        $this->assertEquals( Carbon::parse( $startYear . '-10-31 23:59:59',
+                                            $timezoneId ), $naturalDate->getLocalEnd() );
     }
 
 

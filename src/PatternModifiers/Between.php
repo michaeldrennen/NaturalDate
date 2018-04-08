@@ -29,9 +29,9 @@ class Between extends PatternModifier {
         /**
          * There should only ever be one captured element based on the regex pattern.
          */
-        $startDatePart   = $pregMatchMatches[ 0 ];
+        $startDatePart = $pregMatchMatches[ 0 ];
         //$connectorString = $pregMatchMatches[ 1 ];
-        $endDatePart     = $pregMatchMatches[ 2 ];
+        $endDatePart = $pregMatchMatches[ 2 ];
 
         $capturedStartDate = NaturalDate::parse( $startDatePart,
                                                  $naturalDate->getTimezoneId(),
@@ -55,15 +55,30 @@ class Between extends PatternModifier {
          * Why the need for this code?
          * EXAMPLE STRING: Between Thanksgiving and Christmas 2017
          */
-        if(NaturalDate::yearlessDate == $capturedStartDate->getType()):
-            $startDatePart .= $capturedEndDate->getEndYear();
-            $capturedStartDate = NaturalDate::parse( $startDatePart,
-                                                     $naturalDate->getTimezoneId(),
-                                                     $naturalDate->getLanguageCode(),
-                                                     $naturalDate->getPatternModifiers(),
-                                                     NULL, FALSE );
-        endif;
+        if ( NaturalDate::yearlessDate == $capturedStartDate->getType() ):
+            $modifiedStartDatePart = $startDatePart . " " . $capturedEndDate->getEndYear();
+            $capturedStartDate     = NaturalDate::parse( $modifiedStartDatePart,
+                                                         $naturalDate->getTimezoneId(),
+                                                         $naturalDate->getLanguageCode(),
+                                                         $naturalDate->getPatternModifiers(),
+                                                         NULL, FALSE );
 
+            // So I just pasted the end year onto the start date because it didn't have a year.
+            // Now, for a small little wrinkle.
+            // What if someone enters this as a date: "Between Christmas and Valentine's Day 2017"
+            // The existing logic will make it: "Between Christmas 2017 and Valentine's Day 2017"
+            // That doesn't make sense since I expect the users to enter dates chronologically.
+            // So if the start date is older than the end date, append the end year minus 1 year.
+            if ( $capturedStartDate->getLocalStart() >= $capturedEndDate->getLocalEnd() ):
+                $newStartYear = (int)$capturedEndDate->getEndYear() - 1;
+                $modifiedStartDatePart = $startDatePart . " " . $newStartYear;
+                $capturedStartDate     = NaturalDate::parse( $modifiedStartDatePart,
+                                                             $naturalDate->getTimezoneId(),
+                                                             $naturalDate->getLanguageCode(),
+                                                             $naturalDate->getPatternModifiers(),
+                                                             NULL, FALSE );
+            endif;
+        endif;
 
 
         switch ( $capturedEndDate->getType() ):
@@ -74,13 +89,7 @@ class Between extends PatternModifier {
                 $capturedEndDate->setEndMinute( 59 );
                 $capturedEndDate->setEndSecond( 59 );
                 break;
-            //case NaturalDate::datetime:
-            // Made temp variables here because its cleaner to include in the debug message.
-            //$hour   = $capturedEndDate->getEndHour();
-            //$minute = $capturedEndDate->getEndMinute();
-            //$second = $capturedEndDate->getEndSecond();
-            //$naturalDate->addDebugMessage( "capturedEndDate was of type datetime, so setting hh:mm:ss to $hour:$minute:$second", __FUNCTION__, __CLASS__ );
-            //break;
+
             /**
              * If the end year is null, look at the startYear in the capturedStartDate object. If it makes sense to use that
              * year, then do it. If not, take the next year.
@@ -100,8 +109,6 @@ class Between extends PatternModifier {
                 endif;
                 break;
         endswitch;
-
-
 
 
         return new NaturalDate( $naturalDate->getInput(),

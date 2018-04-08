@@ -70,8 +70,8 @@ class NaturalDateLateTest extends TestCase {
         $endDate          = $naturalDate->getUtcEnd();
 
 
-        $this->assertEquals( Carbon::parse( Carbon::parse( date( 'Y-m-d 03:00:00' ) )->addDay(), 'UTC' ), $startDate );
-        $this->assertEquals( Carbon::parse( Carbon::parse( date( 'Y-m-d 06:59:59' ) )->addDay(), 'UTC' ), $endDate );
+        $this->assertEquals( Carbon::parse( Carbon::parse( date( 'Y-m-d 02:00:00' ) )->addDay(), 'UTC' ), $startDate );
+        $this->assertEquals( Carbon::parse( Carbon::parse( date( 'Y-m-d 05:59:59' ) )->addDay(), 'UTC' ), $endDate );
     }
 
     public function testLateModifierYear() {
@@ -85,6 +85,8 @@ class NaturalDateLateTest extends TestCase {
 
         $this->assertEquals( Carbon::parse( '2016-09-01 06:00:00', 'UTC' ), $startDate );
         $this->assertEquals( Carbon::parse( '2017-01-01 06:59:59', 'UTC' ), $endDate );
+
+        print($naturalDate->toJson());
     }
 
 

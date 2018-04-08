@@ -1,4 +1,5 @@
 <?php
+
 namespace MichaelDrennen\NaturalDate\Tests;
 
 use Carbon\Carbon;
@@ -48,10 +49,12 @@ class NaturalDateEarlyTest extends TestCase {
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
         $startDate        = $naturalDate->getUtcStart();
         $endDate          = $naturalDate->getUtcEnd();
+        //$startDate        = $naturalDate->getLocalStart();
+        //$endDate          = $naturalDate->getLocalEnd();
 
 
-        $this->assertEquals( Carbon::parse( Carbon::parse( date( 'Y-m-d 07:00:00' ) ), 'UTC' ), $startDate );
-        $this->assertEquals( Carbon::parse( Carbon::parse( date( 'Y-m-d 13:59:59' ) ), 'UTC' ), $endDate );
+        $this->assertEquals( Carbon::parse( Carbon::parse( date( 'Y-m-d 06:00:00' ) ), 'UTC' ), $startDate );
+        $this->assertEquals( Carbon::parse( Carbon::parse( date( 'Y-m-d 12:59:59' ) ), 'UTC' ), $endDate );
     }
 
     /**
@@ -64,13 +67,15 @@ class NaturalDateEarlyTest extends TestCase {
         $languageCode     = 'en';
         $patternModifiers = [];
 
-        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
+        $naturalDate = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
 
         $startDate = $naturalDate->getLocalStart();
         $endDate   = $naturalDate->getLocalEnd();
 
         $this->assertEquals( Carbon::parse( '2016-01-01 00:00:00', $timezoneId ), $startDate );
         $this->assertEquals( Carbon::parse( '2016-04-30 23:59:59', $timezoneId ), $endDate );
+
+        print($naturalDate->toJson());
     }
 
     public function testEarlyModifierWithMonthAndYear() {

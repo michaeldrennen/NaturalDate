@@ -149,6 +149,10 @@ class NaturalDate {
         return $string;
     }
 
+    public function toJson(){
+        echo json_encode($this);
+    }
+
     /**
      * @param string                                  $string              Ex: 'Summer of 78'
      * @param string                                  $timezoneId          Ex: 'America/Denver'
