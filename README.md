@@ -1,4 +1,7 @@
 # NaturalDate  
+
+[![Latest Stable Version](https://poser.pugx.org/michaeldrennen/natural-date/version)](https://packagist.org/packages/michaeldrennen/natural-date) [![Total Downloads](https://poser.pugx.org/michaeldrennen/natural-date/downloads)](https://packagist.org/packages/michaeldrennen/natural-date) [![License](https://poser.pugx.org/michaeldrennen/natural-date/license)](https://packagist.org/packages/michaeldrennen/natural-date) [![Build Status](https://travis-ci.org/michaeldrennen/natural-date.svg?branch=master)](https://travis-ci.org/michaeldrennen/natural-date) [![Coverage Status](https://coveralls.io/repos/github/michaeldrennen/natural-date/badge.svg?branch=master)](https://coveralls.io/github/michaeldrennen/natural-date?branch=master)
+
 When telling stories, people usually don't give an exact date for the events of the story. They often say things like:
 > the summer of '87
 
