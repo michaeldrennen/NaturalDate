@@ -150,8 +150,11 @@ class NaturalDate {
         return $string;
     }
 
-    public function toJson() {
-        echo json_encode( $this );
+    /**
+     * @return string
+     */
+    public function toJson(): string {
+        return json_encode( $this );
     }
 
     /**
@@ -639,23 +642,23 @@ class NaturalDate {
         $this->endSecond = str_pad( $second, 2, '0', STR_PAD_LEFT );
     }
 
-    public function setStartDateTimeAsStartOfToday() {
-        $this->setStartYear( date( 'Y' ) );
-        $this->setStartMonth( date( 'm' ) );
-        $this->setStartDay( date( 'd' ) );
-        $this->setStartHour( 0 );
-        $this->setStartMinute( 0 );
-        $this->setStartSecond( 0 );
-    }
+//    public function setStartDateTimeAsStartOfToday() {
+//        $this->setStartYear( date( 'Y' ) );
+//        $this->setStartMonth( date( 'm' ) );
+//        $this->setStartDay( date( 'd' ) );
+//        $this->setStartHour( 0 );
+//        $this->setStartMinute( 0 );
+//        $this->setStartSecond( 0 );
+//    }
 
-    public function setEndDateTimeAsEndOfToday() {
-        $this->setEndYear( date( 'Y' ) );
-        $this->setEndMonth( date( 'm' ) );
-        $this->setEndDay( date( 'd' ) );
-        $this->setEndHour( 23 );
-        $this->setEndMinute( 59 );
-        $this->setEndSecond( 59 );
-    }
+//    public function setEndDateTimeAsEndOfToday() {
+//        $this->setEndYear( date( 'Y' ) );
+//        $this->setEndMonth( date( 'm' ) );
+//        $this->setEndDay( date( 'd' ) );
+//        $this->setEndHour( 23 );
+//        $this->setEndMinute( 59 );
+//        $this->setEndSecond( 59 );
+//    }
 
     /**
      * use to set the start hour:min:sec to 00:00:00 (at the beginning of the day). By default, it will not overwrite

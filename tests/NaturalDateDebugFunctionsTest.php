@@ -1,4 +1,5 @@
 <?php
+
 namespace MichaelDrennen\NaturalDate\Tests;
 
 use MichaelDrennen\NaturalDate\Exceptions\StrToTimeParseFailure;
@@ -18,16 +19,30 @@ class NaturalDateDebugFunctionsTest extends TestCase {
         $timezoneId       = 'America/Denver';
         $languageCode     = 'en';
         $patternModifiers = [];
-        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, null, false );
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL, FALSE );
         echo $naturalDate;
     }
+
+    public function testToJson() {
+
+        $string           = 'December 25, 2017';
+        $timezoneId       = 'America/Denver';
+        $languageCode     = 'en';
+        $patternModifiers = [];
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL, TRUE );
+        $jsonOutput       = $naturalDate->toJson();
+        $decodedJson      = json_decode( $jsonOutput );
+        $lastJsonError    = json_last_error();
+        $this->assertEquals( JSON_ERROR_NONE, $lastJsonError );
+    }
+
 
     public function testGetDebugMessages() {
         $string           = 'December 25, 2017';
         $timezoneId       = 'America/Denver';
         $languageCode     = 'en';
         $patternModifiers = [];
-        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, null, false );
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL, FALSE );
         $debugMessages    = $naturalDate->getDebugMessages();
         $this->assertTrue( is_array( $debugMessages ) );
     }
@@ -47,7 +62,7 @@ class NaturalDateDebugFunctionsTest extends TestCase {
         $timezoneId       = 'America/Denver';
         $languageCode     = 'en';
         $patternModifiers = [];
-        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, null, true );
+        $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL, TRUE );
         $debugMessages    = $naturalDate->getDebugMessages();
         $this->assertTrue( empty( $debugMessages ) );
     }
