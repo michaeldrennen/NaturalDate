@@ -3,12 +3,12 @@
   "description": "A PHP library that takes a user supplied date (that doesn't have to be exact) and NaturalDate will return an object that represents it's best guess on the date the user meant.",
   "type": "library",
   "require": {
-    "php": ">=7.1",
-    "nesbot/carbon": "^1.22"
+    "php": "^7.3",
+    "nesbot/carbon": "^2.16"
   },
   "require-dev": {
-    "phpunit/phpunit": "^6.4",
-    "satooshi/php-coveralls": "^1.0"
+    "php-coveralls/php-coveralls": "^2.1",
+    "phpunit/phpunit": "^8.0"
   },
   "license": "MIT",
   "authors": [
