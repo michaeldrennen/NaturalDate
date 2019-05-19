@@ -1,4 +1,5 @@
 <?php
+
 namespace MichaelDrennen\NaturalDate\Tests;
 
 use Carbon\Carbon;
@@ -69,9 +70,8 @@ class NaturalDateLateTest extends TestCase {
         $startDate        = $naturalDate->getUtcStart();
         $endDate          = $naturalDate->getUtcEnd();
 
-
-        $this->assertEquals( Carbon::parse( Carbon::parse( date( 'Y-m-d 02:00:00' ) )->addDay(), 'UTC' ), $startDate );
-        $this->assertEquals( Carbon::parse( Carbon::parse( date( 'Y-m-d 05:59:59' ) )->addDay(), 'UTC' ), $endDate );
+        $this->assertEquals( Carbon::parse( date( 'Y-m-d 02:00:00' ), 'UTC' )->addDay(), $startDate );
+        $this->assertEquals( Carbon::parse( date( 'Y-m-d 05:59:59' ), 'UTC' )->addDay(), $endDate );
     }
 
     public function testLateModifierYear() {

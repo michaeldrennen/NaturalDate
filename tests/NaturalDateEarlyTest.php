@@ -41,6 +41,9 @@ class NaturalDateEarlyTest extends TestCase {
     }
 
 
+    /**
+     * @group ee
+     */
     public function testEarlyModifierWithJustTheWordEarlyShouldReturnEarlyToday() {
         $string           = 'early';
         $timezoneId       = 'America/Denver';
@@ -52,9 +55,8 @@ class NaturalDateEarlyTest extends TestCase {
         //$startDate        = $naturalDate->getLocalStart();
         //$endDate          = $naturalDate->getLocalEnd();
 
-
-        $this->assertEquals( Carbon::parse( Carbon::parse( date( 'Y-m-d 06:00:00' ) ), 'UTC' ), $startDate );
-        $this->assertEquals( Carbon::parse( Carbon::parse( date( 'Y-m-d 12:59:59' ) ), 'UTC' ), $endDate );
+        $this->assertEquals( Carbon::parse( date( 'Y-m-d 06:00:00' ),'UTC' ), $startDate );
+        $this->assertEquals( Carbon::parse( date( 'Y-m-d 12:59:59' ),'UTC' ), $endDate );
     }
 
     /**

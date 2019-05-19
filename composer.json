@@ -4,7 +4,8 @@
   "type": "library",
   "require": {
     "php": "^7.3",
-    "nesbot/carbon": "^2.16"
+    "nesbot/carbon": "^2.16",
+    "ext-json": "*"
   },
   "require-dev": {
     "php-coveralls/php-coveralls": "^2.1",

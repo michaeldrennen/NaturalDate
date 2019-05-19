@@ -102,17 +102,15 @@ class NaturalDate {
 
     /**
      * NaturalDate constructor.
-     *
-     * @param string         $input        Ex: early 2016
-     * @param string         $timezoneId   Ex: America\Denver
-     * @param string         $languageCode Ex: en
-     * @param \Carbon\Carbon $localStartDateTime
-     * @param \Carbon\Carbon $localEndDateTime
-     * @param string         $type
-     * @param array          $patternModifiers
-     *
-     * @throws \MichaelDrennen\NaturalDate\Exceptions\InvalidTimezone
-     * @throws \Exception
+     * @param string $input Ex: early 2016
+     * @param string $timezoneId Ex: America\Denver
+     * @param string $languageCode Ex: en
+     * @param Carbon|NULL $localStartDateTime
+     * @param Carbon|NULL $localEndDateTime
+     * @param string|NULL $type
+     * @param array $patternModifiers
+     * @throws InvalidTimezone
+     * @throws NaturalDateException
      */
     public function __construct( string $input = '', string $timezoneId = '', string $languageCode = '', Carbon $localStartDateTime = NULL, Carbon $localEndDateTime = NULL, string $type = NULL, array $patternModifiers = [] ) {
         $this->setInput( $input );
@@ -125,6 +123,8 @@ class NaturalDate {
         if ( isset( $type ) ):
             $this->setType( $type );
         endif;
+
+        $this->setPatternModifiers( $patternModifiers );
     }
 
     /**
@@ -158,10 +158,10 @@ class NaturalDate {
     }
 
     /**
-     * @param string                                  $string              Ex: 'Summer of 78'
-     * @param string                                  $timezoneId          Ex: 'America/Denver'
-     * @param string                                  $languageCode        Ex: 'en'
-     * @param array                                   $patternModifiers    Keys are PatternMap labels, and values are
+     * @param string $string Ex: 'Summer of 78'
+     * @param string $timezoneId Ex: 'America/Denver'
+     * @param string $languageCode Ex: 'en'
+     * @param array $patternModifiers Keys are PatternMap labels, and values are
      *                                                                     PatternModifier objects. For instance, there
      *                                                                     is no way for the NaturalDate class to know
      *                                                                     when I was a freshman in high school. So the
@@ -173,7 +173,7 @@ class NaturalDate {
      *                                                                     together to create a single NaturalDate
      *                                                                     object that accounts for all of the
      *                                                                     modifiers.
-     * @param bool                                    $cleanOutput         Set to false if you want all of the
+     * @param bool $cleanOutput Set to false if you want all of the
      *                                                                     debugging messages returned with the
      *                                                                     NaturalDate object.
      *
@@ -289,9 +289,9 @@ class NaturalDate {
     protected function dateParseYieldsDate( array $parts ) {
 
         if (
-            ! empty( $parts[ 'year' ] ) &&
-            ! empty( $parts[ 'month' ] ) &&
-            ! empty( $parts[ 'day' ] ) &&
+            !empty( $parts[ 'year' ] ) &&
+            !empty( $parts[ 'month' ] ) &&
+            !empty( $parts[ 'day' ] ) &&
             FALSE === $parts[ 'hour' ] &&
             FALSE === $parts[ 'minute' ] &&
             FALSE === $parts[ 'second' ]
@@ -312,9 +312,9 @@ class NaturalDate {
      */
     protected function dateParseYieldsDateTime( array $parts ) {
         if (
-            ! empty( $parts[ 'year' ] ) &&
-            ! empty( $parts[ 'month' ] ) &&
-            ! empty( $parts[ 'day' ] ) &&
+            !empty( $parts[ 'year' ] ) &&
+            !empty( $parts[ 'month' ] ) &&
+            !empty( $parts[ 'day' ] ) &&
             FALSE !== $parts[ 'hour' ] &&
             FALSE !== $parts[ 'minute' ] &&
             FALSE !== $parts[ 'second' ]
@@ -330,7 +330,7 @@ class NaturalDate {
      *
      * @param string $message
      * @param string $function __FUNCTION__
-     * @param string $class    __CLASS__
+     * @param string $class __CLASS__
      */
     public function addDebugMessage( string $message, string $function = NULL, string $class = NULL ) {
         $this->debugMessages[] = [
@@ -672,15 +672,15 @@ class NaturalDate {
             $this->setStartMinute( 0 );
             $this->setStartSecond( 0 );
         else:
-            if ( ! isset( $this->startHour ) ):
+            if ( !isset( $this->startHour ) ):
                 $this->setStartHour( 0 );
             endif;
 
-            if ( ! isset( $this->startMinute ) ):
+            if ( !isset( $this->startMinute ) ):
                 $this->setStartMinute( 0 );
             endif;
 
-            if ( ! isset( $this->startSecond ) ):
+            if ( !isset( $this->startSecond ) ):
                 $this->setStartSecond( 0 );
             endif;
         endif;
@@ -699,15 +699,15 @@ class NaturalDate {
             $this->setEndMinute( 59 );
             $this->setEndSecond( 59 );
         else:
-            if ( ! isset( $this->endHour ) ):
+            if ( !isset( $this->endHour ) ):
                 $this->setEndHour( 23 );
             endif;
 
-            if ( ! isset( $this->endMinute ) ):
+            if ( !isset( $this->endMinute ) ):
                 $this->setEndMinute( 59 );
             endif;
 
-            if ( ! isset( $this->endSecond ) ):
+            if ( !isset( $this->endSecond ) ):
                 $this->setEndSecond( 59 );
             endif;
         endif;
