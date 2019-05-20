@@ -4,3 +4,4 @@
 /vendor/
 _config.yml
 phpunit.xml
+.phpunit.result.cache
