@@ -1,4 +1,5 @@
 <?php
+
 namespace MichaelDrennen\NaturalDate\Languages\En;
 
 use MichaelDrennen\NaturalDate\PatternMap;
@@ -56,7 +57,10 @@ class PatternMapForLanguage extends PatternMap {
             '/^new years\' eve[\s]*(?:of)?[\s]*(.*)/i',
             "/^nye[\s]*(?:of)?[\s]*(.*)/i",
         ],
-
+        PatternMap::fall          => [ '/^fall( of )?/i', '/^autumn?( of )?/i' ],
+        PatternMap::spring        => [ '/^spring( of )?/i' ],
+        PatternMap::summer        => [ '/^summer( of )?/i' ],
+        PatternMap::winter        => [ '/^winter( of )?/i' ],
 
     ];
 }

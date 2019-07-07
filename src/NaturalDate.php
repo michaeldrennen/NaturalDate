@@ -15,9 +15,10 @@ use MichaelDrennen\NaturalDate\Exceptions\UnparsableString;
 class NaturalDate {
 
     /**
-     * These are the different "types" of NaturalDate objects. The type is used by the PatternModifiers, so they can
+     * TYPES:
+     * These are the different "types" of NaturalDate objects. The "type" is used by the PatternModifiers, so they can
      * know exactly how the date should be modified. For example if the "type" is year, and the "Early" PatternModifier
-     * is used, then the NaturalDate will have it's start date changed to Jan 1, and it's end date set to June 30.
+     * is used, then the NaturalDate will have its start date changed to Jan 1, and it's end date set to June 30.
      */
     const datetime     = 'datetime'; // All the way out to the seconds position.
     const date         = 'date';     // Just the year, month, and day
