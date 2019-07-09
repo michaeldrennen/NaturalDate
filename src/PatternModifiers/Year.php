@@ -1,4 +1,5 @@
 <?php
+
 namespace MichaelDrennen\NaturalDate\PatternModifiers;
 
 use Carbon\Carbon;

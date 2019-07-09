@@ -3,16 +3,13 @@
 namespace MichaelDrennen\NaturalDate\PatternModifiers;
 
 use MichaelDrennen\NaturalDate\NaturalDate;
+use MichaelDrennen\NaturalDate\PatternModifiers\Seasons\AbstractSeason;
 
 
-class Spring extends PatternModifier {
-
-    protected $patterns = [
-        "/spring/i",
-    ];
-
+class Spring extends AbstractSeason {
 
     public function modify( NaturalDate $naturalDate ): NaturalDate {
+        parent::modify($naturalDate);
 
         // I use the meteorological dates for the season changes.
         $naturalDate->setStartMonth( 3 );
@@ -24,9 +21,9 @@ class Spring extends PatternModifier {
         // I have to do this one on the first second of Spring, because sometimes Feb has 29 days.
         $naturalDate->setEndMonth( 5 );
         $naturalDate->setEndDay( 31 );
-        $naturalDate->setEndHour( 0 );
-        $naturalDate->setEndMinute( 0 );
-        $naturalDate->setEndSecond( 0 );
+        $naturalDate->setEndHour( 23 );
+        $naturalDate->setEndMinute( 59 );
+        $naturalDate->setEndSecond( 59 );
 
         $naturalDate->setType( NaturalDate::season );
 

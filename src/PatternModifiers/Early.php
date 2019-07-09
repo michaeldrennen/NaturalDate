@@ -101,7 +101,6 @@ class Early extends PatternModifier {
         $naturalDate->setStartDay( 1 );
         $naturalDate->setEndDay( 9 );
 
-
         $this->setStartYearIfNotSetAlready( $naturalDate, date( 'Y' ) );
         $this->setEndYearIfNotSetAlready( $naturalDate, date( 'Y' ) );
 

@@ -7,6 +7,12 @@ use MichaelDrennen\NaturalDate\NaturalDate;
 
 class JohnMcClanesBirthday extends PatternModifier {
 
+    /**
+     * This $patterns array is set in the Languages/{en}/PatternMapForLanguages.php file for PatternModifiers that are
+     * built into the NaturalDate library. For user-defined PatternModifiers, like this one, you need to define your
+     * own regex patterns that will trigger this PatternModifier.
+     * @var array
+     */
     protected $patterns = [
         "/john mcclane\'s birthday/i",
         "/john mcclanes birthday/i",

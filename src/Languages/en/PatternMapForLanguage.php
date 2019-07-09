@@ -57,10 +57,19 @@ class PatternMapForLanguage extends PatternMap {
             '/^new years\' eve[\s]*(?:of)?[\s]*(.*)/i',
             "/^nye[\s]*(?:of)?[\s]*(.*)/i",
         ],
-        PatternMap::fall          => [ '/^fall( of )?/i', '/^autumn?( of )?/i' ],
-        PatternMap::spring        => [ '/^spring( of )?/i' ],
-        PatternMap::summer        => [ '/^summer( of )?/i' ],
-        PatternMap::winter        => [ '/^winter( of )?/i' ],
+        PatternMap::fall          => [
+            "/^fall[\s]*(?:of)?[\s]*(.*)/i",
+            "/^autumn?[\s]*(?:of)?[\s]*(.*)/i",
+        ],
+        PatternMap::spring        => [
+            "/^spring[\s]*(?:of)?[\s]*(.*)/i",
+        ],
+        PatternMap::summer        => [
+            "/^summer[\s]*(?:of)?[\s]*(.*)/i",
+        ],
+        PatternMap::winter        => [
+            "/^winter[\s]*(?:of)?[\s]*(.*)/i",
+        ],
 
     ];
 }

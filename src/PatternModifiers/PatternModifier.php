@@ -6,8 +6,15 @@ use MichaelDrennen\NaturalDate\NaturalDate;
 
 abstract class PatternModifier implements PatternModifierInterface {
 
+    /**
+     * @var array
+     */
     protected $patterns = [];
-    protected $matches = [];
+
+    /**
+     * @var array
+     */
+    protected $matches  = [];
 
     /**
      * PatternModifier constructor.
@@ -19,25 +26,32 @@ abstract class PatternModifier implements PatternModifierInterface {
     }
 
 
+    /**
+     * @param string $input
+     * @return bool
+     */
     public function match( string $input ): bool {
-        $patterns          = $this->getPatterns();
+        $patterns = $this->getPatterns();
         foreach ( $patterns as $pattern ):
-            //echo "\nPATTERN: " . $pattern . "\n";
-            $matched = preg_match( $pattern, $input, $this->matches );
-            $this->matches = array_map( 'trim', $this->matches );   // Trim the whitespace.
-            $this->matches = array_filter( $this->matches );                // Remove empties from the matches array.
+            $matched       = preg_match( $pattern, $input, $this->matches );
+            $this->matches = array_map( 'trim', $this->matches );  // Trim the whitespace.
+            $this->matches = array_filter( $this->matches );               // Remove empties from the matches array.
             if ( 1 === $matched ):
-                return true;
+                return TRUE;
             endif;
         endforeach;
 
-        return false;
+        return FALSE;
     }
 
 
+    /**
+     * @return array
+     */
     protected function getPatterns(): array {
         return $this->patterns;
     }
+
 
     /**
      * @return array
@@ -46,12 +60,22 @@ abstract class PatternModifier implements PatternModifierInterface {
         return $this->matches;
     }
 
+
+    /**
+     * @param NaturalDate $naturalDate
+     * @param int $year
+     */
     protected function setStartYearIfNotSetAlready( NaturalDate &$naturalDate, int $year ) {
         if ( is_null( $naturalDate->getStartYear() ) ):
             $naturalDate->setStartYear( $year );
         endif;
     }
 
+
+    /**
+     * @param NaturalDate $naturalDate
+     * @param int $year
+     */
     protected function setEndYearIfNotSetAlready( NaturalDate &$naturalDate, int $year ) {
         if ( is_null( $naturalDate->getEndYear() ) ):
             $naturalDate->setEndYear( $year );

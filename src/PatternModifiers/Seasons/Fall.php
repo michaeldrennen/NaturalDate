@@ -3,16 +3,14 @@
 namespace MichaelDrennen\NaturalDate\PatternModifiers;
 
 use MichaelDrennen\NaturalDate\NaturalDate;
+use MichaelDrennen\NaturalDate\PatternModifiers\Seasons\AbstractSeason;
 
 
-class Fall extends PatternModifier {
-
-    protected $patterns = [
-        "/fall/i",
-    ];
-
+class Fall extends AbstractSeason {
 
     public function modify( NaturalDate $naturalDate ): NaturalDate {
+
+        parent::modify($naturalDate);
 
         // I use the meteorological dates for the season changes.
         $naturalDate->setStartMonth( 9 );

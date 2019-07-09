@@ -3,17 +3,19 @@
 namespace MichaelDrennen\NaturalDate\PatternModifiers;
 
 use MichaelDrennen\NaturalDate\NaturalDate;
+use MichaelDrennen\NaturalDate\PatternModifiers\Seasons\AbstractSeason;
 
 
-class Winter extends PatternModifier {
+class Winter extends AbstractSeason {
 
-    protected $patterns = [
-        "/winter/i",
-    ];
-
-
+    /**
+     * If the user enters "Winter of 1978" then NaturalDate assumes the year sent in references the START of winter.
+     * @param NaturalDate $naturalDate
+     * @return NaturalDate
+     * @throws \MichaelDrennen\NaturalDate\Exceptions\NaturalDateException
+     */
     public function modify( NaturalDate $naturalDate ): NaturalDate {
-
+        parent::modify($naturalDate);
         // I use the meteorological dates for the season changes.
         $naturalDate->setStartMonth( 12 );
         $naturalDate->setStartDay( 1 );
@@ -27,6 +29,11 @@ class Winter extends PatternModifier {
         $naturalDate->setEndHour( 0 );
         $naturalDate->setEndMinute( 0 );
         $naturalDate->setEndSecond( 0 );
+
+
+        // Because winter ends in the next year.
+        $endYear = $naturalDate->getStartYear() + 1;
+        $naturalDate->setEndYear($endYear);
 
         $naturalDate->setType( NaturalDate::season );
 

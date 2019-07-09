@@ -13,10 +13,13 @@ use MichaelDrennen\NaturalDate\PatternModifiers\Month;
 use MichaelDrennen\NaturalDate\PatternModifiers\NewYears;
 use MichaelDrennen\NaturalDate\PatternModifiers\NewYearsEve;
 use MichaelDrennen\NaturalDate\PatternModifiers\PatternModifier;
+use MichaelDrennen\NaturalDate\PatternModifiers\Spring;
+use MichaelDrennen\NaturalDate\PatternModifiers\Summer;
 use MichaelDrennen\NaturalDate\PatternModifiers\Thanksgiving;
 use MichaelDrennen\NaturalDate\PatternModifiers\Today;
 use MichaelDrennen\NaturalDate\PatternModifiers\Tomorrow;
 use MichaelDrennen\NaturalDate\PatternModifiers\ValentinesDay;
+use MichaelDrennen\NaturalDate\PatternModifiers\Winter;
 use MichaelDrennen\NaturalDate\PatternModifiers\Year;
 use MichaelDrennen\NaturalDate\PatternModifiers\Yesterday;
 
@@ -159,9 +162,9 @@ class PatternMap {
             PatternMap::newYearsEve  => new NewYearsEve( $this->patterns[ PatternMap::newYearsEve ] ),
 
             PatternMap::fall   => new Fall( $this->patterns[ PatternMap::fall ] ),
-            PatternMap::spring => new Fall( $this->patterns[ PatternMap::spring ] ),
-            PatternMap::summer => new Fall( $this->patterns[ PatternMap::summer ] ),
-            PatternMap::winter => new Fall( $this->patterns[ PatternMap::winter ] ),
+            PatternMap::spring => new Spring( $this->patterns[ PatternMap::spring ] ),
+            PatternMap::summer => new Summer( $this->patterns[ PatternMap::summer ] ),
+            PatternMap::winter => new Winter( $this->patterns[ PatternMap::winter ] ),
         ];
 
         foreach ( $overridePatterns as $tag => $patternModifier ):

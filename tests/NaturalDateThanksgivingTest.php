@@ -9,6 +9,10 @@ use PHPUnit\Framework\TestCase;
 class NaturalDateThanksgivingTest extends TestCase {
 
 
+    /**
+     * @test
+     * @group holidays
+     */
     public function testThanksgiving() {
         $string           = 'thanksgiving 2017';
         $timezoneId       = 'America/Denver';
@@ -21,7 +25,10 @@ class NaturalDateThanksgivingTest extends TestCase {
         $this->assertEquals( Carbon::parse( '2017-11-23 23:59:59', $timezoneId ), $naturalDate->getLocalEnd() );
     }
 
-
+    /**
+     * @test
+     * @group holidays
+     */
     public function testThanksgivingFollowedByMonthShouldThrowException() {
         $this->expectException( NaturalDateException::class );
         $string           = 'thanksgiving of january';

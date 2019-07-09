@@ -241,6 +241,11 @@ class NaturalDate {
         }
     }
 
+    /**
+     * @param NaturalDate $naturalDate
+     * @param bool $cleanOutput
+     * @return NaturalDate
+     */
     protected static function cleanOutput( NaturalDate $naturalDate, bool $cleanOutput = FALSE ): NaturalDate {
         if ( $cleanOutput ):
             /**
@@ -395,6 +400,7 @@ class NaturalDate {
      */
     public function getPregMatchMatches() {
         $matches = $this->matchedPatternModifier->getMatches();
+
         array_shift( $matches );
         $matches = array_map( 'trim', $matches );
         $matches = array_filter( $matches );
