@@ -134,5 +134,4 @@ class NaturalDateSeasonsTest extends TestCase {
         $this->assertEquals( Carbon::parse( $nextYear . '-03-01 00:00:00', $timezoneId ), $naturalDate->getLocalEnd() );
     }
 
-
 }

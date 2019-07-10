@@ -119,5 +119,4 @@ class Early extends PatternModifier {
         $naturalDate->setType( NaturalDate::date );
     }
 
-
 }
