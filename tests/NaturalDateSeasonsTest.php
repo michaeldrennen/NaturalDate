@@ -36,7 +36,6 @@ class NaturalDateSeasonsTest extends TestCase {
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL, FALSE );
         $this->assertEquals( Carbon::parse( $thisYear . '-09-01 00:00:00', $timezoneId ), $naturalDate->getLocalStart() );
         $this->assertEquals( Carbon::parse( $thisYear . '-11-30 23:59:59', $timezoneId ), $naturalDate->getLocalEnd() );
-        print( $naturalDate );
     }
 
 
@@ -52,7 +51,6 @@ class NaturalDateSeasonsTest extends TestCase {
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL, FALSE );
         $this->assertEquals( Carbon::parse( $thisYear . '-09-01 00:00:00', $timezoneId ), $naturalDate->getLocalStart() );
         $this->assertEquals( Carbon::parse( $thisYear . '-11-30 23:59:59', $timezoneId ), $naturalDate->getLocalEnd() );
-        print( $naturalDate );
     }
 
 
