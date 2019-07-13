@@ -2,8 +2,10 @@
 
 namespace MichaelDrennen\NaturalDate;
 
+
 use Carbon\Carbon;
 use DateTimeZone;
+use Exception;
 use MichaelDrennen\NaturalDate\Exceptions\InvalidLanguageCode;
 use MichaelDrennen\NaturalDate\Exceptions\InvalidNaturalDateType;
 use MichaelDrennen\NaturalDate\Exceptions\InvalidTimezone;
@@ -179,7 +181,9 @@ class NaturalDate {
      *                                                                     NaturalDate object.
      *
      * @return static
-     * @throws \Exception;
+     * @throws Exception
+     * @throws NaturalDateException
+     * @throws UnparsableString
      */
     public static function parse( string $string = '', string $timezoneId = 'UTC', string $languageCode = 'en', $patternModifiers = [], NaturalDate $existingNaturalDate = NULL, bool $cleanOutput = TRUE ): NaturalDate {
 
@@ -234,7 +238,7 @@ class NaturalDate {
 
         } catch ( NaturalDateException $exception ) {
             throw $exception;
-        } catch ( \Exception $exception ) {
+        } catch ( Exception $exception ) {
             $debugMessages = isset( $naturalDate ) ? $naturalDate->getDebugMessages() : [];
             throw new NaturalDateException( $exception->getMessage(), $exception->getCode(), $exception,
                                             $debugMessages );
