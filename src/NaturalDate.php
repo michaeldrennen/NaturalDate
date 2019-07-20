@@ -142,6 +142,9 @@ class NaturalDate {
         $string .= "\nlanguageCode: " . $this->getLanguageCode();
         $string .= "\nlocal start:  " . $this->getLocalStart();
         $string .= "\nlocal end:    " . $this->getLocalEnd();
+        $string .= "\nUTC start:    " . $this->getUtcStart();
+        $string .= "\nUTC end:      " . $this->getUtcEnd();
+
         $string .= "\ntype:         " . $this->getType();
 
         $string        .= "\n\ndebugMessages:";
@@ -568,9 +571,9 @@ class NaturalDate {
     /**
      * Used in the constructor when the parse() function is able to find a date using date_parse();
      *
+     * @param \Carbon\Carbon|null $start
      * @see \MichaelDrennen\NaturalDate\NaturalDate::parse()
      *
-     * @param \Carbon\Carbon|null $start
      */
     protected function setLocalStartDateTime( Carbon $start = NULL ) {
         if ( is_null( $start ) ):
@@ -588,9 +591,9 @@ class NaturalDate {
     /**
      * Used in the constructor when the parse() function is able to find a date using date_parse();
      *
+     * @param \Carbon\Carbon|null $end
      * @see \MichaelDrennen\NaturalDate\NaturalDate::parse()
      *
-     * @param \Carbon\Carbon|null $end
      */
     protected function setLocalEndDateTime( Carbon $end = NULL ) {
         if ( is_null( $end ) ):
