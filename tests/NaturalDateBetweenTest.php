@@ -15,7 +15,7 @@ class NaturalDateBetweenTest extends TestCase {
      */
     public function testBetweenTwoYears() {
         $string           = 'between 2000 and 2010';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
@@ -30,9 +30,13 @@ class NaturalDateBetweenTest extends TestCase {
     }
 
 
+    /**
+     * @throws \MichaelDrennen\NaturalDate\Exceptions\NaturalDateException
+     * @throws \MichaelDrennen\NaturalDate\Exceptions\UnparsableString
+     */
     public function testBetweenTwoMonthYearCombos() {
         $string           = 'between Feb 2000 and March 2000';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
@@ -53,7 +57,7 @@ class NaturalDateBetweenTest extends TestCase {
      */
     public function testBetweenTwoSpecificDates() {
         $string           = 'between Feb 14, 2017 and March 14, 2017';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL );
@@ -66,9 +70,13 @@ class NaturalDateBetweenTest extends TestCase {
     }
 
 
+    /**
+     * @throws \MichaelDrennen\NaturalDate\Exceptions\NaturalDateException
+     * @throws \MichaelDrennen\NaturalDate\Exceptions\UnparsableString
+     */
     public function testBetweenTwoChristmases() {
         $string           = 'between Christmas 1979 and Xmas 2017';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL );
@@ -78,9 +86,13 @@ class NaturalDateBetweenTest extends TestCase {
     }
 
 
+    /**
+     * @throws \MichaelDrennen\NaturalDate\Exceptions\NaturalDateException
+     * @throws \MichaelDrennen\NaturalDate\Exceptions\UnparsableString
+     */
     public function testBetweenChristmasAndNewYears() {
         $string           = 'between Christmas 1978 and ny 1979';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL );
@@ -90,9 +102,13 @@ class NaturalDateBetweenTest extends TestCase {
     }
 
 
+    /**
+     * @throws \MichaelDrennen\NaturalDate\Exceptions\NaturalDateException
+     * @throws \MichaelDrennen\NaturalDate\Exceptions\UnparsableString
+     */
     public function testBetweenThanksgivingAndChristmas() {
         $string           = 'between thanksgiving and christmas 2017';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL );
@@ -102,9 +118,13 @@ class NaturalDateBetweenTest extends TestCase {
     }
 
 
+    /**
+     * @throws \MichaelDrennen\NaturalDate\Exceptions\NaturalDateException
+     * @throws \MichaelDrennen\NaturalDate\Exceptions\UnparsableString
+     */
     public function testBetweenThanksgivingAndNewYearsEveFor2017() {
         $string           = 'between thanksgiving and new years eve 2017';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL );
@@ -120,7 +140,7 @@ class NaturalDateBetweenTest extends TestCase {
      */
     public function testBetweenThanksgivingAndNewYearsEveForThisYear() {
         $string           = 'between thanksgiving and new years eve';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL );
@@ -140,7 +160,7 @@ class NaturalDateBetweenTest extends TestCase {
      */
     public function testBetweenWithReversedSpecialDatesHavingStartDateThisYear() {
         $string           = 'between thanksgiving and halloween';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL, FALSE );
@@ -162,7 +182,7 @@ class NaturalDateBetweenTest extends TestCase {
      */
     public function testBetweenYesterdayAndToday() {
         $string           = 'between yesterday and today';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL );
@@ -182,7 +202,7 @@ class NaturalDateBetweenTest extends TestCase {
      */
     public function testBetweenTodayAndTomorrow() {
         $string           = 'between today and tomorrow';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL );

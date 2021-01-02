@@ -14,7 +14,7 @@ If NaturalDate can't determine an exact date from the input, it will give you a 
   
 # Example
 ```php  
-$naturalDate = NaturalDate::parse( "Early 2016", 'America/Denver' );  
+$naturalDate = NaturalDate::parse( "Early 2016", 'America/Phoenix' );  
 echo $naturalDate->toJson();
 ```
 ## Output
@@ -46,7 +46,7 @@ echo $naturalDate->toJson();
 # Summary of Functions
 
 ```php
-$naturalDate = NaturalDate::parse( "between thanksgiving and christmas 2017", 'America/Denver' );
+$naturalDate = NaturalDate::parse( "between thanksgiving and christmas 2017", 'America/Phoenix' );
 
 // $localStartDateTime will be a Carbon object.
 $localStartDateTime = $naturalDate->getLocalStart();

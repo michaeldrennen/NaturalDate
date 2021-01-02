@@ -97,6 +97,11 @@ class Late extends PatternModifier {
         $naturalDate->setType( NaturalDate::year );
     }
 
+
+    /**
+     * @param NaturalDate $naturalDate
+     * @throws \MichaelDrennen\NaturalDate\Exceptions\NaturalDateException
+     */
     protected function modifyMonth( NaturalDate &$naturalDate ) {
         $naturalDate->setStartDay( 21 );
         $lastDayOfTheMonth = $naturalDate->getLocalEnd()->format( 't' );
@@ -108,10 +113,10 @@ class Late extends PatternModifier {
         $naturalDate->setType( NaturalDate::month );
     }
 
+
     /**
-     * @param \MichaelDrennen\NaturalDate\NaturalDate $naturalDate
-     *
-     * @throws \Exception
+     * @param NaturalDate $naturalDate
+     * @throws \MichaelDrennen\NaturalDate\Exceptions\NaturalDateException
      */
     protected function modifyDate( NaturalDate &$naturalDate ) {
         $naturalDate->setStartHour( 17 );

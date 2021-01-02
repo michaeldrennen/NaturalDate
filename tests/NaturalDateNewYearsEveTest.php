@@ -3,7 +3,6 @@ namespace MichaelDrennen\NaturalDate\Tests;
 
 use Carbon\Carbon;
 use MichaelDrennen\NaturalDate\Exceptions\NaturalDateException;
-use MichaelDrennen\NaturalDate\Exceptions\StrToTimeParseFailure;
 use MichaelDrennen\NaturalDate\NaturalDate;
 use PHPUnit\Framework\TestCase;
 
@@ -16,7 +15,7 @@ class NaturalDateNewYearsEveTest extends TestCase {
      */
     public function testNyeForThisYear() {
         $string           = 'new years eve';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, null );
@@ -28,7 +27,7 @@ class NaturalDateNewYearsEveTest extends TestCase {
 
     public function testNyeFor1978() {
         $string           = 'new years eve 1978';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, null );
@@ -40,7 +39,7 @@ class NaturalDateNewYearsEveTest extends TestCase {
     public function testNyeFollowedByHolidayShouldThrowException() {
         $this->expectException( NaturalDateException::class );
         $string           = 'new years eve of halloween';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, null );

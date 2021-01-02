@@ -1,5 +1,5 @@
 <?php
-namespace MichaelDrennen\NaturalDate\PatternModifiers;
+namespace MichaelDrennen\NaturalDate\PatternModifiers\Holidays;
 
 class Halloween extends AbstractHoliday {
 

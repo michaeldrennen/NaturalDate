@@ -2,7 +2,6 @@
 
 namespace MichaelDrennen\NaturalDate\Tests;
 
-use MichaelDrennen\NaturalDate\Exceptions\StrToTimeParseFailure;
 use MichaelDrennen\NaturalDate\NaturalDate;
 use PHPUnit\Framework\TestCase;
 
@@ -16,7 +15,7 @@ class NaturalDateDebugFunctionsTest extends TestCase {
     public function testToString() {
         $this->expectOutputRegex( '/NATURAL DATE OBJECT/' );
         $string           = 'December 25, 2017';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL, FALSE );
@@ -26,7 +25,7 @@ class NaturalDateDebugFunctionsTest extends TestCase {
     public function testToJson() {
 
         $string           = 'December 25, 2017';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL, TRUE );
@@ -39,7 +38,7 @@ class NaturalDateDebugFunctionsTest extends TestCase {
 
     public function testGetDebugMessages() {
         $string           = 'December 25, 2017';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL, FALSE );
@@ -49,7 +48,7 @@ class NaturalDateDebugFunctionsTest extends TestCase {
 
     public function testDebugMessagesShouldBeEmpty() {
         $string           = 'December 25, 2017';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = new NaturalDate( $string, $timezoneId, $languageCode );
@@ -59,7 +58,7 @@ class NaturalDateDebugFunctionsTest extends TestCase {
 
     public function testDebugMessagesShouldBeUnset() {
         $string           = 'December 25, 2017';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL, TRUE );

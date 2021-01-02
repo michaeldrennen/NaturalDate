@@ -3,8 +3,6 @@
 namespace MichaelDrennen\NaturalDate\Tests;
 
 use Carbon\Carbon;
-use MichaelDrennen\NaturalDate\Exceptions\NaturalDateException;
-use MichaelDrennen\NaturalDate\Exceptions\StrToTimeParseFailure;
 use MichaelDrennen\NaturalDate\NaturalDate;
 use PHPUnit\Framework\TestCase;
 
@@ -16,7 +14,7 @@ class NaturalDateSeasonsTest extends TestCase {
     public function testNoYearGiven() {
         $thisYear         = date( 'Y' );
         $string           = 'fall';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL, TRUE );
@@ -30,7 +28,7 @@ class NaturalDateSeasonsTest extends TestCase {
     public function testFall() {
         $thisYear         = 2019;
         $string           = 'fall ' . $thisYear;
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL, FALSE );
@@ -45,7 +43,7 @@ class NaturalDateSeasonsTest extends TestCase {
     public function testOldFall() {
         $thisYear         = 1978;
         $string           = 'fall ' . $thisYear;
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL, FALSE );
@@ -60,7 +58,7 @@ class NaturalDateSeasonsTest extends TestCase {
     public function testAutumn() {
         $thisYear         = 2019;
         $string           = 'autumn ' . $thisYear;
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL, TRUE );
@@ -76,7 +74,7 @@ class NaturalDateSeasonsTest extends TestCase {
     public function testAutum() {
         $thisYear         = 2019;
         $string           = 'autum ' . $thisYear;
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL, TRUE );
@@ -92,7 +90,7 @@ class NaturalDateSeasonsTest extends TestCase {
     public function testSpring() {
         $thisYear         = 2019;
         $string           = 'spring ' . $thisYear;
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL, TRUE );
@@ -107,7 +105,7 @@ class NaturalDateSeasonsTest extends TestCase {
     public function testSummer() {
         $thisYear         = 2019;
         $string           = 'summer ' . $thisYear;
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL, TRUE );
@@ -123,7 +121,7 @@ class NaturalDateSeasonsTest extends TestCase {
         $thisYear         = 2019;
         $nextYear         = 2020;
         $string           = 'winter ' . $thisYear;
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers, NULL, TRUE );

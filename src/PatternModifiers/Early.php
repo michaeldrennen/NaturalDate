@@ -96,6 +96,11 @@ class Early extends PatternModifier {
         //$naturalDate->setType( NaturalDate::year );
     }
 
+
+    /**
+     * @param NaturalDate $naturalDate
+     * @throws \MichaelDrennen\NaturalDate\Exceptions\NaturalDateException
+     */
     protected function modifyMonth( NaturalDate &$naturalDate ) {
 
         $naturalDate->setStartDay( 1 );
@@ -109,6 +114,11 @@ class Early extends PatternModifier {
         $naturalDate->setType( NaturalDate::month );
     }
 
+
+    /**
+     * @param NaturalDate $naturalDate
+     * @throws \MichaelDrennen\NaturalDate\Exceptions\NaturalDateException
+     */
     protected function modifyDate( NaturalDate &$naturalDate ) {
         $naturalDate->setStartHour( 0 );
         $naturalDate->setStartMinute( 0 );

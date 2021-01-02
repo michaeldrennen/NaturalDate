@@ -2,7 +2,6 @@
 namespace MichaelDrennen\NaturalDate\Tests;
 
 use Carbon\Carbon;
-use MichaelDrennen\NaturalDate\Exceptions\StrToTimeParseFailure;
 use MichaelDrennen\NaturalDate\Exceptions\UnparsableString;
 use MichaelDrennen\NaturalDate\NaturalDate;
 use PHPUnit\Framework\TestCase;
@@ -12,7 +11,7 @@ class NaturalDateTest extends TestCase {
 
     public function testChristmas() {
         $string           = 'xmas 1979';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
@@ -26,7 +25,7 @@ class NaturalDateTest extends TestCase {
 
     public function testNewYears() {
         $string           = 'new years 1979';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
@@ -39,7 +38,7 @@ class NaturalDateTest extends TestCase {
 
     public function testNaturalDateInstantiation() {
         $string           = 'Last Friday of December 2016 11:30pm';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $date             = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
@@ -49,7 +48,7 @@ class NaturalDateTest extends TestCase {
 
     public function testYear() {
         $string           = '1978';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
@@ -66,7 +65,7 @@ class NaturalDateTest extends TestCase {
      */
     public function testYearWithTickMark() {
         $string           = "'78";
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
@@ -83,7 +82,7 @@ class NaturalDateTest extends TestCase {
      */
     public function testYearWithTwoDigits() {
         $string           = "78";
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
@@ -98,7 +97,7 @@ class NaturalDateTest extends TestCase {
     public function testNaturalDateWithUnparsableString() {
         $this->expectException( UnparsableString::class );
         $string = "Did you ever hear the tragedy of Darth Plagueis The Wise?";
-        NaturalDate::parse( $string, 'America/Denver' );
+        NaturalDate::parse( $string, 'America/Phoenix' );
     }
 
 }

@@ -3,7 +3,6 @@
 namespace MichaelDrennen\NaturalDate\Tests;
 
 use Carbon\Carbon;
-use MichaelDrennen\NaturalDate\Exceptions\StrToTimeParseFailure;
 use MichaelDrennen\NaturalDate\NaturalDate;
 use PHPUnit\Framework\TestCase;
 
@@ -12,7 +11,7 @@ class NaturalDateLateTest extends TestCase {
 
     public function testLateModifierJustMonth() {
         $string           = 'late jan';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
@@ -31,7 +30,7 @@ class NaturalDateLateTest extends TestCase {
 
     public function testLateModifierWithMonthAndYear() {
         $string           = 'late jan 1978';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
@@ -49,7 +48,7 @@ class NaturalDateLateTest extends TestCase {
 
     public function testLateChristmas() {
         $string           = 'late xmas 1979';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $date             = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
@@ -63,27 +62,27 @@ class NaturalDateLateTest extends TestCase {
 
     public function testLateModifierWithJustTheWordLateShouldReturnLateToday() {
         $string           = 'late';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
         $startDate        = $naturalDate->getUtcStart();
         $endDate          = $naturalDate->getUtcEnd();
 
-        $this->assertEquals( Carbon::parse( date( 'Y-m-d 02:00:00' ), 'UTC' )->addDay(), $startDate );
-        $this->assertEquals( Carbon::parse( date( 'Y-m-d 05:59:59' ), 'UTC' )->addDay(), $endDate );
+        $this->assertEquals( Carbon::parse( date( 'Y-m-d 03:00:00' ), 'UTC' )->addDay(), $startDate );
+        $this->assertEquals( Carbon::parse( date( 'Y-m-d 06:59:59' ), 'UTC' )->addDay(), $endDate );
     }
 
     public function testLateModifierYear() {
         $string           = 'late 2016';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
         $startDate        = $naturalDate->getUtcStart();
         $endDate          = $naturalDate->getUtcEnd();
 
-        $this->assertEquals( Carbon::parse( '2016-09-01 06:00:00', 'UTC' ), $startDate );
+        $this->assertEquals( Carbon::parse( '2016-09-01 07:00:00', 'UTC' ), $startDate );
         $this->assertEquals( Carbon::parse( '2017-01-01 06:59:59', 'UTC' ), $endDate );
     }
 

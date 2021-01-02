@@ -1,10 +1,11 @@
 <?php
 
-namespace MichaelDrennen\NaturalDate\PatternModifiers;
+namespace MichaelDrennen\NaturalDate\PatternModifiers\Holidays;
 
 use Carbon\Carbon;
 use MichaelDrennen\NaturalDate\Exceptions\NaturalDateException;
 use MichaelDrennen\NaturalDate\NaturalDate;
+use MichaelDrennen\NaturalDate\PatternModifiers\PatternModifier;
 
 abstract class AbstractHoliday extends PatternModifier {
 

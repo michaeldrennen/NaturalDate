@@ -14,7 +14,7 @@ class NaturalDateExceptionsTest extends TestCase {
     public function testInvalidLanguageCodeShouldThrowException() {
         $this->expectException( InvalidLanguageCode::class );
         $string           = 'Jan 1, 1970';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'badlanguagecode';
         $patternModifiers = [];
         NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
@@ -38,7 +38,7 @@ class NaturalDateExceptionsTest extends TestCase {
     public function testInvalidTypeShouldThrowException() {
         $this->expectException( InvalidNaturalDateType::class );
         $string           = 'Jan 1, 1970';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
@@ -53,7 +53,7 @@ class NaturalDateExceptionsTest extends TestCase {
     public function testSetTypeToNullShouldThrowException() {
         $this->expectException( InvalidNaturalDateType::class );
         $string           = 'Jan 1, 1970';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );

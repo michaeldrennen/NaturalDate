@@ -19,6 +19,12 @@ class JohnMcClanesBirthday extends PatternModifier {
         "/john mcclane birthday/i",
     ];
 
+
+    /**
+     * @param NaturalDate $naturalDate
+     * @return NaturalDate
+     * @throws \MichaelDrennen\NaturalDate\Exceptions\NaturalDateException
+     */
     public function modify( NaturalDate $naturalDate ): NaturalDate {
         $naturalDate->setStartYear( 1955 );
         $naturalDate->setStartMonth( 11 );

@@ -11,7 +11,7 @@ class NaturalDateHalloweenTest extends TestCase {
 
     public function testHalloweenOfThisYear() {
         $string           = 'halloween';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
@@ -23,7 +23,7 @@ class NaturalDateHalloweenTest extends TestCase {
 
     public function testHalloween1980() {
         $string           = 'halloween 1980';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
@@ -34,7 +34,7 @@ class NaturalDateHalloweenTest extends TestCase {
 
     public function testHalloweenOf1980() {
         $string           = 'halloween of 1980';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
@@ -46,7 +46,7 @@ class NaturalDateHalloweenTest extends TestCase {
     public function testHalloweenFollowedByMonthShouldThrowException() {
         $this->expectException( NaturalDateException::class );
         $string           = 'halloween of january';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );

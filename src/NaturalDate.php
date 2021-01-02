@@ -39,7 +39,7 @@ class NaturalDate {
     protected $input;
 
     /**
-     * @var string $timezoneId Ex: 'America/Denver'
+     * @var string $timezoneId Ex: 'America/Phoenix'
      */
     protected $timezoneId;
 
@@ -165,30 +165,34 @@ class NaturalDate {
 
     /**
      * @param string $string Ex: 'Summer of 78'
-     * @param string $timezoneId Ex: 'America/Denver'
+     * @param string $timezoneId Ex: 'America/Phoenix'
      * @param string $languageCode Ex: 'en'
      * @param array $patternModifiers Keys are PatternMap labels, and values are
-     *                                                                     PatternModifier objects. For instance, there
-     *                                                                     is no way for the NaturalDate class to know
-     *                                                                     when I was a freshman in high school. So the
-     *                                                                     developer would pass in: ['my freshman year
-     *                                                                     in high school' =>
-     *                                                                     $naturalDateForHighSchoolFreshmanYearDates]
-     * @param \MichaelDrennen\NaturalDate\NaturalDate $existingNaturalDate The idea is to break down each substring
-     *                                                                     into a NaturalDate object. Then combine them
-     *                                                                     together to create a single NaturalDate
-     *                                                                     object that accounts for all of the
-     *                                                                     modifiers.
-     * @param bool $cleanOutput Set to false if you want all of the
-     *                                                                     debugging messages returned with the
-     *                                                                     NaturalDate object.
+     *                                PatternModifier objects. For instance, there
+     *                                is no way for the NaturalDate class to know
+     *                                when I was a freshman in high school. So the
+     *                                developer would pass in: ['my freshman year
+     *                                in high school' =>
+     *                                $naturalDateForHighSchoolFreshmanYearDates]
+     * @param \MichaelDrennen\NaturalDate\NaturalDate|NULL $existingNaturalDate The idea is to break down each substring
+     *                                                                          into a NaturalDate object. Then combine them
+     *                                                                          together to create a single NaturalDate
+     *                                                                          object that accounts for all of the
+     *                                                                          modifiers.
+     * @param bool $cleanOutput Set to false if you want all of the debugging
+     *                          messages returned with the NaturalDate object.
      *
      * @return static
      * @throws Exception
      * @throws NaturalDateException
      * @throws UnparsableString
      */
-    public static function parse( string $string = '', string $timezoneId = 'UTC', string $languageCode = 'en', $patternModifiers = [], NaturalDate $existingNaturalDate = NULL, bool $cleanOutput = TRUE ): NaturalDate {
+    public static function parse( string $string = '',
+                                  string $timezoneId = 'UTC',
+                                  string $languageCode = 'en',
+                                  $patternModifiers = [],
+                                  NaturalDate $existingNaturalDate = NULL,
+                                  bool $cleanOutput = TRUE ): NaturalDate {
 
         // Run the whole string through the patterns. I take the first pattern that matches.
         try {
@@ -342,8 +346,8 @@ class NaturalDate {
      * I added this function to aid in development and debugging.
      *
      * @param string $message
-     * @param string $function __FUNCTION__
-     * @param string $class __CLASS__
+     * @param string|NULL $function __FUNCTION__
+     * @param string|NULL $class __CLASS__
      */
     public function addDebugMessage( string $message, string $function = NULL, string $class = NULL ) {
         $this->debugMessages[] = [
@@ -368,8 +372,8 @@ class NaturalDate {
 
     /**
      * @param string $languageCode Ex: "en" for english
-     *
-     * @throws \MichaelDrennen\NaturalDate\Exceptions\InvalidLanguageCode
+     * @throws InvalidLanguageCode
+     * @throws \Exception
      */
     protected function setPatternMap( string $languageCode ) {
         switch ( $languageCode ):
@@ -433,7 +437,7 @@ class NaturalDate {
     }
 
     /**
-     * @param string $timezoneId Ex: 'America/Denver'
+     * @param string|NULL $timezoneId Ex: 'America/Phoenix'
      *
      * @throws \MichaelDrennen\NaturalDate\Exceptions\InvalidTimezone
      * @link http://php.net/manual/en/datetimezone.listabbreviations.php
@@ -449,7 +453,7 @@ class NaturalDate {
     }
 
     /**
-     * @param string $languageCode EX: "en"
+     * @param string|NULL $languageCode EX: "en"
      */
     public function setLanguageCode( string $languageCode = NULL ) {
         $this->languageCode = $languageCode;
@@ -467,7 +471,7 @@ class NaturalDate {
 
 
     /**
-     * @param string $type See the constants above like 'year' for valid types.
+     * @param string|NULL $type See the constants above like 'year' for valid types.
      *
      * @throws \MichaelDrennen\NaturalDate\Exceptions\NaturalDateException
      */
@@ -525,7 +529,7 @@ class NaturalDate {
 
 
     /**
-     * @return string Ex: 'America/Denver'
+     * @return string Ex: 'America/Phoenix'
      */
     public function getTimezoneId() {
         return $this->timezoneId;

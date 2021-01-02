@@ -1,9 +1,8 @@
 <?php
 
-namespace MichaelDrennen\NaturalDate\PatternModifiers;
+namespace MichaelDrennen\NaturalDate\PatternModifiers\Seasons;
 
 use MichaelDrennen\NaturalDate\NaturalDate;
-use MichaelDrennen\NaturalDate\PatternModifiers\Seasons\AbstractSeason;
 
 
 class Spring extends AbstractSeason {

@@ -11,7 +11,7 @@ class NaturalDateValentinesDayTest extends TestCase {
 
     public function testHolidayOfThisYear() {
         $string           = 'valentines day';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
@@ -23,7 +23,7 @@ class NaturalDateValentinesDayTest extends TestCase {
 
     public function testHoliday1980() {
         $string           = 'valentines day 1980';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
@@ -34,7 +34,7 @@ class NaturalDateValentinesDayTest extends TestCase {
 
     public function testHolidayOf1980() {
         $string           = 'valentines day of 1980';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
@@ -46,7 +46,7 @@ class NaturalDateValentinesDayTest extends TestCase {
     public function testHolidayFollowedByMonthShouldThrowException() {
         $this->expectException( NaturalDateException::class );
         $string           = 'valentines day of january';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );

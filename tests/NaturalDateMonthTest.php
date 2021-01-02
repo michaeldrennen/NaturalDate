@@ -1,9 +1,8 @@
 <?php
+
 namespace MichaelDrennen\NaturalDate\Tests;
 
 use Carbon\Carbon;
-use MichaelDrennen\NaturalDate\Exceptions\StrToTimeParseFailure;
-use MichaelDrennen\NaturalDate\Exceptions\UnparsableString;
 use MichaelDrennen\NaturalDate\NaturalDate;
 use PHPUnit\Framework\TestCase;
 
@@ -16,7 +15,7 @@ class NaturalDateMonthTest extends TestCase {
      */
     public function testMonthWithYear() {
         $string           = 'jan 2019';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
@@ -31,20 +30,19 @@ class NaturalDateMonthTest extends TestCase {
      * @test
      * @group month
      */
-    public function testMonthWithoutYear(){
+    public function testMonthWithoutYear() {
         $string           = 'jan';
-        $timezoneId       = 'America/Denver';
+        $currentYear      = date( 'Y' ); // So the unit test will work next year.
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
         $startDate        = $naturalDate->getUtcStart();
         $endDate          = $naturalDate->getUtcEnd();
 
-        $this->assertEquals( Carbon::parse( '2019-01-01 07:00:00', 'UTC' ), $startDate );
-        $this->assertEquals( Carbon::parse( '2019-02-01 06:59:59', 'UTC' ), $endDate );
+        $this->assertEquals( Carbon::parse( $currentYear . '-01-01 07:00:00', 'UTC' ), $startDate );
+        $this->assertEquals( Carbon::parse( $currentYear . '-02-01 06:59:59', 'UTC' ), $endDate );
     }
-
-
 
 
 }

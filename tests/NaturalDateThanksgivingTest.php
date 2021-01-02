@@ -15,7 +15,7 @@ class NaturalDateThanksgivingTest extends TestCase {
      */
     public function testThanksgiving() {
         $string           = 'thanksgiving 2017';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         $naturalDate      = NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );
@@ -32,7 +32,7 @@ class NaturalDateThanksgivingTest extends TestCase {
     public function testThanksgivingFollowedByMonthShouldThrowException() {
         $this->expectException( NaturalDateException::class );
         $string           = 'thanksgiving of january';
-        $timezoneId       = 'America/Denver';
+        $timezoneId       = 'America/Phoenix';
         $languageCode     = 'en';
         $patternModifiers = [];
         NaturalDate::parse( $string, $timezoneId, $languageCode, $patternModifiers );

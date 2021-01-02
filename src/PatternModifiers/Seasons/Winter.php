@@ -1,10 +1,8 @@
 <?php
 
-namespace MichaelDrennen\NaturalDate\PatternModifiers;
+namespace MichaelDrennen\NaturalDate\PatternModifiers\Seasons;
 
 use MichaelDrennen\NaturalDate\NaturalDate;
-use MichaelDrennen\NaturalDate\PatternModifiers\Seasons\AbstractSeason;
-
 
 class Winter extends AbstractSeason {
 
@@ -13,6 +11,7 @@ class Winter extends AbstractSeason {
      * @param NaturalDate $naturalDate
      * @return NaturalDate
      * @throws \MichaelDrennen\NaturalDate\Exceptions\NaturalDateException
+     * @throws \Exception
      */
     public function modify( NaturalDate $naturalDate ): NaturalDate {
         parent::modify($naturalDate);
