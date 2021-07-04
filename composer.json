@@ -3,7 +3,7 @@
   "description": "A PHP library that takes a user supplied date (that doesn't have to be exact) and NaturalDate will return an object that represents it's best guess on the date the user meant.",
   "type": "library",
   "require": {
-    "php": "^7.3",
+    "php": "^7.3|^8.0",
     "nesbot/carbon": "^2.0",
     "ext-json": "*"
   },
